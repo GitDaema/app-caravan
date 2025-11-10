@@ -14,8 +14,8 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
-lib64/
+/lib/
+/lib64/
 parts/
 sdist/
 var/
@@ -68,3 +68,12 @@ venv.bak/
 # IDE settings
 .idea/
 .vscode/
+
+# Node (frontend)
+node_modules/
+web/node_modules/
+web/dist/
+web/.vite/
+web/coverage/
+*.log
+web/.env

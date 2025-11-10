@@ -1,6 +1,6 @@
 # src/core/config.py
 import os
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
@@ -18,7 +18,9 @@ class Settings(BaseSettings):
     # Database
     SQLALCHEMY_DATABASE_URI: str = os.getenv("DATABASE_URL", "sqlite:///./caravan_booking.db")
 
-    class Config:
-        case_sensitive = True
+    # CORS
+    CORS_ORIGINS: str = os.getenv("CORS_ORIGINS", "*")
+
+    model_config = SettingsConfigDict(case_sensitive=True)
 
 settings = Settings()

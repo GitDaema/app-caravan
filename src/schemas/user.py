@@ -1,5 +1,5 @@
 # src/schemas/user.py
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, ConfigDict
 from typing import Optional
 from src.models.user import UserRole
 
@@ -23,8 +23,7 @@ class UserInDBBase(UserBase):
     is_active: bool
     role: UserRole
 
-    class Config:
-        from_attributes = True # orm_mode is deprecated
+    model_config = ConfigDict(from_attributes=True)
 
 # Properties to return to client
 class User(UserInDBBase):

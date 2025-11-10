@@ -1,0 +1,18 @@
+$ErrorActionPreference = 'Stop'
+
+# 1) Backend venv ì¤€ë¹?if (-not (Test-Path ".venv/ScriptS/python.exe")) {
+  Write-Host "[i] ê°€?í™˜ê²½ì´ ?†ì–´ ?ì„±?©ë‹ˆ?? -ForegroundColor Cyan
+  ./scripts/setup_venv.ps1
+}
+
+# 2) Backend API ì°??´ê¸°
+Write-Host "[i] API ?œë²„ ì°½ì„ ?½ë‹ˆ?? -ForegroundColor Cyan
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "./scripts/dev_api.ps1"
+
+# 3) Frontend Dev ?œë²„ ì°??´ê¸°
+Write-Host "[i] ?„ë¡ ?¸ì—”??Dev ?œë²„ ì°½ì„ ?½ë‹ˆ?? -ForegroundColor Cyan
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "./scripts/dev_web.ps1"
+
+Write-Host "[?? ì¤€ë¹??„ë£Œ: http://localhost:5173  (ë°±ì—”?? http://localhost:8000)" -ForegroundColor Green
+
+

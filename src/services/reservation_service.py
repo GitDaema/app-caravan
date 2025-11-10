@@ -69,7 +69,7 @@ class ReservationService:
             self._validator.validate_availability(caravan_id, start_date, end_date)
 
             # 3. 가격 계산 위임
-            price = self._price_calculator.calculate(caravan.daily_rate, start_date, end_date)
+            price = self._price_calculator.calculate(caravan.price_per_day, start_date, end_date)
 
             # 4. 유효성 검사 (지불)
             self._validator.validate_payment(user, price)

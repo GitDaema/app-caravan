@@ -12,7 +12,14 @@ from src.core.config import settings
 from src.database.session import SessionLocal
 from src.models import user as user_model
 from src.schemas import token as token_schema
-from src.crud import crud_user
+from src.repositories.user_repository import UserRepository
+from src.services.user_service import UserService
+from src.services.caravan_service import CaravanService
+from src.services.reservation_service import ReservationService
+from src.services.reservation_validator import ReservationValidator
+from src.services.price_calculator import PriceCalculator
+from src.repositories.reservation_repository import ReservationRepository
+from src.repositories.caravan_repository import CaravanRepository
 
 reusable_oauth2 = OAuth2PasswordBearer(
     tokenUrl=f"{settings.API_V1_STR}/login/access-token"
@@ -24,6 +31,26 @@ def get_db() -> Generator:
         yield db
     finally:
         db.close()
+
+def get_user_service(db: Session = Depends(get_db)) -> UserService:
+    return UserService(db)
+
+def get_caravan_service(db: Session = Depends(get_db)) -> CaravanService:
+    return CaravanService(db)
+
+def get_reservation_service(db: Session = Depends(get_db)) -> ReservationService:
+    reservation_repo = ReservationRepository(db)
+    user_repo = UserRepository(db)
+    caravan_repo = CaravanRepository(db)
+    validator = ReservationValidator(reservation_repo)
+    price_calc = PriceCalculator()
+    return ReservationService(
+        validator=validator,
+        reservation_repository=reservation_repo,
+        user_repository=user_repo,
+        caravan_repository=caravan_repo,
+        price_calculator=price_calc,
+    )
 
 def get_current_user(
     db: Session = Depends(get_db), token: str = Depends(reusable_oauth2)
@@ -38,7 +65,8 @@ def get_current_user(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Could not validate credentials",
         )
-    user = crud_user.get_user_by_email(db, email=token_data.email)
+    user_repo = UserRepository(db)
+    user = user_repo.get_user_by_email(email=token_data.email)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user

@@ -1,5 +1,6 @@
 # src/models/user.py
-from sqlalchemy import Column, Integer, String, Boolean, Enum
+from sqlalchemy import Column, Integer, String, Boolean, Enum, Float
+from sqlalchemy.orm import relationship
 from src.database.session import Base
 import enum
 
@@ -17,3 +18,6 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     is_active = Column(Boolean(), default=True)
     role = Column(Enum(UserRole), nullable=False, default=UserRole.GUEST)
+    balance = Column(Float, nullable=False, default=0.0)
+    
+    caravans = relationship("Caravan", back_populates="host")
