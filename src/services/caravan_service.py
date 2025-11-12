@@ -20,3 +20,25 @@ class CaravanService:
         #     raise SomeException("User is not a host")
         
         return self.caravan_repo.create(caravan_in=caravan_in, host_id=host.id)
+
+    def get(self, caravan_id: int) -> Caravan | None:
+        return self.caravan_repo.get_by_id(caravan_id)
+
+    def list(
+        self,
+        *,
+        location: str | None = None,
+        min_price: float | None = None,
+        max_price: float | None = None,
+        min_capacity: int | None = None,
+        skip: int = 0,
+        limit: int = 100,
+    ) -> list[Caravan]:
+        return self.caravan_repo.search(
+            location=location,
+            min_price=min_price,
+            max_price=max_price,
+            min_capacity=min_capacity,
+            skip=skip,
+            limit=limit,
+        )

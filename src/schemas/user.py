@@ -22,6 +22,7 @@ class UserInDBBase(UserBase):
     id: int
     is_active: bool
     role: UserRole
+    balance: float
 
     model_config = ConfigDict(from_attributes=True)
 

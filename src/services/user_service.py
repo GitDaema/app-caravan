@@ -2,7 +2,7 @@
 from sqlalchemy.orm import Session
 from src.repositories.user_repository import UserRepository
 from src.schemas.user import UserCreate
-from src.models.user import User
+from src.models.user import User, UserRole
 from src.exceptions.user_exceptions import UserAlreadyExistsError
 
 
@@ -22,3 +22,24 @@ class UserService:
             raise UserAlreadyExistsError(email=user_in.email)
 
         return self.user_repo.create_user(user_in=user_in)
+
+    # Admin-only actions
+    def promote_to_host(self, user_id: int) -> User:
+        user = self.user_repo.set_role(user_id, UserRole.HOST)
+        if not user:
+            raise ValueError("user_not_found")
+        return user
+
+    def set_role(self, user_id: int, role: UserRole) -> User:
+        user = self.user_repo.set_role(user_id, role)
+        if not user:
+            raise ValueError("user_not_found")
+        return user
+
+    def top_up(self, user_id: int, amount: float) -> User:
+        if amount <= 0:
+            raise ValueError("amount_must_be_positive")
+        user = self.user_repo.top_up(user_id, amount)
+        if not user:
+            raise ValueError("user_not_found")
+        return user

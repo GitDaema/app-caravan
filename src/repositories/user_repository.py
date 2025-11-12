@@ -27,3 +27,28 @@ class UserRepository:
         self.db.commit()
         self.db.refresh(db_user)
         return db_user
+
+    # Admin utilities
+    def set_role(self, user_id: int, role: str) -> User | None:
+        user = self.get_by_id(user_id)
+        if not user:
+            return None
+        user.role = role  # expects UserRole-compatible str
+        self.db.add(user)
+        self.db.commit()
+        self.db.refresh(user)
+        return user
+
+    def top_up(self, user_id: int, amount: float, *, commit: bool = True) -> User | None:
+        user = self.get_by_id(user_id)
+        if not user:
+            return None
+        user.balance = float(user.balance or 0.0) + float(amount)
+        self.db.add(user)
+        if commit:
+            self.db.commit()
+            self.db.refresh(user)
+        else:
+            # ensure pending writes are flushed so value is up to date
+            self.db.flush()
+        return user

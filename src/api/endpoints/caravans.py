@@ -1,5 +1,5 @@
 # src/api/endpoints/caravans.py
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from src.api import deps
 from src.services.caravan_service import CaravanService
 from src.schemas import caravan as caravan_schema
@@ -25,3 +25,36 @@ def create_caravan(
         )
     caravan = caravan_service.create_caravan(caravan_in=caravan_in, host=current_user)
     return caravan
+
+
+@router.get("/", response_model=list[caravan_schema.Caravan])
+def list_caravans(
+    *,
+    caravan_service: CaravanService = Depends(deps.get_caravan_service),
+    location: str | None = Query(default=None),
+    min_price: float | None = Query(default=None, ge=0),
+    max_price: float | None = Query(default=None, ge=0),
+    min_capacity: int | None = Query(default=None, ge=1),
+    skip: int = 0,
+    limit: int = 100,
+):
+    return caravan_service.list(
+        location=location,
+        min_price=min_price,
+        max_price=max_price,
+        min_capacity=min_capacity,
+        skip=skip,
+        limit=limit,
+    )
+
+
+@router.get("/{caravan_id}", response_model=caravan_schema.Caravan)
+def get_caravan(
+    *,
+    caravan_id: int,
+    caravan_service: CaravanService = Depends(deps.get_caravan_service),
+):
+    c = caravan_service.get(caravan_id)
+    if not c:
+        raise HTTPException(status_code=404, detail="caravan_not_found")
+    return c
