@@ -5,6 +5,11 @@ from src.services.caravan_service import CaravanService
 from src.schemas import caravan as caravan_schema
 from src.models import user as user_model
 from src.models.user import UserRole
+from sqlalchemy.orm import Session
+from src.repositories.reservation_repository import ReservationRepository
+from src.models.reservation import ReservationStatus
+from pydantic import BaseModel
+from datetime import date
 
 router = APIRouter()
 
@@ -58,3 +63,33 @@ def get_caravan(
     if not c:
         raise HTTPException(status_code=404, detail="caravan_not_found")
     return c
+
+
+class CalendarRange(BaseModel):
+    start: date
+    end: date
+
+
+class CaravanCalendarResponse(BaseModel):
+    caravan_id: int
+    ranges: list[CalendarRange]
+
+
+@router.get("/{caravan_id}/calendar", response_model=CaravanCalendarResponse)
+def get_caravan_calendar(
+    *,
+    caravan_id: int,
+    db: Session = Depends(deps.get_db),
+):
+    repo = ReservationRepository(db)
+    reservations = repo.get_by_caravan_id(caravan_id)
+    if reservations is None:
+        # get_by_caravan_id returns list; if caravan doesn't exist, still returns []
+        reservations = []
+    # Include ranges for non-cancelled reservations only, [start, end) semantics
+    ranges = [
+        {"start": r.start_date, "end": r.end_date}
+        for r in reservations
+        if r.status != ReservationStatus.CANCELLED
+    ]
+    return {"caravan_id": caravan_id, "ranges": ranges}

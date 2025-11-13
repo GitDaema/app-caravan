@@ -121,6 +121,24 @@ class ReservationService:
             raise CaravanNotFoundError("caravan_not_found")
         if caravan.host_id != host_id:
             raise PermissionError("forbidden")
+        # Transition rules:
+        # - CANCELLED is terminal; cannot transition out of CANCELLED
+        # - PENDING -> CONFIRMED or CANCELLED
+        # - CONFIRMED -> CANCELLED
+        # - same-to-same: no-op
+        if r.status == ReservationStatus.CANCELLED and status != ReservationStatus.CANCELLED:
+            raise ValueError("cannot_update_cancelled")
+        if r.status == status:
+            return r
+        if r.status == ReservationStatus.PENDING and status in (ReservationStatus.CONFIRMED, ReservationStatus.CANCELLED):
+            pass
+        elif r.status == ReservationStatus.CONFIRMED and status in (ReservationStatus.CANCELLED,):
+            pass
+        elif status == ReservationStatus.CANCELLED:
+            # any state can go to CANCELLED? restrict to defined above; fall through to invalid
+            pass
+        else:
+            raise ValueError("invalid_transition")
         session = self._user_repo.db
         try:
             updated = self._reservation_repo.update_status(

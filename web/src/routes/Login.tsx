@@ -34,11 +34,17 @@ export default function Login() {
       setError(e?.message || '로그인 실패')
     }
   }
+
   return (
     <div className="container mx-auto p-6">
       <h2 className="text-2xl font-semibold mb-4">로그인</h2>
       <button onClick={async () => {
-        try { await signInWithGoogle() } catch (e:any) { setError(e?.message || 'Google 로그인 실패') }
+        try {
+          await signInWithGoogle()
+          navigate('/app')
+        } catch (e:any) {
+          setError(e?.message || 'Google 로그인 실패')
+        }
       }} className="text-white bg-red-500 hover:bg-red-600 px-4 py-2 rounded">
         Google로 로그인
       </button>
@@ -52,3 +58,4 @@ export default function Login() {
     </div>
   )
 }
+

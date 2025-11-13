@@ -77,3 +77,8 @@ web/.vite/
 web/coverage/
 *.log
 web/.env
+web/.env.local
+
+# Defensive: accidental files from console redirection on Windows
+/-
+/CON

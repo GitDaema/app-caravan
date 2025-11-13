@@ -32,6 +32,23 @@ def list_my_reservations(
     return reservation_service._reservation_repo.list_by_user(current_user.id, skip=skip, limit=limit)
 
 
+@router.get("/host", response_model=list[reservation_schema.Reservation])
+def list_host_reservations(
+    *,
+    reservation_service: ReservationService = Depends(deps.get_reservation_service),
+    current_user: user_model.User = Depends(deps.get_current_active_user),
+    skip: int = 0,
+    limit: int = 200,
+):
+    if current_user.role != UserRole.HOST:
+        raise HTTPException(status_code=403, detail="host_only")
+    return reservation_service._reservation_repo.list_all(
+        skip=skip,
+        limit=limit,
+        host_id=current_user.id,
+    )
+
+
 @router.post("/", response_model=reservation_schema.Reservation, status_code=status.HTTP_201_CREATED)
 def create_reservation(
     *,
@@ -138,6 +155,10 @@ def update_reservation_status(
         code = str(e)
         if code == "reservation_not_found":
             raise HTTPException(status_code=404, detail=code)
+        if code == "cannot_update_cancelled":
+            raise HTTPException(status_code=409, detail=code)
+        if code == "invalid_transition":
+            raise HTTPException(status_code=400, detail=code)
         raise
     except CaravanNotFoundError:
         raise HTTPException(status_code=404, detail="caravan_not_found")

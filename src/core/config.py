@@ -21,6 +21,16 @@ class Settings(BaseSettings):
     # CORS
     CORS_ORIGINS: str = os.getenv("CORS_ORIGINS", "*")
 
+    # Google OAuth
+    # Set your OAuth Client ID from Google Cloud Console to enable
+    # strict audience verification when validating ID tokens.
+    # If not set, token verification will skip audience validation,
+    # which is acceptable for local development only.
+    GOOGLE_CLIENT_ID: str | None = os.getenv("GOOGLE_CLIENT_ID") or None
+    # Firebase support (optional): set your Firebase Project ID to verify
+    # Firebase Authentication ID tokens issued by securetoken.google.com.
+    FIREBASE_PROJECT_ID: str | None = os.getenv("FIREBASE_PROJECT_ID") or None
+
     model_config = SettingsConfigDict(case_sensitive=True)
 
 settings = Settings()

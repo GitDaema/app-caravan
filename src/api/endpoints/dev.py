@@ -47,7 +47,8 @@ def demo_overview(db: Session = Depends(deps.get_db)):
     demo_caravans = [c for c in caravan_repo.get_multi(limit=1000) if c.name == "Demo Caravan"]
 
     if not demo_host or not demo_caravans:
-        raise HTTPException(status_code=404, detail="demo_not_seeded")
+        # 데모 시드가 없어도 200으로 빈 데이터 반환하여 404 로그를 방지
+        return DemoOverview(demo=False, caravans=[], reservations=[])
 
     caravans = [
         CaravanBrief(id=c.id, name=c.name, location=c.location, host_id=c.host_id)
@@ -68,4 +69,3 @@ def demo_overview(db: Session = Depends(deps.get_db)):
         )
 
     return DemoOverview(demo=True, caravans=caravans, reservations=res)
-

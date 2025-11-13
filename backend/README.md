@@ -1,20 +1,24 @@
 Backend (FastAPI)
 
-로컬 실행
-- 가상환경 활성화 후 의존성 설치: `pip install -r requirements.txt`
-- DB 초기화(개발용 drop+create): `python initial_data.py`
-- 서버 실행: `uvicorn backend.app.main:app --reload`
+Local run
+- Create venv and install: `pip install -r requirements.txt`
+- Initialize DB (drop+create dev): `python initial_data.py`
+- Start server: `uvicorn backend.app.main:app --reload`
 
-환경 변수
-- `SECRET_KEY`: JWT 서명 키(미설정 시 기본값 사용)
-- `DATABASE_URL`: 예) `sqlite:///./caravan_booking.db`
+Environment variables
+- `SECRET_KEY`: JWT signing secret (defaults for dev)
+- `DATABASE_URL`: e.g. `sqlite:///./caravan_booking.db`
+- `GOOGLE_CLIENT_ID`: Audience for Google ID token verification (optional; GIS path)
+- `FIREBASE_PROJECT_ID`: Firebase Authentication project ID to verify Firebase ID tokens (optional; Firebase path)
 
-주요 엔드포인트
-- `POST /api/v1/login/access-token` (폼 로그인)
-- `POST /api/v1/auth/google/verify` (Google ID Token 검증 → JWT 발급)
-- `POST /api/v1/users` (회원가입: role 포함 가능)
-- `POST /api/v1/caravans` (호스트만)
+Key endpoints
+- `POST /api/v1/login/access-token` (local login)
+- `POST /api/v1/auth/google/verify` (Google ID Token → JWT)
+- `POST /api/v1/users` (signup; role optional)
+- `POST /api/v1/caravans` (host only)
 - `GET/POST /api/v1/reservations`
+- `GET /api/v1/reservations/host` (host-only; reservations for caravans I own)
+- `GET /api/v1/caravans/{caravan_id}/calendar` (ranges for calendar; [start,end))
 
-테스트
-- `pytest -q` (최소 스모크 테스트 제공)
+Tests
+- `pytest -q`

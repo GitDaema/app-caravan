@@ -1,53 +1,55 @@
-# CaravanShare 빠른 실행/테스트 가이드 (Windows)
+# CaravanShare Quickstart (Windows)
 
-PowerShell 실행 정책 문제를 피하기 위해 `.cmd` 스크립트를 제공합니다. 아래 명령은 `cmd.exe`(명령 프롬프트)에서 실행하세요.
+Prereqs
+- Python 3.11+, Node 18+
 
-## 1) 가상환경/의존성 설치
-
-PowerShell이 허용된다면:
-
-  scripts/setup_venv.ps1
-
-PowerShell이 제한된다면(또는 수동):
+1) Create venv and install
 
   python -m venv .venv
   .venv\Scripts\python.exe -m pip install -U pip
   .venv\Scripts\python.exe -m pip install -r requirements.txt
 
-웹 의존성은 첫 실행 시 자동 설치됩니다.
+2) Seed DB (admin user, optional demo)
 
-## 2) DB 시드(관리자/데모 데이터)
+- Basic (admin with 1000 balance):
 
-- 기본(admin + 잔액 1000):
+  python initial_data.py
 
-  scripts/seed.cmd
+- Demo data (host + caravan):
 
-- 데모 호스트/카라반 포함:
+  set SEED_DEMO=1 && python initial_data.py
 
-  scripts/seed.cmd demo
+3) Start dev servers
 
-## 3) 개발 서버 동시 실행
+  # API
+  uvicorn backend.app.main:app --reload
 
-  scripts/dev_all.cmd
+  # Web
+  cd web && npm install && npm run dev
 
-- API: http://localhost:8000
-- Web: http://localhost:5173
+API: http://localhost:8000
+Web: http://localhost:5173
 
-로컬 로그인: admin@example.com / password
+Local login
+- Email: admin@example.com
+- Password: password
 
-## 4) 테스트 실행
+Running tests
+- Backend: `pytest -q`
+- Web: `cd web && npm run test:run`
 
-- 백엔드만:  scripts/test_api.cmd
-- 프론트만:  scripts/test_web.cmd
-- 전체:      scripts/test_all.cmd
+Environment
+- Backend
+  - `SECRET_KEY` (optional in dev)
+  - `DATABASE_URL` (default sqlite:///./caravan_booking.db)
+  - `GOOGLE_CLIENT_ID` (optional; Google Identity Services path)
+  - `FIREBASE_PROJECT_ID` (optional; Firebase Authentication path)
+- Web
+  - `VITE_API_BASE_URL` (default http://localhost:8000/api/v1)
+  - `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN` if using Google sign-in via Firebase
 
-## 5) 개별 실행 (원하면 분리 실행)
-
-- API만: scripts/dev_api.cmd
-- Web만: scripts/dev_web.cmd
-
-## 참고
-
-- Google ID 토큰 검증은 실제 클라이언트 ID 설정 전에는 실패할 수 있습니다. 로컬 로그인으로 진행하세요.
-- 웹에서 API 경로는 기본 `http://localhost:8000/api/v1` 입니다. 필요 시 `VITE_API_BASE_URL` 환경변수로 변경 가능합니다.
-
+Notes
+- Google 로그인은 두 경로 중 하나를 선택해 구성하세요.
+  1) Google Identity Services(GIS): 웹 OAuth 클라이언트 ID를 만들고 `GOOGLE_CLIENT_ID`를 백엔드에 설정.
+  2) Firebase Authentication: 프로젝트 생성, Google provider 활성화, 웹 앱 API Key/Domain을 프런트에 설정하고 `FIREBASE_PROJECT_ID`를 백엔드에 설정.
+- Calendar API returns [start,end) date ranges; UI highlights each day d with start <= d < end.
