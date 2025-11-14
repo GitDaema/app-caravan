@@ -4,173 +4,167 @@
 # GOAL
 - 하나의 코드베이스로 PC와 모바일에서 모두 실행 가능한 앱을 만든다.
 - 웹(PWA)로 동작하며, 모바일 빌드는 Capacitor로 래핑 가능하도록 한다. (데스크톱은 선택: Tauri 스캐폴드만 README에 옵션으로 안내)
-- **구글 로그인**을 지원하고, 로그인 상태로 백엔드 API(예약 도메인) 호출이 가능하다.
-- 단순하지만 현대적인 **UI/UX**(반응형, 접근성, 기본 컴포넌트 일관성)를 제공한다.
+- **구글 로그인** 및 **이메일/비밀번호** 로그인을 지원하고, 로그인 상태로 백엔드 API(예약, 캐러밴 관리 등) 호출이 가능하다.
+- **사용자 역할**(일반 사용자, 호스트, 관리자)에 따른 기능 분리를 제공한다.
+- 현대적인 **UI/UX**(반응형, 접근성, 기본 컴포넌트 일관성)를 제공한다.
 
-# STACK (정확히 이 스펙 사용)
+# STACK (최신)
 ## Frontend (Web/PWA, 모바일 래핑 베이스)
 - Vite + React + TypeScript
 - react-router-dom
 - @tanstack/react-query (데이터 패칭/캐싱)
-- Zustand (가벼운 전역 상태)
+- Zustand (전역 상태 관리)
 - Tailwind CSS + shadcn/ui + lucide-react
-- Firebase Web SDK v10 (Google Auth Provider) — 브라우저에서 구글 로그인 처리
-- Capacitor v6 (iOS/Android 래핑 준비: `@capacitor/core`, `@capacitor/cli`, `@capacitor/app`, `@capacitor/browser`)
+- Firebase Web SDK v10 (Google Auth Provider)
+- Capacitor v6 (iOS/Android 래핑 준비)
 - PWA: `vite-plugin-pwa`
+- Testing: `vitest`, `react-testing-library`
 
 ## Backend (API)
 - FastAPI (Python 3.11+)
-- uvicorn
-- python-jose[cryptography] (JWT 발급/검증)
-- google-auth (구글 ID 토큰 검증용)
-- pydantic
-- httpx (선택: 외부 연동시)
-- pytest (간단 테스트)
+- Uvicorn
+- **SQLAlchemy** (ORM)
+- **Alembic** (데이터베이스 마이그레이션)
+- Pydantic (v2, with `pydantic-settings`)
+- `python-jose[cryptography]` (JWT)
+- `passlib[bcrypt]` (비밀번호 해싱)
+- `google-auth` (Google ID 토큰 검증)
+- `pytest` (테스트)
 
-# AUTH FLOW (명확한 스펙)
-1) 프론트엔드가 **Firebase Google Sign-In**으로 `idToken`(Google ID Token)을 획득한다.
-2) 프론트엔드는 백엔드에 `POST /auth/google/verify` (JSON: `{ "idToken": "<string>" }`)를 보낸다.
-3) 백엔드는 `google.oauth2.id_token.verify_oauth2_token`으로 ID 토큰을 검증하고, 내부 사용자 생성/조회 후 **서버 발급 JWT**(access_token, HS256) 반환.
-4) 이후 프론트엔드는 `Authorization: Bearer <access_token>` 헤더로 예약(Reservation) API를 호출.
+# ARCHITECTURE (Backend)
+백엔드는 계층형 아키텍처(Layered Architecture)를 채택하여 각 부분의 책임을 명확히 분리했다.
 
-# API SPEC (정확히 이대로)
-- `POST /auth/google/verify`
-  - Req: `{ "idToken": "string" }`
-  - Res: `{ "access_token": "string", "token_type": "bearer", "expires_in": 3600, "user": { "id": int, "email": "string", "name": "string" } }`
-  - 400/401: 토큰 검증 실패
+- **`src/models`**: SQLAlchemy 모델. 데이터베이스 테이블 스키마를 정의.
+- **`src/schemas`**: Pydantic 스키마. API 요청/응답 데이터 유효성 검사 및 직렬화/역직렬화.
+- **`src/repositories`**: 데이터베이스 접근 계층. CRUD 연산을 수행하며, 서비스 계층과 데이터베이스를 분리.
+- **`src/services`**: 비즈니스 로직. 여러 리포지토리를 조합하여 복잡한 비즈니스 규칙을 처리.
+- **`src/api`**: FastAPI 엔드포인트. HTTP 요청을 받아 적절한 서비스로 전달하고, 결과를 HTTP 응답으로 반환.
+- **`src/core`**: 설정(`config.py`), 보안(`security.py`) 등 프로젝트 전반의 핵심 기능.
+- **`src/database`**: 데이터베이스 세션 관리(`session.py`).
+- **`src/exceptions`**: 커스텀 예외 정의.
 
-- `GET /me`
-  - 헤더: `Authorization: Bearer <token>`
-  - Res: 현재 사용자 프로필
+# AUTH FLOW
+1.  **Google 로그인**:
+    1.  프론트엔드가 Firebase Google Sign-In으로 `idToken`을 획득.
+    2.  프론트엔드가 백엔드에 `POST /api/auth/google/verify`로 `{ "idToken": "..." }` 전송.
+    3.  백엔드는 Google ID 토큰을 검증하고, 사용자 생성/조회 후 내부 JWT(Access Token)를 발급.
+2.  **이메일 로그인**:
+    1.  프론트엔드가 `POST /api/login/access-token`으로 이메일/비밀번호 전송.
+    2.  백엔드는 사용자 검증 후 내부 JWT를 발급.
+3.  **API 접근**: 프론트엔드는 이후 모든 요청의 `Authorization: Bearer <access_token>` 헤더에 JWT를 담아 API 호출.
 
-- 예약(샘플 도메인; 최소 엔드투엔드 확인 목적)
-  - `GET /reservations` (내 예약 목록)
-  - `POST /reservations`
-    - Req: `{ "caravan_id": int, "start_date": "YYYY-MM-DD", "end_date": "YYYY-MM-DD" }`
-    - Res: `Reservation` JSON (id, user_id, caravan_id, start_date, end_date, price, status)
-  - 중복되면 409 with `{ "detail": "duplicate_reservation" }`, 잔액 부족은 402 with `{ "detail": "insufficient_funds" }`
+# API SPEC (주요 엔드포인트)
+- **Auth & Users**
+  - `POST /api/auth/google/verify`: 구글 토큰 검증 및 JWT 발급
+  - `POST /api/login/access-token`: 이메일/비밀번호 로그인
+  - `POST /api/users/`: 사용자 회원가입
+  - `GET /api/users/me`: 현재 로그인된 사용자 정보
+  - `PUT /api/users/me/balance`: 사용자 잔액 충전 (개발용)
+- **Caravans**
+  - `GET /api/caravans/`: 캐러밴 목록 조회
+  - `POST /api/caravans/`: (호스트) 새 캐러밴 등록
+  - `GET /api/caravans/{caravan_id}`: 특정 캐러밴 정보 조회
+- **Reservations**
+  - `GET /api/reservations/`: (사용자) 내 예약 목록
+  - `POST /api/reservations/`: 새 예약 생성
+  - `POST /api/reservations/{reservation_id}/cancel`: 예약 취소
+- **Host**
+  - `GET /api/host/reservations`: (호스트) 내 캐러밴의 예약 목록
+- **Admin**
+  - `GET /api/admin/reservations`: (관리자) 모든 예약 목록
 
 # FRONTEND REQUIREMENTS (UI/UX)
-- 페이지: `/`(홈/Landing), `/login`, `/app`(로그인 후 대시보드: “예약 만들기” 폼 + 리스트)
-- 반응형 레이아웃(Grid/Card), 모바일 우선, 키보드 접근성 포커스 스타일, ARIA 라벨 기본 준수
-- 헤더에 “로그인/로그아웃”, 프로필 아바타, 로딩/에러 상태 일관 표기(shadcn/ui `Toast`/`Alert`)
-- 상태:
-  - `useAuthStore`(Zustand): `{ user, accessToken, signInWithGoogle(), signOut() }`
-  - React Query: `useQuery('me')`, `useQuery('reservations')`, `useMutation('createReservation')`
-- 환경변수:
-  - Frontend `.env`: `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_API_BASE_URL`
-- PWA: 기본 manifest, service worker 등록
+- **페이지**:
+  - `/`: 랜딩 페이지 (캐러밴 목록)
+  - `/login`: 로그인/회원가입 페이지
+  - `/app`: 로그인 후 대시보드 (내 예약, 예약 만들기)
+  - `/host`: (호스트) 호스트 패널 (내 캐러밴, 받은 예약 관리)
+  - `/admin`: (관리자) 관리자 대시보드
+- **주요 컴포넌트**:
+  - `Header`: 로그인/로그아웃, 프로필, 잔액 표시
+  - `CaravanList`: 캐러밴 카드 목록
+  - `CaravanCalendar`: 캐러밴 예약 가능 날짜 표시
+  - `ReservationForm`: 예약 생성 폼
+  - `ReservationList`: 내 예약 목록
+  - `HostPanel`: 호스트용 관리 UI
+  - `AdminReservations`: 관리자용 예약 관리 UI
+  - `BalanceCard`: 사용자 잔액 표시 및 충전
+- **상태 관리 (Zustand)**:
+  - `useAuthStore`: `{ user, accessToken, ... }`
+  - `useUIStore`: `{ isSidebarOpen, ... }`
+- **데이터 페칭 (@tanstack/react-query)**: API 호출 결과 캐싱 및 상태 관리
 
-# BACKEND REQUIREMENTS
-- `.env` 예시: `GOOGLE_CLIENT_ID`, `JWT_SECRET`, `JWT_EXPIRES_SECONDS=3600`, `CORS_ORIGINS=*`(개발용)
-- 모듈:
-  - `auth.py`: Google ID 토큰 검증 → 내부 JWT 발급
-  - `deps.py`: 인증 디펜던시(헤더에서 Bearer 추출→검증)
-  - `models.py`: In-memory User/Reservation (또는 Pydantic 모델)
-  - `routes_auth.py`, `routes_reservations.py`
-  - CORS 허용(FastAPI `CORSMiddleware`) — 개발 편의
-
-# FILE TREE (생성)
-web/
-  index.html
-  vite.config.ts
-  package.json
-  tsconfig.json
-  tailwind.config.js
-  postcss.config.js
-  src/
-    main.tsx
-    App.tsx
-    routes/
-      Landing.tsx
-      Login.tsx
-      Dashboard.tsx
-    components/
-      Header.tsx
-      ReservationForm.tsx
-      ReservationList.tsx
-    lib/
-      firebase.ts
-      api.ts
-      queryClient.ts
-    store/
-      auth.ts
-    styles/
-      globals.css
-    shadcn-components/*   # 자동 생성/사용 가정
-    pwa.ts                # PWA 등록
-backend/
-  app/
-    main.py
-    auth.py
-    deps.py
-    routes_auth.py
-    routes_reservations.py
-    models.py
-    schema.py
-    settings.py
-  tests/
-    test_auth.py
-    test_reservations_smoke.py
-  pyproject.toml
-  README.md
-capacitor/               # 초기화 스크립트/README에서 안내만. 실제 생성 커맨드 포함.
-
-# OUTPUT FORMAT
-- 각 파일을 **별도 코드 블록**으로 출력. (파일 경로 주석 필수)
-- `web/README.md`와 `backend/README.md`를 포함하여 로컬 실행 방법, ENV 설정, PWA/Capacitor 빌드 지침을 서술.
-- 테스트: `backend/tests/*`는 `pytest -q`로 통과 가능한 최소 스모크 제공.
+# FILE TREE (현재 구조)
+```
+.
+├── src/                      # Backend Source
+│   ├── api/
+│   │   ├── api.py
+│   │   └── endpoints/
+│   │       ├── auth_google.py
+│   │       ├── caravans.py
+│   │       ├── login.py
+│   │       ├── reservations.py
+│   │       └── users.py
+│   ├── core/
+│   │   ├── config.py
+│   │   └── security.py
+│   ├── database/
+│   │   └── session.py
+│   ├── models/
+│   │   ├── caravan.py
+│   │   ├── reservation.py
+│   │   └── user.py
+│   ├── repositories/
+│   │   ├── caravan_repository.py
+│   │   ├── reservation_repository.py
+│   │   └── user_repository.py
+│   ├── schemas/
+│   │   ├── caravan.py
+│   │   ├── reservation.py
+│   │   ├── token.py
+│   │   └── user.py
+│   ├── services/
+│   │   ├── caravan_service.py
+│   │   ├── reservation_service.py
+│   │   └── user_service.py
+│   └── main.py
+├── web/                      # Frontend Source
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── BalanceCard.tsx
+│   │   │   ├── CaravanCalendar.tsx
+│   │   │   ├── CaravanList.tsx
+│   │   │   ├── Header.tsx
+│   │   │   ├── HostPanel.tsx
+│   │   │   └── ReservationForm.tsx
+│   │   ├── lib/
+│   │   │   ├── api.ts
+│   │   │   └── firebase.ts
+│   │   ├── routes/
+│   │   │   ├── Dashboard.tsx
+│   │   │   ├── Landing.tsx
+│   │   │   └── Login.tsx
+│   │   ├── store/
+│   │   │   ├── auth.ts
+│   │   │   └── ui.ts
+│   │   ├── App.tsx
+│   │   └── main.tsx
+│   ├── vite.config.ts
+│   └── package.json
+├── backend/                  # Legacy (현재 사용 안 함)
+├── requirements.txt
+└── README.md
+```
 
 # ACCEPTANCE CRITERIA
-- 로컬에서:
-  1) 백엔드 `uvicorn app.main:app --reload` 실행.
-  2) 프론트엔드 `npm run dev` 실행.
-  3) `/login`에서 “Google로 로그인” → 동의 후 `/app`으로 이동.
-  4) `/app`에서 예약 생성 폼 제출 시, 토큰 포함 API 호출로 예약 생성/조회 가능.
-- PWA는 설치 가능(manifest/service worker 동작), 모바일 디바이스에서도 반응형으로 정상 사용 가능.
-- Capacitor: `npx cap init`/`npx cap add ios|android`/`npx cap copy`/`npx cap open ios|android` 사용 지침을 README에 제공.
-- 코드 스타일: 타입 안정성, 접근성, 에러 상태/로딩 상태 표준화.
-
-# REPRESENTATIVE EXAMPLE (권위 톤 예시: 백엔드 구글 검증 엔드포인트)
-```python
-# backend/app/auth.py
-from datetime import datetime, timedelta
-from typing import Optional, Dict, Any
-
-from fastapi import HTTPException, status
-from google.oauth2 import id_token
-from google.auth.transport import requests as grequests
-from jose import jwt
-
-from .settings import settings
-
-def verify_google_id_token(id_token_str: str) -> Dict[str, Any]:
-    try:
-        info = id_token.verify_oauth2_token(
-            id_token_str, grequests.Request(), settings.GOOGLE_CLIENT_ID
-        )
-        if info.get("iss") not in ("https://accounts.google.com", "accounts.google.com"):
-            raise ValueError("Invalid issuer")
-        if not info.get("email"):
-            raise ValueError("Email required")
-        return {
-            "sub": info["sub"],
-            "email": info["email"],
-            "name": info.get("name", ""),
-            "picture": info.get("picture", ""),
-        }
-    except Exception:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="invalid_google_token")
-
-def create_access_token(user_id: int, email: str) -> str:
-    now = datetime.utcnow()
-    payload = {
-        "sub": str(user_id),
-        "email": email,
-        "iat": int(now.timestamp()),
-        "exp": int((now + timedelta(seconds=settings.JWT_EXPIRES_SECONDS)).timestamp()),
-    }
-    return jwt.encode(payload, settings.JWT_SECRET, algorithm="HS256")
-
-START
-위 스펙을 충족하는 전체 코드를 “파일별 코드 블록”으로 출력하라. 프런트엔드/백엔드 각각 README에 실행 방법과 ENV 샘플을 포함하라. 테스트 코드는 백엔드에 최소 2개 스모크를 제공하라.
+- **로컬 실행**:
+  1. 백엔드: `uvicorn src.main:app --reload` 실행
+  2. 프론트엔드: `npm install && npm run dev` 실행
+- **기능 검증**:
+  1. `/login`에서 구글 또는 이메일로 로그인/회원가입 후 `/app`으로 이동.
+  2. `/` 또는 `/app`에서 캐러밴을 선택하고 예약 생성.
+  3. 내 예약 목록에서 방금 만든 예약 확인 및 취소 가능.
+  4. (호스트 역할 유저) `/host`에서 자신이 등록한 캐러밴 및 예약 현황 관리.
+- **PWA**: 웹 앱 설치 가능(manifest/service worker 동작), 모바일 반응형 UI.
+- **Capacitor**: `npx cap init` 등 Capacitor CLI를 통한 모바일 앱 빌드 준비.
