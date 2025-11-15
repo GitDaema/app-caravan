@@ -11,6 +11,9 @@ Environment variables
 - `GOOGLE_CLIENT_ID`: Audience for Google ID token verification (optional; GIS path)
 - `FIREBASE_PROJECT_ID`: Firebase Authentication project ID to verify Firebase ID tokens (optional; Firebase path)
 
+PWA / Mobile notes
+- When serving the API for a PWA or Capacitor-wrapped mobile app, ensure CORS and `VITE_API_BASE_URL` are configured so the frontend origin (web or native WebView) can reach `http://<host>:8000/api/v1`.
+
 Key endpoints
 - `POST /api/v1/login/access-token` (local login)
 - `POST /api/v1/auth/google/verify` (Google ID Token → JWT)

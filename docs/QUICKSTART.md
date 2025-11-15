@@ -53,3 +53,18 @@ Notes
   1) Google Identity Services(GIS): 웹 OAuth 클라이언트 ID를 만들고 `GOOGLE_CLIENT_ID`를 백엔드에 설정.
   2) Firebase Authentication: 프로젝트 생성, Google provider 활성화, 웹 앱 API Key/Domain을 프런트에 설정하고 `FIREBASE_PROJECT_ID`를 백엔드에 설정.
 - Calendar API returns [start,end) date ranges; UI highlights each day d with start <= d < end.
+
+PWA install (web)
+- Web app is shipped as a PWA using `vite-plugin-pwa`.
+- App shell (routing + basic UI) is available offline; bookings and other API features still require network access.
+- In supported browsers you can install the app via the browser UI or the in-app “앱 설치하기” banner (triggered from the `beforeinstallprompt` event).
+
+Mobile build (Capacitor)
+- Capacitor is configured under `web/capacitor.config.ts` with `webDir: "dist"`.
+- Recommended flow (from project root):
+  - Build web: `cd web && npm run build:pwa`
+  - Sync native projects: `cd web && npm run cap:sync`
+  - (Once per machine) initialize Capacitor in `web/`: `cd web && npm run cap:init`
+  - Add platforms as needed (run manually): `npx cap add android`, `npx cap add ios`
+  - Open IDEs: `cd web && npm run cap:android` or `npm run cap:ios`
+- Ensure the backend API URL (`VITE_API_BASE_URL`) is reachable from the emulator/device (e.g. LAN IP instead of `localhost` when needed).

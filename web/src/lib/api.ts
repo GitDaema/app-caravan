@@ -10,18 +10,27 @@ async function handle(res: Response) {
   return res.json()
 }
 
+async function request(path: string, init?: RequestInit) {
+  try {
+    const res = await fetch(path, init)
+    return await handle(res)
+  } catch (error) {
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+      throw new Error('오프라인 상태입니다. 네트워크 연결 후 다시 시도해주세요.')
+    }
+    throw error
+  }
+}
+
 export const api = {
   async get(path: string) {
-    const res = await fetch(`${API_BASE}${path}`, { headers: { ...authHeaders() } })
-    return handle(res)
+    return request(`${API_BASE}${path}`, { headers: { ...authHeaders() } })
   },
   async post(path: string, body?: any) {
-    const res = await fetch(`${API_BASE}${path}`, {
+    return request(`${API_BASE}${path}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...authHeaders() },
       body: JSON.stringify(body || {}),
     })
-    return handle(res)
   },
 }
-

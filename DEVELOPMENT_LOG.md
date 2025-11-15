@@ -9,14 +9,6 @@
 
 ---
 
-## 개발 과정
-- 기록 방법
-  1. 작업을 일 단위로 나누어 핵심 산출물과 결정만 요약
-  2. API·UI 스펙은 `GEMINI.md`를 단일 소스 오브 트루스로 유지하고, 실제 구현 중 생긴 차이는 일지에 근거와 함께 명시
-  3. 실행 방법과 테스트는 `docs/QUICKSTART.md` 및 각 `README.md`에 반영 후 링크
-
----
-
 ### Day 1 - 환경 세팅 및 백엔드 도메인/API 골격 구현
 
 #### AI 개발 프롬프트
@@ -454,3 +446,46 @@ GEMINI.md와 GOAL.md의 지침을 준수하는 풀스택 개발자. FastAPI 백�
 - 권한 모델을 리포지토리(데이터 접근 계층)에서부터 강제하면 React Query 캐시처럼 클라이언트 상태 관리가 단순해지고 잘못된 데이터를 캐시할 여지를 줄일 수 있음
 - Windows 콘솔 특수 파일(`CON`)까지 `.gitignore`로 방어해 두면 협업 중 우발적인 파일 생성으로 생기는 merge 노이즈를 줄일 수 있음
 ---
+
+### Day 4 - PWA 품질 개선 및 모바일 래핑 준비
+
+#### 작업 개요
+- 웹 프론트엔드를 “설치 가능한 PWA + Capacitor 래핑 준비” 상태로 정리하고, 오프라인 UX와 모바일 빌드 흐름을 문서화.
+
+#### 주요 변경 사항
+- **PWA 매니페스트/아이콘**
+  - `web/vite.config.ts`: `VitePWA` 설정에 `includeAssets`/`manifest.icons` 추가 (CaravanShare 이름/short_name, `/icons/pwa-192x192.png`, `/icons/pwa-512x512.png`, maskable 아이콘 등).
+  - 앱 스코프(`/`), `background_color`/`theme_color`를 브랜드 컬러에 맞게 정리.
+
+- **서비스워커/캐싱 전략**
+  - `web/vite.config.ts`: `workbox` 설정으로 앱 쉘(HTML/JS/CSS/아이콘)을 precache 하고, `/api/` 하위 호출은 `NetworkFirst` 런타임 캐싱(짧은 타임아웃, 별도 캐시 이름)으로 구성.
+  - `web/src/pwa.ts`: `registerSW`의 `onNeedRefresh` 콜백에서 새 버전이 준비되면 사용자가 확인 후 새로고침하도록 안내(간단한 confirm 기반).
+
+- **설치/오프라인 UX**
+  - `web/src/hooks/usePwaInstallPrompt.ts`: `beforeinstallprompt` 이벤트를 캡처해 상태로 보존하고, `prompt()`를 노출하는 커스텀 훅 추가.
+  - `web/src/components/PwaInstallBanner.tsx`: 설치 가능 시 “앱 설치하기” 배너를 보여주고 클릭 시 설치 프롬프트 실행.
+  - `web/src/components/OfflineBanner.tsx`: `online`/`offline` 이벤트를 구독해 오프라인 상태일 때 상단 배너로 “오프라인 상태입니다. 네트워크 연결 후 다시 시도해주세요.” 메시지 표시.
+  - `web/src/App.tsx`: 공통 레이아웃에 PWA 설치 배너와 오프라인 배너를 삽입해 대시보드 뷰에서 항상 노출.
+  - `web/src/lib/api.ts`: fetch 공통 래퍼(`request`)를 추가해 네트워크 오류나 오프라인 상태일 때 명시적인 한글 오류 메시지로 변환.
+
+- **Capacitor 설정/스크립트**
+  - `web/capacitor.config.ts`: `appId: "com.caravanshare.app"`, `appName: "CaravanShare"`, `webDir: "dist"` 기반 기본 설정과 dev 용 `server.url: "http://localhost:5173"` 템플릿 추가.
+  - `web/package.json`: 모바일 빌드를 위한 스크립트 추가
+    - `build:pwa` (PWA 빌드), `cap:init`, `cap:sync`, `cap:android`, `cap:ios`.
+
+- **문서 정리**
+  - `web/README.md`: PWA 동작 범위(앱 쉘 오프라인 지원, API 온라인 의존), 설치 방법(브라우저 UI + in-app 배너), 아이콘 경로(`/public/icons/*.png`) 안내, Capacitor 기반 모바일 빌드 플로우 정리.
+  - `docs/QUICKSTART.md`: 기본 실행 방법 아래에 PWA 설치와 Capacitor 모바일 빌드 준비 섹션 추가 (build → cap sync → IDE 오픈 흐름).
+  - `backend/README.md`: PWA/모바일 환경에서의 CORS 및 `VITE_API_BASE_URL` 설정에 대한 간단한 참고 문구 추가.
+
+#### 실행/검증
+- PWA 빌드: `cd web && npm run build:pwa`
+- Web tests: `cd web && npm run test:run`
+- Capacitor 동기화(플랫폼 추가 이후): `cd web && npm run cap:sync`
+*** End of File
+
+## 개발 과정
+- 기록 방법
+  1. 작업을 일 단위로 나누어 핵심 산출물과 결정만 요약
+  2. API·UI 스펙은 `GEMINI.md`를 단일 소스 오브 트루스로 유지하고, 실제 구현 중 생긴 차이는 일지에 근거와 함께 명시
+  3. 실행 방법과 테스트는 `docs/QUICKSTART.md` 및 각 `README.md`에 반영 후 링크
