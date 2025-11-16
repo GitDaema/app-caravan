@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 
 export default function OfflineBanner() {
-  const [isOffline, setIsOffline] = useState(!navigator.onLine)
+  const [isOffline, setIsOffline] = useState(
+    typeof navigator !== 'undefined' && 'onLine' in navigator ? !navigator.onLine : false,
+  )
 
   useEffect(() => {
     const handleOnline = () => setIsOffline(false)
@@ -20,8 +22,7 @@ export default function OfflineBanner() {
 
   return (
     <div className="bg-amber-500 text-white text-xs sm:text-sm text-center py-2">
-      오프라인 상태입니다. 네트워크 연결 후 다시 시도해주세요.
+      오프라인 상태입니다. 네트워크 연결 후 다시 시도해 주세요.
     </div>
   )
 }
-

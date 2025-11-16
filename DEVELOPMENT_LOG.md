@@ -290,6 +290,7 @@ GEMINI.md와 GOAL.md의 지침을 준수하는 풀스택 개발자. FastAPI 백�
 - React Query로 데이터/에러 상태를 표준화하면 폼/목록 UI 품질이 안정적으로 향상
 - 개발 스크립트(dev_all/seed)가 체험형 데모 반복을 빠르게 함
 
+
 ---
 
 
@@ -445,14 +446,146 @@ GEMINI.md와 GOAL.md의 지침을 준수하는 풀스택 개발자. FastAPI 백�
 - GIS/Firebase 인증을 동시에 지원하려면, `audience` 검증 경로를 명확히 분기하고 문서화해야 테스트 환경마다 발생하는 혼선을 줄일 수 있음
 - 권한 모델을 리포지토리(데이터 접근 계층)에서부터 강제하면 React Query 캐시처럼 클라이언트 상태 관리가 단순해지고 잘못된 데이터를 캐시할 여지를 줄일 수 있음
 - Windows 콘솔 특수 파일(`CON`)까지 `.gitignore`로 방어해 두면 협업 중 우발적인 파일 생성으로 생기는 merge 노이즈를 줄일 수 있음
+
+
 ---
+
 
 ### Day 4 - PWA 품질 개선 및 모바일 래핑 준비
 
-#### 작업 개요
-- 웹 프론트엔드를 “설치 가능한 PWA + Capacitor 래핑 준비” 상태로 정리하고, 오프라인 UX와 모바일 빌드 흐름을 문서화.
+#### AI 개발 프롬프트
 
-#### 주요 변경 사항
+# 역할
+당신은 FastAPI 백엔드와 Vite+React+TS PWA 프론트엔드를 사용하는 CaravanShare(app-caravan) 프로젝트의 Day 4 페어 프로그래밍 어시스턴트입니다. 목표는 이 코드베이스를 “설치 가능한 PWA + Capacitor 래핑 준비” 상태로 끌어올리는 것입니다.
+
+# 전체 컨텍스트 요약
+- 전체 개요/요구사항: 루트 `GOAL.md`, `GEMINI.md` 참고
+- 개발 히스토리: `DEVELOPMENT_LOG.md`의 Day 1~3 기록
+  - Day 1: 백엔드 도메인 모델/리포지토리/서비스 레이어 정리 (FastAPI + SQLAlchemy + Pydantic)
+  - Day 2: 프론트엔드 PWA 골격, Google/로컬 로그인, 기본 예약/캐러밴/관리자 UI, 초기 테스트
+  - Day 3: Google 인증 검증 강화, 호스트 대시보드·예약 캘린더·취소/환불 흐름, 권한/상태 관련 테스트 강화
+- 현재 구조(요점):
+  - 백엔드: `src/` (models/schemas/repositories/services/api/core/database/exceptions), 실행 엔트리 `backend.app.main:app` 혹은 `src.main:app` (로그/README 기준)
+  - 프론트엔드: `web/` (Vite + React + TS + React Router + React Query + Zustand)
+    - 라우팅: `web/src/main.tsx`, `web/src/App.tsx`, `web/src/routes/{Landing,Login,Dashboard}.tsx`
+    - 상태: `web/src/store/{auth,ui}.ts`
+    - UI: `web/src/components/*` (HostPanel, CaravanCalendar, ReservationList 등)
+    - PWA: `web/vite.config.ts` 에 `VitePWA` 플러그인, `web/src/pwa.ts` 에 서비스워커 등록, `web/src/main.tsx` 에 `./pwa` import
+  - 실행/테스트:
+    - 백엔드: `uvicorn backend.app.main:app --reload`, `pytest -q`
+    - 프론트엔드: `cd web && npm install && npm run dev`, `npm run test:run`
+    - 빠른 안내: `docs/QUICKSTART.md`, `web/README.md`, `backend/README.md`
+
+이 Day 4 작업에서, 기존 도메인/인증/예약 로직은 “되도록 건드리지 않고”, PWA 품질과 모바일 래핑 준비에 집중합니다.
+
+# Day 4 핵심 목표
+1. **PWA 매니페스트/아이콘/메타데이터 정비**
+   - 브라우저에서 “설치 가능(Installable)” 판정을 확실히 받도록 PWA 관련 설정을 보강합니다.
+   - 다양한 해상도 아이콘을 준비하고, 이름/short_name/start_url/display/theme_color 등 메타데이터를 정리합니다.
+
+2. **서비스워커/캐싱 전략 개선**
+   - `vite-plugin-pwa` 설정을 활용해, 최소한 “앱 쉘(라우팅/기본 UI)”은 오프라인에서도 열리도록 precache 전략을 설계합니다.
+   - API 호출은 완전 오프라인 지원이 아니라, 네트워크 우선(혹은 적절한 캐시) 전략으로 설계하되, 실패 시 UI에서 명확한 피드백(토스트/메시지)을 제공하도록 합니다.
+
+3. **설치/업데이트 UX 개선**
+   - PWA 설치 배너/힌트를 위한 간단한 컴포넌트 또는 훅을 추가합니다 (예: “앱 설치하기” 안내 바).
+   - 서비스워커 업데이트 시 새 버전이 다운로드되면, “새 버전 사용하기” 정도의 안내 혹은 자동 reload 전략을 마련합니다.
+
+4. **Capacitor 기반 모바일 빌드 준비**
+   - 이 리포를 모노레포/루트 기준으로, Capacitor v6 구성을 문서와 스크립트 차원에서 준비합니다.
+   - 실제 `npx cap add android/ios` 까지 강제하지는 않아도 되지만, 최소한:
+     - 프로젝트 구조 상 어디에서 `npx cap init` 을 실행할지,
+     - `capacitor.config.ts` (또는 `capacitor.config.json`)의 기본 템플릿,
+     - `npm run build` → `npx cap copy` → 플랫폼별 IDE(안드로이드 스튜디오/Xcode)에서 열기 흐름
+     를 명확히 문서화합니다.
+
+5. **문서/README/QUICKSTART 업데이트**
+   - `web/README.md`, `docs/QUICKSTART.md` 등에:
+     - PWA 기능(설치/오프라인 동작 범위),
+     - 모바일 빌드/Capacitor 사용법(기본 명령/주의사항),
+     를 간단하고 실용적인 수준으로 추가합니다.
+
+# 구체 작업 지시
+
+## 1) PWA 매니페스트/아이콘 정비
+- `web/vite.config.ts` 의 `VitePWA` 설정을 검토/보강하세요.
+  - `manifest.icons` 가 현재 비어있다면, 일반적인 PWA 아이콘 세트를 추가하세요.
+    - 예: 192x192, 512x512 PNG 경로 (예: `/icons/icon-192.png`, `/icons/icon-512.png` 등)
+  - 필요하다면 `/public/icons/` 디렉터리를 만들고 아이콘 파일 경로를 전제로 한 구성을 넣되,
+    - 실제 바이너리 이미지는 생성하지 않고, README에 “아이콘 파일은 디자인 완료 후 이 경로에 배치” 정도로 명시해도 괜찮습니다.
+- `name`, `short_name`, `start_url`, `display`, `background_color`, `theme_color` 가 GOAL/GEMINI의 브랜드(“CaravanShare”)와 일관되도록 정리합니다.
+
+## 2) 서비스워커/캐싱 전략 설계
+- `VitePWA` 옵션에 다음을 고려해 설정합니다. (필요시 `registerType`, `workbox` 등 사용)
+  - 앱 쉘(HTML/JS/CSS/폰트/아이콘)을 precache.
+  - API 호출(`/api/`)은 네트워크 우선 + fallback 정도로 처리하거나, 명시적으로 캐시 대상에서 제외.
+- 오프라인 상태에서:
+  - 랜딩(`/`)과 기본 UI는 열리지만,
+  - API가 안 될 때는 예약/목록 등의 버튼에서 “오프라인 상태입니다. 네트워크 연결 후 다시 시도해주세요.” 같은 메시지가 보이도록 합니다.
+- 필요하면 React Query의 글로벌 에러 핸들링 또는 간단한 에러 토스트 컴포넌트로 통일된 UX를 제공하도록 권장합니다.
+
+## 3) 설치/업데이트 UX
+- 예시 구현 방향:
+  - `web/src/hooks/usePwaInstallPrompt.ts` (또는 유사 이름) 훅을 만들어 `beforeinstallprompt` 이벤트를 받아 상태를 저장.
+  - `Header` 또는 `Dashboard` 상단에 “앱 설치하기” 버튼/배너를 보여주고, 클릭 시 `prompt()` 호출.
+- 서비스워커 업데이트:
+  - `web/src/pwa.ts` 에서 `registerSW` 콜백을 활용해 새 버전이 준비되면 `window.location.reload()` 또는 “새 버전 사용하기” 버튼을 보여주는 패턴 중 하나를 채택.
+
+## 4) Capacitor 스캐폴딩 (설정/문서 중심)
+- 코드베이스 구조를 고려해, Capacitor 프로젝트 루트를 어떻게 둘지 제안하고 설정 파일을 추가합니다.
+  - 예: `web/` 디렉터리 기준으로 `npx cap init` 하는 것을 기본으로 가정할 수 있습니다.
+- 다음과 같은 파일/내용을 준비합니다.
+  - `web/capacitor.config.ts` (또는 루트에 `capacitor.config.ts`) 템플릿:
+    - `appId`, `appName`, `webDir`(예: `dist`), 서버 URL(개발시) 등을 적절히 설정.
+  - `web/package.json` 에 모바일 관련 스크립트 예:
+    - `"build:pwa": "vite build"`
+    - `"cap:sync": "npx cap sync"`
+    - `"cap:android": "npx cap open android"`, `"cap:ios": "npx cap open ios"` 등.
+- 실제 `npx cap add ios/android` 실행 여부는 개발 환경에 따라 다를 수 있으므로,
+  - 실행 예시는 문서에 명시하고,
+  - 코드 변경은 config/스크립트/문서 수준에 머무르도록 합니다.
+
+## 5) 문서 업데이트
+- `web/README.md`:
+  - “PWA & 설치 방법” 섹션 추가 (지원 범위: 앱 쉘 오프라인 지원, 예약/API는 온라인 필요 등).
+  - “모바일 빌드(Capacitor)” 섹션에 기본 명령/흐름 정리.
+- `docs/QUICKSTART.md`:
+  - 기존 백엔드/웹 실행 안내 아래에 “PWA 설치”와 “모바일 빌드 준비” 짧은 섹션 추가.
+- 필요하다면 `backend/README.md` 에도 PWA/Capacitor와 연동되는 환경 변수나 CORS 관련 참고를 한 줄 정도 첨언.
+
+# 제약 조건
+- `GOAL.md` 의 설계 원칙(SRP, OCP, DIP, 예외 처리, 테스트 가능 구조)을 가능한 한 준수하세요.
+- 이미 구현된 인증/예약/권한 로직을 불필하게 변경하지 마세요.
+- 기존 테스트(`pytest`, `npm run test:run`)가 깨지면, 원인을 분석하고 **우선 기존 동작을 보존하는 방향**으로 수정하세요.
+- 새로운 기능/설정은 “Day 4 작업”임을 `DEVELOPMENT_LOG.md` 에 요약 추가하는 것을 권장합니다 (가능하다면).
+
+# 산출물(예상 파일 목록)
+- PWA/프론트엔드
+  - `web/vite.config.ts` (VitePWA 설정 보강)
+  - `web/src/pwa.ts` (업데이트 UX 개선 시)
+  - `web/src/hooks/usePwaInstallPrompt.ts` (또는 유사 훅/컴포넌트)
+  - 필요 시 `web/src/components/PwaInstallBanner.tsx` 등
+  - (선택) `/public/manifest.webmanifest` 또는 아이콘 경로 관련 파일/구조
+- Capacitor 관련
+  - `web/capacitor.config.ts` (또는 루트 `capacitor.config.ts`)
+  - `web/package.json` 스크립트 업데이트
+- 문서
+  - `web/README.md`
+  - `docs/QUICKSTART.md`
+  - (선택) `DEVELOPMENT_LOG.md` 의 Day 4 섹션 추가
+
+# 작업 방식
+1. 먼저 현재 PWA 설정(`web/vite.config.ts`, `web/src/pwa.ts`, 라우팅 구조)을 빠르게 스캔해 어떤 부분이 이미 구현되어 있고 어떤 부분이 비어 있는지 파악하세요.
+2. 그 다음 PWA 매니페스트/아이콘/서비스워커 설정을 정리하고, 설치/업데이트 UX를 최소 기능 수준으로 구현합니다.
+3. 이어서 Capacitor 설정 파일과 npm 스크립트를 추가하고, 모바일 빌드 흐름을 README/QUICKSTART에 명확히 문서화합니다.
+4. 변경 후에는:
+   - `cd web && npm run build` (가능하다면),
+   - `cd web && npm run test:run`
+   을 실행해 빌드/테스트가 통과하는지 점검합니다.
+
+- [Day 4 Codex 전체 대화 로그 보기](./codex_logs/Day4-Log.md)
+
+#### 산출물(핵심 파일)
 - **PWA 매니페스트/아이콘**
   - `web/vite.config.ts`: `VitePWA` 설정에 `includeAssets`/`manifest.icons` 추가 (CaravanShare 이름/short_name, `/icons/pwa-192x192.png`, `/icons/pwa-512x512.png`, maskable 아이콘 등).
   - 앱 스코프(`/`), `background_color`/`theme_color`를 브랜드 컬러에 맞게 정리.
@@ -482,10 +615,32 @@ GEMINI.md와 GOAL.md의 지침을 준수하는 풀스택 개발자. FastAPI 백�
 - PWA 빌드: `cd web && npm run build:pwa`
 - Web tests: `cd web && npm run test:run`
 - Capacitor 동기화(플랫폼 추가 이후): `cd web && npm run cap:sync`
-*** End of File
 
-## 개발 과정
-- 기록 방법
-  1. 작업을 일 단위로 나누어 핵심 산출물과 결정만 요약
-  2. API·UI 스펙은 `GEMINI.md`를 단일 소스 오브 트루스로 유지하고, 실제 구현 중 생긴 차이는 일지에 근거와 함께 명시
-  3. 실행 방법과 테스트는 `docs/QUICKSTART.md` 및 각 `README.md`에 반영 후 링크
+#### 문제 및 해결
+
+1) **PWA 설치 가능(Installable) 기준 미달**
+    - **현상**: Day 2에서 PWA 플러그인만 추가했을 뿐, `manifest.icons`나 `theme_color`, `name` 등 필수 메타데이터가 누락되어 브라우저가 앱 설치를 제안하지 않았음.
+    - **대응**: `web/vite.config.ts`의 `VitePWA` 설정을 보강. `/public/icons/` 경로에 맞춘 192x192, 512x512, maskable 아이콘 경로를 `manifest.icons`에 명시하고, `name`, `short_name`, `theme_color` 등을 브랜드("CaravanShare")에 맞게 설정.
+
+2) **오프라인 및 네트워크 불안정 대응 부재**
+    - **현상**: 네트워크 연결이 끊기면 앱 쉘(기본 UI)조차 로드되지 않거나, API 호출 시 브라우저 기본 오류(fetch 실패)가 그대로 노출됨.
+    - **대응**: `workbox` 캐싱 전략을 도입. 앱 쉘/에셋은 `precache`로, API 호출(`/api/`)은 `NetworkFirst` (네트워크 우선, 실패 시 캐시)로 분리. `online`/`offline` 이벤트를 감지하는 `OfflineBanner`와 공통 `fetch` 래퍼(`lib/api.ts`)를 추가해 명확한 한글 오류 메시지 제공 (`web/vite.config.ts`, `web/src/components/OfflineBanner.tsx`).
+
+3) **앱 설치/업데이트 UX 누락**
+    - **현상**: PWA 설치가 가능하더라도 사용자가 설치를 유도하는 UI가 없었고, 새 버전 배포 시 사용자가 기존 캐시(이전 버전)에 머무르는 문제가 있었음.
+    - **대응**: `beforeinstallprompt` 이벤트를 캡처하는 `usePwaInstallPrompt` 훅과 `PwaInstallBanner` 컴포넌트를 추가해 앱 내 설치 유도. `web/src/pwa.ts`의 `onNeedRefresh` 콜백을 활용해 새 버전 감지 시 "새로고침" 확인창을 띄우도록 수정 (`web/src/hooks/usePwaInstallPrompt.ts`, `web/src/pwa.ts`).
+
+4) **모바일 네이티브 앱 래핑(Wrapping) 경로 부재**
+    - **현상**: PWA 외에 안드로이드/iOS 스토어 배포를 위한 Capacitor 연동 설정이나 스크립트가 전무했음.
+    - **대응**: `web/` 디렉터리 기준으로 `web/capacitor.config.ts` 설정 파일(appId, appName, webDir: "dist" 등)을 추가. `web/package.json`에 `cap:sync`, `cap:android` 등 모바일 빌드/동기화 스크립트를 추가하고 `README` 문서에 빌드 플로우(build → sync → open IDE)를 명시 (`web/capacitor.config.ts`, `web/package.json`).
+
+#### 학습 내용
+
+- PWA가 브라우저에서 '설치 가능' 판정을 받으려면 서비스워커 등록 외에도 `manifest.icons` (특히 192x192, 512x512), `name`, `start_url`, `display` 등 핵심 메타데이터가 완비되어야 함.
+- 안정적인 PWA 오프라인 경험을 위해서는 `vite-plugin-pwa`의 `workbox` 설정을 활용해 "앱 쉘(precache)"과 "API 데이터(NetworkFirst 또는 CacheFirst)"의 캐싱 전략을 명확히 분리해야 함.
+- 사용자 경험 측면에서, `online`/`offline` 이벤트를 감지하는 UI(배너)와 `fetch` 공통 래퍼에서의 명시적인 오류 피드백은 API 캐싱만큼이나 중요함.
+- PWA 설치 유도는 `beforeinstallprompt` 이벤트를 캡처하는 커스텀 훅으로, 앱 업데이트는 `registerSW`의 `onNeedRefresh` 콜백으로 처리하는 것이 표준적인 UX 패턴임.
+- Capacitor는 기존 Vite PWA 프로젝트의 프론트엔드 루트(`web/`)에 `capacitor.config.ts`를 추가하고 `webDir`을 빌드 결과물(`dist`)로 지정하는 방식으로 비교적 간단하게 네이티브 래핑 준비가 가능함.
+
+---
+

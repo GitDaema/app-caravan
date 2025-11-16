@@ -35,7 +35,7 @@ export default function ReservationForm() {
         end_date: end,
       })
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['reservations'] })
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['reservations'] }),
   })
 
   return (
@@ -46,15 +46,31 @@ export default function ReservationForm() {
           {selectedCaravanId ? (
             <span>선택한 카라반 ID: #{selectedCaravanId}</span>
           ) : (
-            <span className="text-gray-500">먼저 아래 목록에서 카라반을 선택하세요.</span>
+            <span className="text-gray-500">먼저 우측 목록에서 카라반을 선택해 주세요.</span>
           )}
         </div>
 
-        <label className="text-sm text-gray-700" htmlFor="startDate">시작일</label>
-        <input id="startDate" className="border p-2" type="date" value={start} onChange={e => setStart(e.target.value)} />
+        <label className="text-sm text-gray-700" htmlFor="startDate">
+          시작일
+        </label>
+        <input
+          id="startDate"
+          className="border p-2 rounded"
+          type="date"
+          value={start}
+          onChange={e => setStart(e.target.value)}
+        />
 
-        <label className="text-sm text-gray-700" htmlFor="endDate">종료일</label>
-        <input id="endDate" className="border p-2" type="date" value={end} onChange={e => setEnd(e.target.value)} />
+        <label className="text-sm text-gray-700" htmlFor="endDate">
+          종료일
+        </label>
+        <input
+          id="endDate"
+          className="border p-2 rounded"
+          type="date"
+          value={end}
+          onChange={e => setEnd(e.target.value)}
+        />
 
         <button
           className="bg-sky-600 text-white px-3 py-2 rounded disabled:opacity-60 disabled:cursor-not-allowed"
@@ -66,16 +82,19 @@ export default function ReservationForm() {
         >
           {mutation.isPending ? '생성 중...' : isOffline ? '오프라인에서는 예약 생성 불가' : '예약하기'}
         </button>
+
         {isOffline && (
           <p className="text-amber-600 text-xs sm:text-sm">
-            오프라인 상태입니다. 네트워크 연결 후 다시 시도해주세요.
+            오프라인 상태에서는 예약을 만들 수 없어요. 네트워크 연결 후 다시 시도해 주세요.
           </p>
         )}
+
         {mutation.isError && (
-          <p className="text-red-600 text-sm">오류: {(mutation.error as any)?.message || '실패'}</p>
+          <p className="text-red-600 text-sm">
+            오류: {(mutation.error as any)?.message || '요청에 실패했습니다.'}
+          </p>
         )}
       </div>
     </div>
   )
 }
-

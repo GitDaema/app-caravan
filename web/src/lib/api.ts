@@ -15,8 +15,9 @@ async function request(path: string, init?: RequestInit) {
     const res = await fetch(path, init)
     return await handle(res)
   } catch (error) {
-    if (typeof navigator !== 'undefined' && !navigator.onLine) {
-      throw new Error('오프라인 상태입니다. 네트워크 연결 후 다시 시도해주세요.')
+    if (typeof navigator !== 'undefined' && 'onLine' in navigator && !navigator.onLine) {
+      // 통합 오프라인 메시지 (배너/버튼과 톤 맞춤)
+      throw new Error('오프라인 상태입니다. 네트워크 연결 후 다시 시도해 주세요.')
     }
     throw error
   }

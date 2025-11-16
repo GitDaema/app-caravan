@@ -11,7 +11,7 @@ import CaravanCalendar from '../components/CaravanCalendar'
 
 export default function Dashboard() {
   return (
-    <div className="grid md:grid-cols-2 gap-4">
+    <div className="grid gap-4 md:gap-6 md:grid-cols-2">
       <HostPanel />
       <BalanceCard />
       <ProfileActions />
