@@ -17,7 +17,7 @@ export default function CaravanCalendar() {
   const { data, isLoading, error } = useQuery({
     enabled: selectedCaravanId != null,
     queryKey: ['caravan-calendar', selectedCaravanId],
-    queryFn: async () => api.get(`/caravans/${selectedCaravanId}/calendar`),
+    queryFn: async () => api.get(`/api/caravans/${selectedCaravanId}/calendar`),
   })
 
   const today = new Date()
@@ -77,4 +77,3 @@ export default function CaravanCalendar() {
     </div>
   )
 }
-

@@ -10,7 +10,7 @@ export default function CaravanForm() {
     name: '', description: '', capacity: 2, amenities: '', location: '', price_per_day: 100,
   })
   const mutation = useMutation({
-    mutationFn: async () => api.post('/caravans', form),
+    mutationFn: async () => api.post('/api/caravans', form),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['caravans'] })
   })
 
@@ -35,4 +35,3 @@ export default function CaravanForm() {
     </div>
   )
 }
-

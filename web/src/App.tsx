@@ -1,28 +1,40 @@
 import Header from './components/Header'
-import { ReactNode, useEffect } from 'react'
-import { api } from './lib/api'
+import type { ReactNode } from 'react'
+import { useEffect } from 'react'
 import { useAuthStore } from './store/auth'
 import PwaInstallBanner from './components/PwaInstallBanner'
 import OfflineBanner from './components/OfflineBanner'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useLocation } from 'react-router-dom'
 
 export default function App({ children }: { children?: ReactNode }) {
-  const { user } = useAuthStore()
+  const { fetchMe } = useAuthStore()
+  const location = useLocation()
+
   useEffect(() => {
-    const token = localStorage.getItem('accessToken')
-    // ?�큰?� ?�는???�토?��? 비어 ?�으�?/users/me�??�이?�레?�션
-    if (token && !user) {
-      api.get('/users/me').then((me) => {
-        // @ts-ignore
-        useAuthStore.setState({ user: me })
-      }).catch(() => {/* ignore */})
-    }
-  }, [user])
+    fetchMe().catch(() => {
+      // ignore; user stays logged out
+    })
+  }, [fetchMe])
+
   return (
-    <div className="min-h-full flex flex-col">
+    <div className="min-h-full flex flex-col bg-gradient-to-b from-sky-50 via-white to-blue-50">
       <Header />
       <PwaInstallBanner />
       <OfflineBanner />
-      <main className="container mx-auto p-4 flex-1">{children}</main>
+      <main className="container mx-auto p-4 flex-1">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={location.pathname}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.22, ease: 'easeOut' }}
+          >
+            {children}
+          </motion.div>
+        </AnimatePresence>
+      </main>
     </div>
   )
 }

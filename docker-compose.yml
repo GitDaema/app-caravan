@@ -1,0 +1,40 @@
+version: "3.9"
+
+services:
+  db:
+    image: mariadb:10.11
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: rootpassword
+      MARIADB_DATABASE: caravanshare
+      MARIADB_USER: caravan
+      MARIADB_PASSWORD: caravan
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  api:
+    build: ./api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: mysql://caravan:caravan@db:3306/caravanshare
+      SESSION_SECRET: change-me-session-secret
+      SESSION_STORE: memory
+      GOOGLE_CLIENT_ID: "${GOOGLE_CLIENT_ID}"
+      GOOGLE_CLIENT_SECRET: "${GOOGLE_CLIENT_SECRET}"
+      GOOGLE_CALLBACK_URL: "http://localhost:3000/auth/google/callback"
+      NAVER_CLIENT_ID: "${NAVER_CLIENT_ID}"
+      NAVER_CLIENT_SECRET: "${NAVER_CLIENT_SECRET}"
+      NAVER_CALLBACK_URL: "http://localhost:3000/auth/naver/callback"
+      KAKAO_CLIENT_ID: "${KAKAO_CLIENT_ID}"
+      KAKAO_CLIENT_SECRET: "${KAKAO_CLIENT_SECRET}"
+      KAKAO_CALLBACK_URL: "http://localhost:3000/auth/kakao/callback"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+
+volumes:
+  db_data:

@@ -5,11 +5,11 @@ export default function ReservationList() {
   const qc = useQueryClient()
   const { data, isLoading } = useQuery({
     queryKey: ['reservations'],
-    queryFn: async () => api.get('/reservations'),
+    queryFn: async () => api.get('/api/reservations'),
   })
 
   const cancelMutation = useMutation({
-    mutationFn: async (vars: { id: number; caravan_id: number }) => api.post(`/reservations/${vars.id}/cancel`),
+    mutationFn: async (vars: { id: number; caravan_id: number }) => api.post(`/api/reservations/${vars.id}/cancel`),
     onSuccess: (_data, vars) => {
       qc.invalidateQueries({ queryKey: ['reservations'] })
       qc.invalidateQueries({ queryKey: ['me'] })

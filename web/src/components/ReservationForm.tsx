@@ -29,7 +29,7 @@ export default function ReservationForm() {
 
   const mutation = useMutation({
     mutationFn: async () => {
-      return api.post('/reservations', {
+      return api.post('/api/reservations', {
         caravan_id: Number(selectedCaravanId),
         start_date: start,
         end_date: end,
@@ -46,7 +46,7 @@ export default function ReservationForm() {
           {selectedCaravanId ? (
             <span>선택한 카라반 ID: #{selectedCaravanId}</span>
           ) : (
-            <span className="text-gray-500">먼저 우측 목록에서 카라반을 선택해 주세요.</span>
+            <span className="text-gray-500">먼저 카라반 목록에서 예약할 카라반을 선택해 주세요.</span>
           )}
         </div>
 
@@ -80,12 +80,12 @@ export default function ReservationForm() {
           }}
           disabled={mutation.isPending || !canSubmit}
         >
-          {mutation.isPending ? '생성 중...' : isOffline ? '오프라인에서는 예약 생성 불가' : '예약하기'}
+          {mutation.isPending ? '생성 중...' : isOffline ? '오프라인 상태에서는 예약을 만들 수 없습니다.' : '예약하기'}
         </button>
 
         {isOffline && (
           <p className="text-amber-600 text-xs sm:text-sm">
-            오프라인 상태에서는 예약을 만들 수 없어요. 네트워크 연결 후 다시 시도해 주세요.
+            오프라인 상태에서는 예약을 만들 수 없습니다. 네트워크 연결 후 다시 시도해 주세요.
           </p>
         )}
 
@@ -98,3 +98,4 @@ export default function ReservationForm() {
     </div>
   )
 }
+

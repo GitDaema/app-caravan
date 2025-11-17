@@ -1,33 +1,63 @@
 import { create } from 'zustand'
-import { signInWithGooglePopup } from '../lib/firebase'
-import { API_BASE } from '../lib/api'
+import { api, API_BASE } from '../lib/api'
 
-type User = { id: number; email: string; name?: string }
+export type User = {
+  id: number
+  email: string
+  fullName?: string
+  role: 'GUEST' | 'HOST' | 'ADMIN'
+  balance: number
+}
 
 type State = {
   user: User | null
-  accessToken: string | null
-  signInWithGoogle: () => Promise<void>
-  signOut: () => void
+  loading: boolean
+  error: string | null
+  fetchMe: () => Promise<void>
+  loginLocal: (email: string, password: string) => Promise<void>
+  logout: () => Promise<void>
 }
 
 export const useAuthStore = create<State>((set) => ({
   user: null,
-  accessToken: localStorage.getItem('accessToken'),
-  signInWithGoogle: async () => {
-    const { idToken } = await signInWithGooglePopup()
-    const res = await fetch(`${API_BASE}/auth/google/verify`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ idToken }),
-    })
-    const data = await res.json()
-    localStorage.setItem('accessToken', data.access_token)
-    set({ accessToken: data.access_token, user: data.user })
+  loading: false,
+  error: null,
+  fetchMe: async () => {
+    try {
+      set({ loading: true, error: null })
+      const res = await fetch(`${API_BASE}/auth/me`, { credentials: 'include' })
+      if (!res.ok) {
+        set({ user: null, loading: false })
+        return
+      }
+      const data = await res.json()
+      set({ user: data.user ?? data, loading: false })
+    } catch (e: any) {
+      set({ error: e?.message || '세션 정보를 가져오지 못했습니다.', loading: false })
+    }
   },
-  signOut: () => {
-    localStorage.removeItem('accessToken')
-    set({ user: null, accessToken: null })
-  }
+  loginLocal: async (email: string, password: string) => {
+    set({ loading: true, error: null })
+    try {
+      const res = await fetch(`${API_BASE}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email, password }),
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data.message || '로그인에 실패했습니다.')
+      }
+      const data = await res.json()
+      set({ user: data.user, loading: false })
+    } catch (e: any) {
+      set({ error: e?.message || '로그인에 실패했습니다.', loading: false })
+      throw e
+    }
+  },
+  logout: async () => {
+    await api.post('/auth/logout')
+    set({ user: null })
+  },
 }))
-

@@ -1,0 +1,96 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  guest
+  host
+  admin
+}
+
+enum CaravanStatus {
+  available
+  reserved
+  maintenance
+}
+
+enum ReservationStatus {
+  pending
+  confirmed
+  cancelled
+}
+
+enum SocialProvider {
+  GOOGLE
+  NAVER
+  KAKAO
+}
+
+model User {
+  id             Int              @id @default(autoincrement())
+  email          String           @unique
+  hashedPassword String?
+  fullName       String?
+  role           UserRole         @default(guest)
+  balance        Float            @default(0)
+
+  caravans       Caravan[]
+  reservations   Reservation[]
+  socialAccounts SocialAccount[]
+
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+}
+
+model SocialAccount {
+  id             Int            @id @default(autoincrement())
+  provider       SocialProvider
+  providerUserId String
+
+  userId         Int
+  user           User           @relation(fields: [userId], references: [id])
+
+  @@unique([provider, providerUserId])
+}
+
+model Caravan {
+  id           Int             @id @default(autoincrement())
+  name         String
+  description  String
+  capacity     Int
+  amenities    String
+  location     String
+  price_per_day Float
+  status       CaravanStatus   @default(available)
+
+  host_id      Int?
+  host         User?           @relation(fields: [host_id], references: [id])
+
+  reservations Reservation[]
+
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+}
+
+model Reservation {
+  id         Int               @id @default(autoincrement())
+  user_id    Int
+  caravan_id Int
+  start_date DateTime
+  end_date   DateTime
+  price      Float
+  status     ReservationStatus @default(pending)
+
+  user       User              @relation(fields: [user_id], references: [id])
+  caravan    Caravan           @relation(fields: [caravan_id], references: [id])
+
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+
+  @@index([caravan_id, start_date, end_date])
+}

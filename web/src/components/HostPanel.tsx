@@ -21,13 +21,13 @@ export default function HostPanel() {
   const qc = useQueryClient()
   const { data, isLoading, error } = useQuery({
     queryKey: ['host-reservations'],
-    queryFn: async () => api.get('/reservations/host'),
+    queryFn: async () => api.get('/api/reservations/host'),
   })
 
   const mutation = useMutation({
     mutationFn: async (
       vars: { id: number; status: string; caravan_id: number }
-    ) => api.post(`/reservations/${vars.id}/status`, { status: vars.status }),
+    ) => api.post(`/api/reservations/${vars.id}/status`, { status: vars.status }),
     onSuccess: (_data, vars) => {
       qc.invalidateQueries({ queryKey: ['host-reservations'] })
       // 캘린더 자동 갱신
