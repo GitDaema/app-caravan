@@ -1,6 +1,6 @@
+import { useState } from 'react'
 import { api } from '../lib/api'
 import { useAuthStore } from '../store/auth'
-import { useState } from 'react'
 
 export default function ProfileActions() {
   const { user, fetchMe } = useAuthStore()
@@ -8,28 +8,30 @@ export default function ProfileActions() {
 
   if (!user) return null
 
+  const isAdmin = user.role === 'ADMIN'
+
   return (
     <div className="bg-white rounded shadow p-4">
-      <h3 className="font-semibold mb-3">프로필 / 개발용 액션</h3>
+      <h3 className="font-semibold mb-3">프로필 / 데모 액션</h3>
       <div className="text-sm mb-2">
         ID: {user.id} / {user.email} / role: {user.role}
       </div>
       <div className="flex gap-2 flex-wrap">
-        {user.role === 'admin' && (
+        {isAdmin && (
           <button
-            className="bg-indigo-600 text-white px-3 py-2 rounded"
+            className="bg-indigo-600 text-white px-3 py-2 rounded text-sm hover:bg-indigo-700"
             onClick={async () => {
               setMsg(null)
               try {
-                await api.post('/api/users/me/balance', { amount: 100 })
+                await api.put('/api/users/me/balance', { amount: 100 })
                 await fetchMe()
                 setMsg('잔액 +100 충전 완료')
               } catch (e: any) {
-                setMsg(e?.message || '실패')
+                setMsg(e?.message || '충전에 실패했습니다.')
               }
             }}
           >
-            잔액충전(+100)
+            잔액 충전 (+100)
           </button>
         )}
       </div>

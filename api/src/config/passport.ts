@@ -16,7 +16,10 @@ export function configurePassport() {
 
   passport.deserializeUser(async (id: number, done) => {
     try {
-      const user = await prisma.user.findUnique({ where: { id } });
+      const user = await prisma.user.findUnique({
+        where: { id },
+        include: { socialAccounts: true },
+      });
       done(null, user);
     } catch (err) {
       done(err as Error);
@@ -88,24 +91,28 @@ export function configurePassport() {
     );
   }
 
-  if (env.kakaoClientId && env.kakaoClientSecret) {
+  if (env.kakaoClientId) {
     passport.use(
       new KakaoStrategy(
         {
           clientID: env.kakaoClientId,
-          clientSecret: env.kakaoClientSecret,
+          // Client secret is optional for Kakao. Use empty string if not set.
+          clientSecret: env.kakaoClientSecret || '',
           callbackURL: env.kakaoCallbackUrl,
         },
         async (_accessToken: string, _refreshToken: string, profile: any, done: any) => {
           try {
             const kakaoAccount = profile._json?.kakao_account ?? {};
-            const email = kakaoAccount.email;
-            if (!email) return done(null, false, { message: 'No email from Kakao' });
-            const providerUserId = profile.id;
-            const name = kakaoAccount.profile?.nickname || profile.displayName;
+            const providerUserId = String(profile.id);
+            const rawEmail = kakaoAccount.email as string | undefined;
+            // For apps without email permission, fall back to a synthetic email.
+            const email = rawEmail || `kakao_${providerUserId}@no-email.local`;
+            const name = kakaoAccount.profile?.nickname || profile.displayName || 'Kakao User';
             const user = await upsertSocialUser('KAKAO', providerUserId, email, name);
             done(null, user);
           } catch (err) {
+            // eslint-disable-next-line no-console
+            console.error('[Kakao strategy error]', err);
             done(err as Error);
           }
         },

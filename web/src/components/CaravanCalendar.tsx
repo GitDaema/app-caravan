@@ -30,7 +30,7 @@ export default function CaravanCalendar() {
     for (const r of data?.ranges || []) {
       const start = new Date(r.start)
       const end = new Date(r.end)
-      for (let d = new Date(start); d < end; d.setDate(d.getDate() + 1)) {
+      for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
         s.add(formatISO(d))
       }
     }
@@ -41,7 +41,9 @@ export default function CaravanCalendar() {
     return (
       <div className="bg-white rounded shadow p-4" aria-live="polite">
         <h3 className="font-semibold mb-3">예약 캘린더</h3>
-        <div className="text-sm text-gray-600">카라반을 선택하면 예약 현황을 표시합니다</div>
+        <div className="text-sm text-gray-600">
+          카라반을 선택하면 해당 카라반의 예약 상황이 캘린더로 표시됩니다.
+        </div>
       </div>
     )
   }
@@ -49,12 +51,16 @@ export default function CaravanCalendar() {
   return (
     <div className="bg-white rounded shadow p-4">
       <h3 className="font-semibold mb-3">예약 캘린더 (Caravan #{selectedCaravanId})</h3>
-      {isLoading && <div>불러오는 중…</div>}
-      {error && <div className="text-red-600 text-sm">캘린더를 불러오지 못했습니다</div>}
+      {isLoading && <div>불러오는 중...</div>}
+      {error && <div className="text-red-600 text-sm">캘린더를 불러오지 못했습니다.</div>}
       {!isLoading && !error && (
         <div>
           <div className="grid grid-cols-7 gap-1 text-xs text-gray-600 mb-1">
-            {['일','월','화','수','목','금','토'].map((d) => <div key={d} className="text-center font-medium">{d}</div>)}
+            {['월', '화', '수', '목', '금', '토', '일'].map((d) => (
+              <div key={d} className="text-center font-medium">
+                {d}
+              </div>
+            ))}
           </div>
           <div className="grid grid-cols-7 gap-1">
             {Array.from({ length: days }, (_, i) => i + 1).map((day) => {
@@ -64,7 +70,9 @@ export default function CaravanCalendar() {
               return (
                 <div
                   key={iso}
-                  className={`aspect-square rounded border flex items-center justify-center text-sm select-none ${isReserved ? 'bg-red-100 text-red-800 border-red-300' : 'bg-white'}`}
+                  className={`aspect-square rounded border flex items-center justify-center text-sm select-none ${
+                    isReserved ? 'bg-red-100 text-red-800 border-red-300' : 'bg-white'
+                  }`}
                   aria-label={`${iso}${isReserved ? ' 예약됨' : ''}`}
                 >
                   {day}
@@ -77,3 +85,4 @@ export default function CaravanCalendar() {
     </div>
   )
 }
+

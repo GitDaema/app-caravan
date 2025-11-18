@@ -1,62 +1,89 @@
 # CaravanShare Quickstart (Node + MariaDB + React)
 
-이 문서는 새 Node.js + Express + Prisma + MariaDB 백엔드와
-React + Vite 프론트엔드를 기준으로 작성되었습니다.
-기존 Python/FastAPI 코드는 `src/` + `backend/` 폴더에 레거시 레퍼런스로 남아 있습니다.
+이 문서는 학교/랩 PC 에서 CaravanShare 를 빠르게 실행해 보는 방법을 정리한 것입니다.
+
+- 백엔드: Node.js 20 + Express + Prisma + MariaDB
+- 프론트엔드: React 18 + Vite + Tailwind + React Query
+- 인증: 세션 기반(Local + Google/Naver/Kakao OAuth, Passport)
+
+기존 Python/FastAPI 코드는 `src/`, `backend/` 폴더에 그대로 보존되어 있으며, 참고용으로만 사용합니다. 실제 데모/배포 경로는 `api/` + `web/` 입니다.
 
 ---
 
 ## 1. 필수 사전 준비
 
 - Node.js 20 LTS
-- Docker + docker-compose (로컬에서 MariaDB + API 구동용)
-- (선택) Git, VS Code 등 IDE
+- Docker + docker-compose (로컬에서 MariaDB + API 컨테이너 실행용)
+- Git, VS Code 등의 기본 개발 도구
 
 ---
 
 ## 2. 로컬 개발 환경 구성
 
-### 2-1. 백엔드(API) + MariaDB 시작
+### 2-1. MariaDB + API 컨테이너 실행
 
 루트 디렉터리(`app-caravan`)에서:
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 구성:
-- `db`: MariaDB 10.11 (포트 `3306`)
-- `api`: Node 20 + Express + Prisma (포트 `3000`)
 
-환경 변수(개발 기본값):
-- DB: `mysql://caravan:caravan@db:3306/caravanshare`
+- `db`: MariaDB 10.11 (`3306` → 로컬 DB 연결 테스트용 포트 공개)
+- `api`: Node 20 + Express + Prisma (`3000`)
+
+환경 변수(개발 기본값 예시):
+
+- DB: `mysql://caravan:<비밀번호>@db:3306/caravanshare`
 - API: `http://localhost:3000`
 
-필요 시 `api/.env.example`를 복사해서 `api/.env`로 만들고,
-OAuth Client ID/Secret 등을 채워줍니다.
+### 2-2. API `.env` 생성 및 마이그레이션 + Seed
 
 ```bash
 cd api
-cp .env.example .env   # Windows PowerShell에서는 수동 복사
+cp .env.example .env   # Windows PowerShell 에서는 copy .env.example .env
+nano .env              # 또는 VS Code 로 수정
 ```
 
-> 첫 실행 시 컨테이너 내부에서 `npx prisma migrate deploy`가 실행되어
-> MariaDB에 스키마가 생성됩니다.
+필수 항목:
 
-### 2-2. 프론트엔드(web) 개발 서버 실행
+- `DATABASE_URL` – docker-compose 의 `db` 서비스를 가리키도록 유지 (`db:3306`)
+- `SESSION_SECRET` – 충분히 랜덤한 문자열로 변경
+- `FRONTEND_BASE_URL=http://localhost:5173`
+- 각 OAuth Provider 의 `*_CLIENT_ID/SECRET` (없으면 소셜 로그인만 동작하지 않고, 로컬 로그인은 가능)
+
+Prisma 마이그레이션 및 데모 데이터:
+
+```bash
+cd api
+npm install
+npx prisma migrate deploy
+node prisma/seed.cjs   # admin/host/guest + 기본 카라반/예약 생성
+```
+
+데모 계정:
+
+- 관리자: `admin@example.com` / `password`
+- 호스트: `host@example.com` / `password`
+- 게스트: `guest@example.com` / `password`
+
+### 2-3. 프론트엔드 개발 서버 실행
 
 ```bash
 cd web
+cp .env.local.example .env.local   # 필요 시 수정
 npm install
 npm run dev
 ```
 
+기본 설정:
+
 - Vite Dev Server: `http://localhost:5173`
-- `.env.local` 기본값:
+- `.env.local`:
   - `VITE_API_BASE_URL=http://localhost:3000`
 
-브라우저에서 `http://localhost:5173` 접속 후
-새로운 UI/UX와 로그인 흐름을 확인할 수 있습니다.
+브라우저에서 `http://localhost:5173` 로 접속하면 랜딩 페이지 → `/login` → `/app` 플로우를 확인할 수 있습니다.
 
 ---
 
@@ -66,30 +93,31 @@ npm run dev
 
 백엔드(`api/`)는 세션 기반 인증을 사용합니다.
 
-- `express-session` + `express-mysql-session` (세션은 MariaDB에 저장)
-- 클라이언트는 세션 쿠키(httpOnly)를 통해 로그인 상태 유지
+- `express-session` (+ prod 에서는 MariaDB 세션 스토어로 확장 가능)
+- 브라우저는 httpOnly 세션 쿠키로 로그인 상태를 유지
 - 주요 엔드포인트:
-  - `POST /auth/login` : 이메일/비밀번호 로그인
-  - `POST /auth/register` : 회원가입
-  - `POST /auth/logout` : 로그아웃
-  - `GET /auth/me` : 현재 로그인한 사용자 정보
-  - `GET /auth/google`, `/auth/naver`, `/auth/kakao` : 소셜 로그인 시작
-  - `GET /auth/*/callback` : 각 소셜 로그인 콜백
+  - `POST /auth/login` – 이메일/비밀번호 로그인
+  - `POST /auth/register` – 회원 가입
+  - `POST /auth/logout` – 로그아웃
+  - `GET /auth/me` – 현재 로그인한 사용자 정보
+  - `GET /auth/google|naver|kakao` – 소셜 로그인 시작
+  - `GET /auth/*/callback` – OAuth 콜백 (성공 시 세션 생성 후 `/app` 리다이렉트, 실패 시 `/login?error=...`)
 
-프론트엔드(`web/`)는:
+프론트엔드(`web/`)에서는:
 
-- `/login` 페이지에서
-  - Google / Naver / Kakao 버튼 클릭 시 `/auth/*`로 리다이렉트
-  - 이메일/비밀번호 폼은 `POST /auth/login` 호출
-- 로그인 성공 시 `/app` 대시보드로 이동
-- 앱 공통 레이아웃(`App.tsx`)에서 `GET /auth/me`를 호출해 전역 유저 상태를 동기화
+- `/login` 페이지:
+  - 상단: Google / Naver / Kakao 버튼 → 각각 `/auth/*` 로 이동
+  - 하단: 이메일/비밀번호 로그인 폼 (React Hook Form + Zod 검증)
+  - `?error=...` 쿼리 파라미터에 따라 소셜 로그인 에러 메시지 표기
+- `/app` 페이지:
+  - 진입 시 `GET /auth/me` 로 세션 상태 확인 (없으면 `/login` 으로 리다이렉트)
 
 ### 3-2. Google OAuth
 
-1. Google Cloud Console에서 OAuth 클라이언트 생성 (웹 애플리케이션)
+1. Google Cloud Console 에서 OAuth 클라이언트 생성
 2. Redirect URI 등록:
-   - 예: `http://localhost:3000/auth/google/callback`
-3. 다음 값을 `api/.env`에 설정:
+   - 로컬: `http://localhost:3000/auth/google/callback`
+3. `api/.env` 에 설정:
 
 ```env
 GOOGLE_CLIENT_ID=...
@@ -99,137 +127,103 @@ GOOGLE_CALLBACK_URL=http://localhost:3000/auth/google/callback
 
 ### 3-3. Naver / Kakao OAuth
 
-각 포털 개발자 콘솔에서 애플리케이션을 생성하고
-Redirect URI를 다음과 같이 설정합니다.
+각 포털 개발자 콘솔에서 애플리케이션을 생성하고, Redirect URI 를 다음과 같이 설정합니다.
 
 - Naver: `http://localhost:3000/auth/naver/callback`
 - Kakao: `http://localhost:3000/auth/kakao/callback`
 
-`api/.env`에 각각의 Client ID/Secret과 Callback URL을 채워넣으면 됩니다.
+`api/.env` 에 Client ID/Secret 및 Callback URL을 채웁니다.  
+Kakao 의 경우 이메일 미제공/동의 취소 등의 케이스는 `/login?error=kakao_no_email|kakao_cancelled` 로 안내됩니다.
 
 ---
 
-## 4. 테스트 실행
+## 4. Host / Admin 플로우 체험
 
-### 4-1. 백엔드 테스트 (Jest + supertest)
+Prisma seed 스크립트(`api/prisma/seed.cjs`)를 실행하면 다음 데모 계정 및 데이터가 생성됩니다.
+
+- `admin@example.com` (role: `ADMIN`)
+- `host@example.com` (role: `HOST`)
+- `guest@example.com` (role: `GUEST`)
+- 최소 2개 카라반, 2개 예약 (pending/confirmed 상태 혼합)
+
+### 4-1. Host 플로우
+
+1. `host@example.com` / `password` 로 로그인
+2. `/app` → `HostPanel` 카드에서:
+   - 본인이 소유한 카라반에 대한 예약 목록 확인
+   - 예약 상태를 `pending → confirmed` 또는 `confirmed → cancelled` 로 변경
+3. `CaravanForm` 카드로 새 카라반 등록:
+   - 이름/설명/위치/가격 입력 후 등록 → `CaravanList` 에 즉시 반영
+
+### 4-2. Admin 플로우
+
+1. `admin@example.com` / `password` 로 로그인
+2. `/app` → `AdminReservations` 카드에서 전체 예약 목록 확인
+3. `ProfileActions` 카드에서:
+   - 잔액 +100 충전 버튼 → `PUT /api/users/me/balance` 호출 → `BalanceCard` 에 잔액 반영
+
+### 4-3. Guest 플로우
+
+1. `guest@example.com` / `password` 로 로그인
+2. `CaravanList` 에서 카라반 선택, `ReservationForm` 에서 날짜 범위 선택 후 예약 생성
+3. `ReservationList` 에서 본인 예약 목록 확인 및 취소
+4. `CaravanCalendar` 에서 선택한 카라반의 예약 구간(진행/확정)을 달력으로 확인
+
+---
+
+## 5. 테스트 실행
+
+### 5-1. 백엔드 테스트 (Jest + supertest)
 
 ```bash
 cd api
-npm install
 npm test
 ```
 
-포함 내용:
-- `test/health.test.ts`:
-  - `GET /health` 엔드포인트가 `200`과 `{ status: 'ok' }`를 반환하는지 검증
+현재 포함된 테스트 (예시):
 
-> 참고: 현재 통합 인증 플로우 테스트는 MariaDB 의존성이 있어
-> 최소한의 헬스체크 테스트만 Jest + supertest로 구성되어 있습니다.
-> 필요 시 `SESSION_STORE=memory`와 테스트용 DB를 활용해 통합 테스트를 확장할 수 있습니다.
+- `test/health.test.ts`: `GET /health` 200 + `{ status: 'ok' }` 확인
+- Day7 작업 이후 `/auth/login`, `/auth/me`, 소셜 콜백 등에 대한 happy path 테스트가 추가될 예정입니다.
 
-### 4-2. 프론트엔드 테스트 (Vitest + RTL)
+> DB 접속이 필요한 테스트는 `SESSION_STORE=memory` 또는 테스트 전용 DB 를 사용하는 방식으로 확장할 수 있습니다.
+
+### 5-2. 프론트엔드 테스트 (Vitest + RTL)
 
 ```bash
 cd web
-npm test         # 또는 npm run test:run
+npm test          # 또는 npm run test:run
 ```
 
-주요 테스트:
-- `__tests__/Login.test.tsx`:
-  - 로그인 폼 제출 시 `loginLocal` 액션이 호출되는지 검증
-- 기존 컴포넌트 테스트:
-  - 카라반 리스트, 예약 폼/리스트 등 기본 UI 동작 확인
+테스트 범위(예시):
+
+- `/login` 페이지:
+  - 이메일/비밀번호 폼 검증
+  - 소셜 로그인 버튼 렌더링
+  - `?error=...` 기반 에러 메시지 노출
+- `/app` 접근 제어:
+  - 세션 없음 → 로그인 페이지 리다이렉트
+  - 세션 있음 → 대시보드 렌더링
 
 ---
 
-## 5. Azure VM 배포 개요
+## 6. Azure VM 배포 개요
 
-### 5-1. 기본 아키텍처
+Ubuntu 기반 Azure VM 에 배포할 때는 두 가지 시나리오 중 하나를 선택할 수 있습니다.
 
-- Azure Linux VM (Ubuntu LTS)
-- Node.js 20 LTS
-- MariaDB 10.11+ (VM 내부 설치 또는 Docker)
-- Nginx (포트 80/443 → 프록시/정적 서빙)
+- A) Docker Compose 기반
+  - `docker-compose.prod.yml` + `infra/nginx.caravanshare.conf.example` 사용
+  - `web/dist` 를 Nginx 로 정적 서빙, `/api/*` 는 Express API 로 리버스 프록시
+- B) Node + PM2 + Nginx 기반
+  - VM 에서 직접 Node/MariaDB/Nginx 설치
+  - PM2 로 `dist/server.js` 실행, Nginx 가 정적 파일 + `/api` 프록시
 
-추천 구조:
-
-- Nginx
-  - `https://your-domain/` → 프론트엔드 빌드 결과(dist) 정적 서빙
-  - `https://your-domain/api/*` → Node API (`http://localhost:3000`)로 프록시
-- Node API
-  - `pm2` 등으로 `dist/server.js`를 서비스로 실행
-- MariaDB
-  - VM 내부 혹은 별도 Managed 인스턴스
-
-### 5-2. 배포 절차(요약)
-
-1. VM에 Node 20, MariaDB, Nginx 설치
-2. 앱 코드 배포:
-   - `api/`에서 `npm install && npm run build`
-   - `web/`에서 `npm install && npm run build`
-3. Prisma 마이그레이션:
-   - `cd api && npx prisma migrate deploy`
-4. API 실행:
-   - `NODE_ENV=production pm2 start dist/server.js --name caravanshare-api`
-5. Nginx 설정:
-   - 80/443 포트 오픈
-   - `location / { root /var/www/caravanshare-web; }`
-   - `location /api/ { proxy_pass http://localhost:3000/api/; }`
+자세한 단계별 설명은 `docs/DEPLOY_AZURE.md` 를 참고하세요.
 
 ---
 
-## 6. 주요 UX 흐름 (사용자 관점 체크리스트)
+## 7. 참고: 이전 Python/FastAPI 코드
 
-### 6-1. 로그인 / 인증
-
-브라우저에서:
-
-1. `http://localhost:5173` 접속 → 랜딩 페이지
-   - AI 스타일 히어로 이미지와 소개 문구 확인
-   - "지금 시작하기" 버튼 → `/login`으로 이동
-2. `/login` 페이지:
-   - 상단: Google / Naver / Kakao 로그인 버튼
-     - 클릭 시 각각 `/auth/google`, `/auth/naver`, `/auth/kakao`로 리다이렉트
-     - OAuth 승인 후 `/app`으로 돌아와 세션이 유지되어야 함
-   - 하단: 이메일/비밀번호 로그인 폼
-     - 유효성 검증(React Hook Form + Zod) 메시지 확인
-     - 올바른 계정이면 `/app`으로 이동
-
-### 6-2. 대시보드 / 예약 플로우
-
-로그인 후 `/app`에서:
-
-- 상단 헤더:
-  - 우측에 유저 이메일 또는 이름 표시
-  - "로그아웃" 클릭 시 세션 종료 및 `/`로 이동
-- 메인 컨텐츠:
-  - 카라반 리스트:
-    - 필터(위치, 가격, 인원수)에 따라 리스트가 갱신
-    - 카드 선택 시 예약 대상 카라반이 강조
-  - 예약 폼:
-    - 시작일/종료일 선택
-    - "예약하기" 버튼 클릭 시 예약 생성
-  - 예약 리스트:
-    - 본인이 만든 예약 목록 표시
-    - 각 예약에 대해 취소 버튼 동작 확인
-  - 호스트 패널(HostPanel):
-    - 호스트 권한 계정일 경우에만 표시
-    - 자신의 카라반에 대한 예약 목록, 상태 변경(확정/취소) 수행
-  - 관리자 예약(AdminReservations):
-    - 관리자 권한 계정일 경우 전체 예약 목록 확인 가능
-
-### 6-3. 반응형 + 동적 UI
-
-- PC/태블릿/모바일 브라우저에서:
-  - 랜딩/로그인/대시보드 레이아웃이 해상도에 맞게 재배치
-  - 주요 카드/버튼에 Hover/Press 애니메이션(Framer Motion) 적용
-  - PWA 배너/오프라인 배너(기존 구현) 동작
-
----
-
-## 7. 참고: 레거시 Python/FastAPI 코드
-
-- `src/`, `backend/` 아래의 FastAPI + SQLAlchemy 코드는
-  도메인 모델/비즈니스 규칙 참고용으로 남겨두었습니다.
-- 현재 권장 개발/배포 경로는 `api/`(Node + Express + Prisma)입니다.
+- `src/`, `backend/` 폴더에는 기존 FastAPI + SQLAlchemy 구현이 남아 있습니다.
+- 데이터 모델, 예약 비즈니스 규칙, 권한 설계 등은 이 코드에서도 참고할 수 있지만,
+  **실제 과제 제출용 코드는 `api/` + `web/` 방향**으로 유지/발전시키면 됩니다.
 

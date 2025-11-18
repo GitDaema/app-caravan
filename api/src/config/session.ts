@@ -10,8 +10,18 @@ export function configureSession(app: Express) {
     store = new session.MemoryStore();
   } else {
     const MySQLStore = MySQLStoreFactory(session);
+
+    // express-mysql-session does not support a generic "uri" option,
+    // so parse DATABASE_URL and pass explicit connection params.
+    const url = new URL(env.databaseUrl);
+    const database = url.pathname.replace(/^\//, '') || 'caravanshare';
+
     store = new MySQLStore({
-      uri: env.databaseUrl,
+      host: url.hostname || 'localhost',
+      port: url.port ? Number(url.port) : 3306,
+      user: url.username || undefined,
+      password: url.password || undefined,
+      database,
       createDatabaseTable: true,
     });
   }

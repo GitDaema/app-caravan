@@ -54,3 +54,34 @@ caravansRouter.post('/', requireAuth, requireRole('HOST'), async (req, res, next
     next(err);
   }
 });
+
+caravansRouter.get('/:id/calendar', async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    if (Number.isNaN(id)) {
+      return res.status(400).json({ message: 'Invalid caravan id' });
+    }
+
+    const reservations = await prisma.reservation.findMany({
+      where: {
+        caravan_id: id,
+        status: {
+          in: ['pending', 'confirmed'],
+        },
+      },
+      orderBy: { start_date: 'asc' },
+    });
+
+    res.json({
+      caravan_id: id,
+      ranges: reservations.map((r) => ({
+        id: r.id,
+        start: r.start_date,
+        end: r.end_date,
+        status: r.status,
+      })),
+    });
+  } catch (err) {
+    next(err);
+  }
+});

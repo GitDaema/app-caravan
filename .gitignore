@@ -80,6 +80,7 @@ api/dist/
 *.log
 web/.env
 web/.env.local
+api/.env
 api/.env.local
 
 # Local runtime / debug artifacts

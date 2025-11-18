@@ -31,9 +31,12 @@ export const useAuthStore = create<State>((set) => ({
         return
       }
       const data = await res.json()
-      set({ user: data.user ?? data, loading: false })
+      set({ user: data.user, loading: false })
     } catch (e: any) {
-      set({ error: e?.message || '세션 정보를 가져오지 못했습니다.', loading: false })
+      set({
+        error: e?.message || '세션 정보를 불러오지 못했습니다.',
+        loading: false,
+      })
     }
   },
   loginLocal: async (email: string, password: string) => {

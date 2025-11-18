@@ -1,18 +1,25 @@
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { api } from '../lib/api'
-import { useState } from 'react'
 import { useAuthStore } from '../store/auth'
 import { useUIStore } from '../store/ui'
 
 export default function CaravanList() {
   const { user } = useAuthStore()
   const { selectedCaravanId, setSelectedCaravanId } = useUIStore()
-  const [filters, setFilters] = useState({ location: '', min_price: '', max_price: '', min_capacity: '' })
+  const [filters, setFilters] = useState({
+    location: '',
+    min_price: '',
+    max_price: '',
+    min_capacity: '',
+  })
+
   const query = new URLSearchParams()
   if (filters.location) query.set('location', filters.location)
   if (filters.min_price) query.set('min_price', filters.min_price)
   if (filters.max_price) query.set('max_price', filters.max_price)
   if (filters.min_capacity) query.set('min_capacity', filters.min_capacity)
+
   const { data, isLoading } = useQuery({
     queryKey: ['caravans', query.toString()],
     queryFn: async () => api.get(`/api/caravans?${query.toString()}`),
@@ -25,28 +32,28 @@ export default function CaravanList() {
       <h3 className="font-semibold mb-3">카라반 목록</h3>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3">
         <input
-          className="border p-2"
+          className="border p-2 rounded text-sm"
           placeholder="위치"
           value={filters.location}
-          onChange={e => setFilters({ ...filters, location: e.target.value })}
+          onChange={(e) => setFilters({ ...filters, location: e.target.value })}
         />
         <input
-          className="border p-2"
+          className="border p-2 rounded text-sm"
           placeholder="최소 가격"
           value={filters.min_price}
-          onChange={e => setFilters({ ...filters, min_price: e.target.value })}
+          onChange={(e) => setFilters({ ...filters, min_price: e.target.value })}
         />
         <input
-          className="border p-2"
+          className="border p-2 rounded text-sm"
           placeholder="최대 가격"
           value={filters.max_price}
-          onChange={e => setFilters({ ...filters, max_price: e.target.value })}
+          onChange={(e) => setFilters({ ...filters, max_price: e.target.value })}
         />
         <input
-          className="border p-2"
+          className="border p-2 rounded text-sm"
           placeholder="최소 인원"
           value={filters.min_capacity}
-          onChange={e => setFilters({ ...filters, min_capacity: e.target.value })}
+          onChange={(e) => setFilters({ ...filters, min_capacity: e.target.value })}
         />
       </div>
       {isLoading ? (
@@ -65,10 +72,11 @@ export default function CaravanList() {
               <div className="flex gap-3 items-center">
                 <span className="font-medium">{c.name}</span>
                 <span className="text-gray-500">{c.location}</span>
-                <span>{c.capacity}명</span>
-                <span>{c.price_per_day}원/박</span>
-                {/* @ts-ignore 기존 백엔드 호스트 표시 */}
-                {user && c.host_id === user.id && <span className="text-emerald-700">내 카라반</span>}
+                <span>{c.capacity}인</span>
+                <span>{c.price_per_day}원/일</span>
+                {user && c.host_id === user.id && (
+                  <span className="text-emerald-700 text-xs">내 카라반</span>
+                )}
               </div>
               <div className="flex gap-2">
                 <button

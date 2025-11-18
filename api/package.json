@@ -9,6 +9,7 @@
     "lint": "eslint . --ext .ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
+    "seed": "node prisma/seed.cjs",
     "test": "jest"
   },
   "dependencies": {

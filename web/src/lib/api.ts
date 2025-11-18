@@ -1,7 +1,10 @@
 export const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
 
 async function handle(res: Response) {
-  if (!res.ok) throw new Error((await res.json().catch(() => ({ detail: res.statusText }))).detail || 'error')
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({ detail: res.statusText }))
+    throw new Error(data.detail || 'error')
+  }
   return res.json()
 }
 
@@ -14,7 +17,7 @@ async function request(path: string, init?: RequestInit) {
     return await handle(res)
   } catch (error) {
     if (typeof navigator !== 'undefined' && 'onLine' in navigator && !navigator.onLine) {
-      // 통합 오프라인 메시지 (배너/버튼과 톤 맞춤)
+      // 오프라인 상태일 때 공통 메시지
       throw new Error('오프라인 상태입니다. 네트워크 연결 후 다시 시도해 주세요.')
     }
     throw error
@@ -32,4 +35,12 @@ export const api = {
       body: JSON.stringify(body || {}),
     })
   },
+  async put(path: string, body?: any) {
+    return request(`${API_BASE}${path}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body || {}),
+    })
+  },
 }
+
