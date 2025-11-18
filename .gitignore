@@ -83,7 +83,6 @@ web/.env.local
 api/.env.local
 
 # Local runtime / debug artifacts
-codex_logs/
 firebase-debug.log
 
 # Defensive: accidental files from console redirection on Windows
