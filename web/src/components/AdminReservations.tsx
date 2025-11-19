@@ -4,13 +4,15 @@ import { useAuthStore } from '../store/auth'
 
 export default function AdminReservations() {
   const { user } = useAuthStore()
-
-  if (!user || user.role !== 'ADMIN') return null
+  const isAdmin = !!user && user.role === 'ADMIN'
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['admin-reservations'],
     queryFn: async () => api.get('/api/reservations/admin/all'),
+    enabled: isAdmin,
   })
+
+  if (!isAdmin) return null
 
   return (
     <div className="bg-white rounded shadow p-4">
@@ -34,4 +36,3 @@ export default function AdminReservations() {
     </div>
   )
 }
-

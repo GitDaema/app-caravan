@@ -18,13 +18,13 @@ function StatusChip({ status }: { status: string }) {
 
 export default function HostPanel() {
   const { user } = useAuthStore()
-  // Only show for hosts
-  if (!user || (user.role && user.role !== 'HOST')) return null
-
   const qc = useQueryClient()
+  const isHost = !!user && user.role === 'HOST'
+
   const { data, isLoading, error } = useQuery({
     queryKey: ['host-reservations'],
     queryFn: async () => api.get('/api/reservations/host'),
+    enabled: isHost,
   })
 
   const mutation = useMutation({
@@ -40,6 +40,8 @@ export default function HostPanel() {
     },
   })
 
+  // Only show for hosts
+  if (!isHost) return null
   return (
     <div className="bg-white rounded shadow p-4">
       <h3 className="font-semibold mb-3">호스트 예약 관리</h3>

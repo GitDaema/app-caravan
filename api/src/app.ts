@@ -15,6 +15,9 @@ import { reservationsRouter } from './routes/reservations';
 export function createApp() {
   const app = express();
 
+  // Behind Nginx/HTTPS we trust the proxy to report the original protocol.
+  app.set('trust proxy', 1);
+
   app.use(helmet());
   app.use(
     cors({
