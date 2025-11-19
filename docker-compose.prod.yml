@@ -1,3 +1,4 @@
+# docker-compose.prod.yml
 version: "3.9"
 
 services:
@@ -20,16 +21,16 @@ services:
       DATABASE_URL: ${DATABASE_URL}
       SESSION_SECRET: ${SESSION_SECRET}
       SESSION_STORE: ${SESSION_STORE:-mysql}
-      FRONTEND_BASE_URL: ${FRONTEND_BASE_URL:-http://localhost}
+      FRONTEND_BASE_URL: ${FRONTEND_BASE_URL:-https://caravanshare.xyz}
       GOOGLE_CLIENT_ID: "${GOOGLE_CLIENT_ID}"
       GOOGLE_CLIENT_SECRET: "${GOOGLE_CLIENT_SECRET}"
-      GOOGLE_CALLBACK_URL: "${GOOGLE_CALLBACK_URL:-http://localhost/api/auth/google/callback}"
+      GOOGLE_CALLBACK_URL: "${GOOGLE_CALLBACK_URL}"
       NAVER_CLIENT_ID: "${NAVER_CLIENT_ID}"
       NAVER_CLIENT_SECRET: "${NAVER_CLIENT_SECRET}"
-      NAVER_CALLBACK_URL: "${NAVER_CALLBACK_URL:-http://localhost/api/auth/naver/callback}"
+      NAVER_CALLBACK_URL: "${NAVER_CALLBACK_URL}"
       KAKAO_CLIENT_ID: "${KAKAO_CLIENT_ID}"
       KAKAO_CLIENT_SECRET: "${KAKAO_CLIENT_SECRET}"
-      KAKAO_CALLBACK_URL: "${KAKAO_CALLBACK_URL:-http://localhost/api/auth/kakao/callback}"
+      KAKAO_CALLBACK_URL: "${KAKAO_CALLBACK_URL}"
     depends_on:
       - db
 
@@ -39,11 +40,13 @@ services:
     volumes:
       - ./infra/nginx.caravanshare.conf.example:/etc/nginx/conf.d/default.conf:ro
       - ./web/dist:/usr/share/nginx/html:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro # <-- Mount SSL certificates
+      - /var/www/certbot:/var/www/certbot:ro # <-- Mount certbot renewal dir
     ports:
-      - "80:80"
+      - "80:80"   # <-- Expose port 80 for HTTP and renewals
+      - "443:443" # <-- Expose port 443 for HTTPS
     depends_on:
       - api
 
 volumes:
   db_data:
-

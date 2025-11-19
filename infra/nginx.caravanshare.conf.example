@@ -1,6 +1,30 @@
+# /infra/nginx.caravanshare.conf.example
+
+# 1. HTTP server to redirect to HTTPS
 server {
     listen 80;
-    server_name _;
+    server_name caravanshare.xyz;
+
+    # Certbot renewal
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+# 2. HTTPS server
+server {
+    listen 443 ssl http2;
+    server_name caravanshare.xyz;
+
+    # SSL configuration
+    ssl_certificate /etc/letsencrypt/live/caravanshare.xyz/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/caravanshare.xyz/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 
     # Static frontend (Vite build output)
     root /usr/share/nginx/html;
@@ -11,7 +35,6 @@ server {
     }
 
     # API reverse proxy to Express app inside Docker
-    # /api/* on public side -> /* on Express (auth, api/users, api/caravans, ...)
     location /api/ {
         proxy_pass http://api:3000/;
         proxy_http_version 1.1;
