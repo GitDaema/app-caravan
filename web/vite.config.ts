@@ -50,6 +50,10 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+        // Don't serve SPA fallback (index.html) for API routes.
+        // This ensures navigations to /api/auth/* hit the backend
+        // instead of showing React Router's 404 error boundary.
+        navigateFallbackDenylist: [/^\/api\//],
         runtimeCaching: [
           {
             urlPattern: /\/api\//,
