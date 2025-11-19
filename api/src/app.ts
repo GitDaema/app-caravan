@@ -11,6 +11,7 @@ import { authRouter } from './routes/auth';
 import { usersRouter } from './routes/users';
 import { caravansRouter } from './routes/caravans';
 import { reservationsRouter } from './routes/reservations';
+import { devRouter } from './routes/dev';
 
 export function createApp() {
   const app = express();
@@ -40,6 +41,7 @@ export function createApp() {
   });
 
   app.use('/auth', authRouter);
+  app.use('/dev', devRouter);
   app.use('/api/users', usersRouter);
   app.use('/api/caravans', caravansRouter);
   app.use('/api/reservations', reservationsRouter);
