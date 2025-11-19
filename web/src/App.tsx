@@ -1,21 +1,12 @@
 import Header from './components/Header'
 import type { ReactNode } from 'react'
-import { useEffect } from 'react'
-import { useAuthStore } from './store/auth'
 import PwaInstallBanner from './components/PwaInstallBanner'
 import OfflineBanner from './components/OfflineBanner'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useLocation } from 'react-router-dom'
 
 export default function App({ children }: { children?: ReactNode }) {
-  const { fetchMe } = useAuthStore()
   const location = useLocation()
-
-  useEffect(() => {
-    fetchMe().catch(() => {
-      // ignore; user stays logged out
-    })
-  }, [fetchMe])
 
   return (
     <div className="min-h-full flex flex-col bg-gradient-to-b from-sky-50 via-white to-blue-50">
@@ -38,4 +29,3 @@ export default function App({ children }: { children?: ReactNode }) {
     </div>
   )
 }
-
