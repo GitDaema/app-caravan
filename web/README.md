@@ -1,53 +1,117 @@
 Web (Vite + React + TS)
+========================
+
+이 디렉터리는 CaravanShare의 **프론트엔드(PWA)** 입니다.  
+Node 기반 API(`api/`)와 세션 쿠키를 사용해 동작합니다.
+
+---
 
 Local development
-- Node 18+ recommended
-- Install deps: `npm install`
-- Start dev server: `npm run dev` (http://localhost:5173)
+-----------------
 
-Env (.env)
-- `VITE_API_BASE_URL` (default `http://localhost:8000/api/v1`)
-  - PC 브라우저용 예: `http://localhost:8000/api/v1`
-  - 에뮬레이터/실기기용 예: `http://192.168.x.x:8000/api/v1` (백엔드가 떠 있는 PC의 LAN IP)
-- `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN` (if using Google sign-in)
+- Node 18+ 추천
+- 의존성 설치:
+  - `cd web`
+  - `npm install`
+- 개발 서버 실행:
+  - `npm run dev` → http://localhost:5173
+
+Env (.env.local)
+----------------
+
+`web/.env.local.example`를 복사해서 사용합니다.
+
+- `VITE_API_BASE_URL`
+  - 기본값(로컬): `http://localhost:3000`
+  - Prod 예시: `https://caravanshare.xyz/api`
+  - 이 값은 프론트에서 호출하는 **백엔드 루트**입니다.
+    - `/auth/login`, `/auth/me`, `/auth/google|naver|kakao`
+    - `/api/users/*`, `/api/caravans/*`, `/api/reservations/*`, `/dev/overview`
+- (선택) `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`
+  - 현재 Passport 기반 소셜 로그인에 필수는 아니며, 추후 Firebase 연동용으로 남겨둘 수 있습니다.
 
 Routes
-- `/` Landing
-- `/login` Google or local login (exchanges for API JWT)
-- `/app` Dashboard (caravans, reservations, balance)
+------
 
-Auth strategy (Day 5)
-- 기본 로그인은 로컬 계정(`admin@example.com` / `password`)입니다.
-- Google/Firebase 로그인은 선택적 실험 단계이며, 웹뷰/외부 브라우저 전환 관련 이슈는 TODO로 남겨 둡니다.
+- `/`
+  - 랜딩 페이지 (서비스 소개)
+- `/login`
+  - 소셜 로그인(Google/Naver/Kakao) + 로컬 로그인(이메일/비밀번호)
+  - 소셜 로그인 버튼:
+    - `${VITE_API_BASE_URL}/auth/google`
+    - `${VITE_API_BASE_URL}/auth/naver`
+    - `${VITE_API_BASE_URL}/auth/kakao`
+  - 로그인 성공 시 `/app` 으로 이동
+- `/app`
+  - 보호된 대시보드
+  - `ProtectedRoute`가 `GET {VITE_API_BASE_URL}/auth/me`로 세션을 확인
+  - 주요 위젯:
+    - Caravan 리스트, 예약 생성 폼, 예약 목록
+    - Host/관리자 전용 패널
+    - DemoOverview (`/dev/overview` 호출)
 
-PWA & Install
-- PWA service worker is enabled via `vite-plugin-pwa` and `web/src/pwa.ts`.
-- App shell (HTML/JS/CSS/basic assets) is precached so the dashboard can open even when offline.
-- API calls (under `/api/`) use a network-first strategy; when offline, UI shows an offline banner and API actions surface a clear error message.
-- Installable on modern browsers: use the browser's "Install app" UI or the in-app "앱 설치하기" banner (based on `beforeinstallprompt`).
-- Manifest icons are configured to use `/icons/pwa-192x192.png`, `/icons/pwa-512x512.png` and maskable variants under `/icons/`; place actual PNG assets there when the final design is ready.
+Auth strategy (현재)
+--------------------
 
-New UI
-- Host Panel: manage reservations you host (approve/cancel)
-- Caravan Calendar: highlights reserved days for selected caravan
-- Reservation list: cancel button with status chips
+- 세션 기반 인증 (JWT가 아니라 **서버 세션 + 쿠키**)
+  - 백엔드: `express-session` + `express-mysql-session`
+  - 프론트: `fetch(..., { credentials: 'include' })`
+- 스토어: `web/src/store/auth.ts`
+  - `fetchMe()` → `GET {API_BASE}/auth/me`
+  - `loginLocal(email, password)` → `POST {API_BASE}/auth/login`
+  - `logout()` → `POST {API_BASE}/auth/logout`
+- 라우트 가드:
+  - `PublicRoute`:
+    - 마운트 시 `fetchMe()` 한 번 호출
+    - `loading` 동안 `"세션 확인 중..."` 표시
+    - 로그인된 사용자는 `/app` 으로 리다이렉트
+  - `ProtectedRoute`:
+    - 마운트 시 `fetchMe()` 한 번 호출
+    - `loading` 동안 `"세션 확인 중..."` 표시
+    - 비로그인 사용자는 `/login` 으로 리다이렉트
+
+PWA & Service Worker
+--------------------
+
+- PWA 서비스워커는 `vite-plugin-pwa`와 `web/src/pwa.ts` 로 등록됩니다.
+- 주요 포인트:
+  - App shell(HTML/JS/CSS/아이콘 등)을 precache
+  - `/api/` 경로는 `NetworkFirst` 전략 사용
+  - `navigateFallbackDenylist: [/^\/api\//]` 설정으로,
+    - `/api/auth/*` 같은 OAuth 리다이렉트 요청이 React 404로 처리되지 않도록 함
+- 브라우저 설치:
+  - 브라우저의 “앱 설치” UI 또는 앱 내 PWA 설치 배너(지원하는 환경에서) 사용
+
+New UI (요약)
+-------------
+
+- Host Panel
+  - 호스트가 자신의 카라반 예약을 승인/취소
+- Caravan Calendar
+  - 선택한 카라반의 예약 날짜 범위를 캘린더로 표시
+- Reservation List
+  - 사용자 예약 목록 및 취소 버튼
+- Balance Card
+  - 현재 잔액 및 잔액 충전 버튼
 
 Tests
-- `npm run test` (watch) or `npm run test:run` (CI)
+-----
 
-Mobile build (Capacitor, v6)
-- Capacitor config: `web/capacitor.config.ts` (assumes `webDir: "dist"`).
+- 단위/컴포넌트 테스트:
+  - `npm run test` (watch)
+  - `npm run test:run` (CI)
+
+Mobile build (Capacitor, v6 – 선택)
+-----------------------------------
+
+현재 핵심은 웹/PWA이며, 필요 시 Capacitor를 사용해 모바일 래핑할 수 있습니다.
+
+- Capacitor config: `web/capacitor.config.ts` (`webDir: "dist"` 가정)
 - Typical flow:
-  - Build web assets: `npm run build:pwa`
-  - Sync into native projects: `npm run cap:sync`
-  - Open Android Studio: `npm run cap:android`
-  - Open Xcode: `npm run cap:ios`
-- Initial Capacitor wiring (run once, inside `web/`): `npm run cap:init`
-- During development you may set `server.url` to the Vite dev server (e.g. `http://localhost:5173`); **for production builds, comment out or remove `server.url`** so the packaged `dist` assets are served.
-
-Mobile UX smoke tests (Day 5)
-- `/login`를 DevTools 모바일 뷰(iPhone 14 등)에서 열고, 기본 로컬 계정으로 로그인했을 때 `/app` 대시보드가 한 컬럼 그리드로 자연스럽게 보이는지 확인합니다.
-- `/app`에서 카라반을 선택한 뒤 예약 시작/종료일을 지정하고 "예약하기"를 눌렀을 때, 예약 카드와 캘린더에 바로 반영되는지 확인합니다.
-- 에뮬레이터/실기기에서 네트워크를 끊으면 상단에 오프라인 배너가 뜨고, 예약 버튼이 비활성화되며 "오프라인 상태" 안내 문구가 보이는지 확인합니다.
-- 네트워크를 다시 연결한 뒤 새로고침해서, 로그인→대시보드→예약/취소 흐름이 정상적으로 동작하는지 한 번 더 스모크 테스트합니다.
+  - `npm run build` (또는 `npm run build:pwa`)
+  - `npm run cap:sync`
+  - `npm run cap:android`
+  - `npm run cap:ios`
+- 개발 중에는 `capacitor.config.ts` 의 `server.url` 을 Vite dev 서버로 지정할 수 있지만,  
+  **프로덕션 빌드에는 제거**하고 패키지된 `dist` 자산을 사용해야 합니다.
 
