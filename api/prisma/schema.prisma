@@ -92,6 +92,7 @@ model Reservation {
 
   user       User              @relation(fields: [user_id], references: [id])
   caravan    Caravan           @relation(fields: [caravan_id], references: [id])
+  messages   Message[]         @relation("ReservationMessages")
 
   createdAt  DateTime          @default(now())
   updatedAt  DateTime          @updatedAt
@@ -123,7 +124,7 @@ model Message {
   content        String
   createdAt      DateTime   @default(now())
 
-  reservation    Reservation @relation(fields: [reservation_id], references: [id])
+  reservation    Reservation @relation("ReservationMessages", fields: [reservation_id], references: [id])
   sender         User        @relation("SentMessages", fields: [sender_id], references: [id])
   receiver       User        @relation("ReceivedMessages", fields: [receiver_id], references: [id])
 
