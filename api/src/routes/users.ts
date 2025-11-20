@@ -14,7 +14,7 @@ usersRouter.put('/me/balance', requireAuth, async (req, res, next) => {
     const { amount } = req.body as { amount: number };
     const updated = await prisma.user.update({
       where: { id: user.id },
-      data: { balance: user.balance + amount },
+      data: { balance: { increment: amount } },
     });
     res.json(updated);
   } catch (err) {
