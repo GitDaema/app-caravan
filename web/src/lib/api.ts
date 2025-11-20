@@ -3,7 +3,14 @@ export const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3
 async function handle(res: Response) {
   if (!res.ok) {
     const data = await res.json().catch(() => ({ detail: res.statusText }))
-    throw new Error(data.detail || 'error')
+    const message =
+      (typeof data === 'string' && data) ||
+      data.detail ||
+      data.message ||
+      data.error ||
+      res.statusText ||
+      'error'
+    throw new Error(message)
   }
   return res.json()
 }
@@ -43,4 +50,3 @@ export const api = {
     })
   },
 }
-

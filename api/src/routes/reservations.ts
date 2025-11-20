@@ -113,10 +113,43 @@ reservationsRouter.post('/', requireAuth, async (req, res, next) => {
 reservationsRouter.post('/:id/cancel', requireAuth, async (req, res, next) => {
   try {
     const id = Number(req.params.id);
-    const reservation = await prisma.reservation.update({
-      where: { id },
-      data: { status: 'cancelled' },
+
+    const reservation = await prisma.$transaction(async (tx) => {
+      const existing = await tx.reservation.findUnique({
+        where: { id },
+        include: { caravan: true },
+      });
+
+      if (!existing) {
+        throw new Error('RESERVATION_NOT_FOUND');
+      }
+
+      if (existing.status !== 'cancelled') {
+        const guestId = existing.user_id;
+        const hostId = existing.caravan?.host_id ?? null;
+        const amount = existing.price;
+
+        if (amount > 0) {
+          await tx.user.update({
+            where: { id: guestId },
+            data: { balance: { increment: amount } },
+          });
+
+          if (hostId && hostId !== guestId) {
+            await tx.user.update({
+              where: { id: hostId },
+              data: { balance: { decrement: amount } },
+            });
+          }
+        }
+      }
+
+      return tx.reservation.update({
+        where: { id },
+        data: { status: 'cancelled' },
+      });
     });
+
     res.json({
       id: reservation.id,
       user_id: reservation.user_id,
@@ -127,6 +160,9 @@ reservationsRouter.post('/:id/cancel', requireAuth, async (req, res, next) => {
       status: reservation.status,
     });
   } catch (err) {
+    if (err instanceof Error && err.message === 'RESERVATION_NOT_FOUND') {
+      return res.status(404).json({ message: 'Reservation not found' });
+    }
     next(err);
   }
 });
@@ -179,10 +215,43 @@ reservationsRouter.post('/:id/status', requireAuth, requireRole('HOST'), async (
   try {
     const id = Number(req.params.id);
     const { status } = req.body as { status: 'pending' | 'confirmed' | 'cancelled' };
-    const reservation = await prisma.reservation.update({
-      where: { id },
-      data: { status },
+
+    const reservation = await prisma.$transaction(async (tx) => {
+      const existing = await tx.reservation.findUnique({
+        where: { id },
+        include: { caravan: true },
+      });
+
+      if (!existing) {
+        throw new Error('RESERVATION_NOT_FOUND');
+      }
+
+      if (status === 'cancelled' && existing.status !== 'cancelled') {
+        const guestId = existing.user_id;
+        const hostId = existing.caravan?.host_id ?? null;
+        const amount = existing.price;
+
+        if (amount > 0) {
+          await tx.user.update({
+            where: { id: guestId },
+            data: { balance: { increment: amount } },
+          });
+
+          if (hostId && hostId !== guestId) {
+            await tx.user.update({
+              where: { id: hostId },
+              data: { balance: { decrement: amount } },
+            });
+          }
+        }
+      }
+
+      return tx.reservation.update({
+        where: { id },
+        data: { status },
+      });
     });
+
     res.json({
       id: reservation.id,
       user_id: reservation.user_id,
@@ -193,6 +262,9 @@ reservationsRouter.post('/:id/status', requireAuth, requireRole('HOST'), async (
       status: reservation.status,
     });
   } catch (err) {
+    if (err instanceof Error && err.message === 'RESERVATION_NOT_FOUND') {
+      return res.status(404).json({ message: 'Reservation not found' });
+    }
     next(err);
   }
 });
