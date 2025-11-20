@@ -9,11 +9,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
-echo "==> Pulling latest changes from origin/master..."
-git pull --ff-only || {
-  echo "git pull failed. Please resolve conflicts manually." >&2
-  exit 1
-}
+echo "==> Using existing working tree (no git pull)."
 
 echo "==> Building frontend (web)..."
 cd "$ROOT_DIR/web"
@@ -49,4 +45,3 @@ echo "==> Building and starting prod stack (db + api + web)..."
 $COMPOSE -f docker-compose.prod.yml up -d --build
 
 echo "==> Deploy completed."
-
