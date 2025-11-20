@@ -39,7 +39,10 @@ fi
 echo "Using: $COMPOSE"
 
 echo "==> Removing old api service container (if any)..."
+# Try via compose service name first
 $COMPOSE -f docker-compose.prod.yml rm -f api >/dev/null 2>&1 || true
+# And also directly via Docker, to avoid the legacy ContainerConfig bug
+docker rm -f $(docker ps -aq --filter "name=app-caravan_api_1") >/dev/null 2>&1 || true
 
 echo "==> Building and starting prod stack (db + api + web)..."
 $COMPOSE -f docker-compose.prod.yml up -d --build
