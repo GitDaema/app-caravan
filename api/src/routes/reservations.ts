@@ -213,10 +213,30 @@ reservationsRouter.get('/admin/all', requireAuth, requireRole('ADMIN'), async (_
 
 reservationsRouter.post('/cleanup-cancelled', requireAuth, async (_req, res, next) => {
   try {
-    const result = await prisma.reservation.deleteMany({
-      where: { status: 'cancelled' },
+    const result = await prisma.$transaction(async (tx) => {
+      const cancelled = await tx.reservation.findMany({
+        where: { status: 'cancelled' },
+        select: { id: true },
+      });
+
+      if (cancelled.length === 0) {
+        return { deletedCount: 0 };
+      }
+
+      const ids = cancelled.map((r) => r.id);
+
+      await tx.message.deleteMany({
+        where: { reservation_id: { in: ids } },
+      });
+
+      const deleteResult = await tx.reservation.deleteMany({
+        where: { id: { in: ids } },
+      });
+
+      return { deletedCount: deleteResult.count };
     });
-    res.json({ deletedCount: result.count });
+
+    res.json(result);
   } catch (err) {
     next(err);
   }
