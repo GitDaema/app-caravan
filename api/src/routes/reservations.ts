@@ -203,9 +203,20 @@ reservationsRouter.get('/admin/all', requireAuth, requireRole('ADMIN'), async (_
         start_date: r.start_date,
         end_date: r.end_date,
         price: r.price,
-        status: r.status,
-      })),
-    );
+      status: r.status,
+    })),
+  );
+  } catch (err) {
+    next(err);
+  }
+});
+
+reservationsRouter.post('/cleanup-cancelled', requireAuth, async (_req, res, next) => {
+  try {
+    const result = await prisma.reservation.deleteMany({
+      where: { status: 'cancelled' },
+    });
+    res.json({ deletedCount: result.count });
   } catch (err) {
     next(err);
   }
