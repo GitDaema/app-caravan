@@ -11,6 +11,16 @@ dotenv.config()
 const prisma = new PrismaClient()
 
 async function main() {
+  // 안전장치: 기본적으로 prod/unknown 환경에서는 seed를 막고,
+  // 명시적으로 ALLOW_DEMO_SEED=true 인 경우에만 실행되도록 합니다.
+  const env = process.env.NODE_ENV || 'development'
+  if (env !== 'development' && process.env.ALLOW_DEMO_SEED !== 'true') {
+    // eslint-disable-next-line no-console
+    console.log(
+      `Seed skipped (NODE_ENV=${env}). Set ALLOW_DEMO_SEED=true explicitly if you really want to run demo seed in this environment.`,
+    )
+    return
+  }
   const password = 'password'
   const hashedPassword = await bcrypt.hash(password, 10)
 
@@ -134,4 +144,3 @@ main()
   .finally(async () => {
     await prisma.$disconnect()
   })
-
