@@ -19,6 +19,11 @@ function serializeUser(user: any) {
 }
 
 authRouter.post('/login', (req, res, next) => {
+  // Normalize email before passing to Passport's LocalStrategy
+  if (typeof req.body?.email === 'string') {
+    req.body.email = req.body.email.trim().toLowerCase();
+  }
+
   passport.authenticate('local', (err: any, user: any, info: any) => {
     if (err) return next(err);
     if (!user) return res.status(400).json({ message: info?.message ?? 'Invalid credentials' });
@@ -31,7 +36,28 @@ authRouter.post('/login', (req, res, next) => {
 
 authRouter.post('/register', async (req, res, next) => {
   try {
-    const { email, password, fullName } = req.body as { email: string; password: string; fullName?: string };
+    const rawEmail = (req.body as any)?.email ?? '';
+    const rawPassword = (req.body as any)?.password ?? '';
+    const rawFullName = (req.body as any)?.fullName ?? '';
+
+    const email = String(rawEmail).trim().toLowerCase();
+    const password = String(rawPassword);
+    const fullName = String(rawFullName).trim();
+
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email and password are required' });
+    }
+
+    // Very simple email pattern check to avoid obviously invalid input.
+    const emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+    if (!emailPattern.test(email)) {
+      return res.status(400).json({ message: 'Invalid email address' });
+    }
+
+    if (password.length < 4) {
+      return res.status(400).json({ message: 'Password must be at least 4 characters' });
+    }
+
     const existing = await prisma.user.findUnique({ where: { email } });
     if (existing) return res.status(400).json({ message: 'Email already registered' });
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -39,7 +65,7 @@ authRouter.post('/register', async (req, res, next) => {
       data: {
         email,
         hashedPassword,
-        fullName: fullName ?? '',
+        fullName,
         role: 'guest',
       },
     });

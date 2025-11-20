@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '../lib/api'
 import { useAuthStore } from '../store/auth'
+import MessageThread from './MessageThread'
 
 function StatusChip({ status }: { status: string }) {
   const colors: Record<string, string> = {
@@ -20,6 +22,7 @@ export default function HostPanel() {
   const { user } = useAuthStore()
   const qc = useQueryClient()
   const isHost = !!user && user.role === 'HOST'
+  const [activeReservationId, setActiveReservationId] = useState<number | null>(null)
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['host-reservations'],
@@ -108,11 +111,24 @@ export default function HostPanel() {
                         취소됨
                       </button>
                     )}
+                    <button
+                      className="ml-2 px-2 py-1 rounded border text-sky-700 border-sky-600 hover:bg-sky-50 focus:outline-none focus:ring-2 focus:ring-sky-400 disabled:opacity-50"
+                      aria-label={`예약 #${r.id} 메시지 보기`}
+                      disabled={mutation.isPending}
+                      onClick={() => setActiveReservationId(activeReservationId === r.id ? null : r.id)}
+                    >
+                      메시지
+                    </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+          {activeReservationId && (
+            <div className="mt-3">
+              <MessageThread reservationId={activeReservationId} />
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -8,6 +8,7 @@ import DemoOverview from '../components/DemoOverview'
 import AdminReservations from '../components/AdminReservations'
 import HostPanel from '../components/HostPanel'
 import CaravanCalendar from '../components/CaravanCalendar'
+import ReviewSection from '../components/ReviewSection'
 
 export default function Dashboard() {
   return (
@@ -18,6 +19,7 @@ export default function Dashboard() {
       <CaravanForm />
       <CaravanList />
       <CaravanCalendar />
+      <ReviewSection />
       <ReservationForm />
       <ReservationList />
       <DemoOverview />

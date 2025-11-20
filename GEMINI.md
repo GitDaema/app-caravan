@@ -304,6 +304,20 @@ PC/모바일 브라우저에서 동작하는 PWA를 중심으로, 도커 기반 
 
 ---
 
+# New endpoints (reviews/messages)
+
+- `GET /api/reviews?caravan_id=...` : list reviews newest-first
+- `POST /api/reviews` : session required, body `{ caravan_id, rating (1~5), comment }`
+- `GET /api/messages?reservation_id=...` : session required, only reservation guest or host
+- `POST /api/messages` : session required, body `{ reservation_id, content }`, receiver resolved from reservation
+
+# Manual checks
+
+- 로그인 후 `/api/auth/me` 200
+- 같은 카라반에 리뷰 작성 → `/api/reviews?caravan_id=...` 로 확인
+- 예약 단위 메시지 전송/조회(`/api/messages?reservation_id=...`) 성공
+- 소셜 로그인 흐름 영향 없음: `/api/auth/google` 302, `/api/auth/me` 200
+
 # ACCEPTANCE CRITERIA (요약)
 
 1. **로컬 실행**
@@ -317,4 +331,3 @@ PC/모바일 브라우저에서 동작하는 PWA를 중심으로, 도커 기반 
    - 기본적인 오프라인 배너, 설치 가능한 manifest, 서비스워커가 정상 동작
 5. **문서 일관성**
    - GEMINI.md, `web/README.md`, `backend/README.md`, `docs/QUICKSTART.md`가 현재 Node + React + 소셜 로그인 구조를 올바르게 설명할 것
-

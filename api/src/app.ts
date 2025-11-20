@@ -11,6 +11,8 @@ import { authRouter } from './routes/auth';
 import { usersRouter } from './routes/users';
 import { caravansRouter } from './routes/caravans';
 import { reservationsRouter } from './routes/reservations';
+import { reviewsRouter } from './routes/reviews';
+import { messagesRouter } from './routes/messages';
 import { devRouter } from './routes/dev';
 
 export function createApp() {
@@ -45,6 +47,8 @@ export function createApp() {
   app.use('/api/users', usersRouter);
   app.use('/api/caravans', caravansRouter);
   app.use('/api/reservations', reservationsRouter);
+  app.use('/api/reviews', reviewsRouter);
+  app.use('/api/messages', messagesRouter);
 
   app.use(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
