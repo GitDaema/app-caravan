@@ -10,7 +10,7 @@ const popularCaravans = [
     location: '강원도 동해',
     price: '₩180,000 / 박',
     image:
-      'https://unsplash.com/photos/vintage-camper-van-parked-by-the-ocean-at-sunset-PvQ4RPTuXOQ',
+      'https://images.unsplash.com/photo-1525183995014-bd94c0750cd5?q=80&w=800&auto=format&fit=crop',
     superHost: true,
   },
   {
@@ -19,7 +19,7 @@ const popularCaravans = [
     location: '제주 애월',
     price: '₩210,000 / 박',
     image:
-      'https://unsplash.com/photos/white-and-green-camper-trailer-sPig58MKN58',
+      'https://images.unsplash.com/photo-1627483262769-04d0a1401487?q=80&w=800&auto=format&fit=crop',
     superHost: true,
   },
   {
@@ -28,7 +28,7 @@ const popularCaravans = [
     location: '강릉 경포대',
     price: '₩150,000 / 박',
     image:
-      'https://unsplash.com/photos/white-rv-qaYwmYOpUDE',
+      'https://images.unsplash.com/photo-1510312305653-8ed496efae75?q=80&w=800&auto=format&fit=crop',
     superHost: false,
   },
   {
@@ -37,7 +37,7 @@ const popularCaravans = [
     location: '부산 기장',
     price: '₩190,000 / 박',
     image:
-      'https://unsplash.com/photos/green-and-orange-rv-parked-near-mountain-M3zDlLrJAsU',
+      'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=800&auto=format&fit=crop',
     superHost: true,
   },
 ]
