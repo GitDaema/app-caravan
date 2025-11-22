@@ -28,7 +28,7 @@ export default function MessageThread({ reservationId }: Props) {
   })
 
   return (
-    <div className="border rounded p-2 bg-gray-50">
+    <div className="border rounded-2xl p-3 bg-white/80 backdrop-blur-sm border-slate-200 shadow-sm">
       <div className="flex items-center justify-between mb-2 text-sm">
         <span className="font-medium">메시지</span>
         <span className="text-gray-500">예약 #{reservationId}</span>
@@ -43,8 +43,10 @@ export default function MessageThread({ reservationId }: Props) {
             return (
               <li
                 key={m.id}
-                className={`text-xs border rounded px-2 py-1 ${
-                  isMine ? 'bg-white border-sky-200' : 'bg-gray-100 border-gray-200'
+                className={`text-xs border rounded-2xl px-3 py-2 ${
+                  isMine
+                    ? 'bg-[#0F766E]/5 border-[#0F766E]/40 text-slate-900'
+                    : 'bg-slate-50 border-slate-200 text-slate-800'
                 }`}
               >
                 <div className="flex justify-between items-center gap-2">
@@ -61,7 +63,7 @@ export default function MessageThread({ reservationId }: Props) {
       )}
 
       <form
-        className="flex gap-2"
+        className="flex gap-2 pt-1"
         onSubmit={(e) => {
           e.preventDefault()
           if (!content.trim()) {
@@ -72,14 +74,14 @@ export default function MessageThread({ reservationId }: Props) {
         }}
       >
         <input
-          className="flex-1 border rounded px-2 py-1 text-sm"
+          className="flex-1 border border-slate-200 rounded-2xl px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0F766E] focus:border-[#0F766E] transition-colors"
           placeholder="메시지 입력"
           value={content}
           onChange={(e) => setContent(e.target.value)}
         />
         <button
           type="submit"
-          className="px-3 py-1 rounded border text-sky-700 border-sky-600 hover:bg-sky-50 disabled:opacity-50"
+          className="px-3 py-2 rounded-2xl border text-xs font-medium text-[#0F766E] border-[#0F766E] bg-white hover:bg-teal-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm hover:shadow-md"
           disabled={mutation.isPending}
         >
           전송

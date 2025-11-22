@@ -14,7 +14,7 @@ export default function ProfileActions() {
   const isGuest = user.role === 'GUEST'
 
   return (
-    <div className="bg-white rounded shadow p-4">
+    <div className="bg-white rounded-2xl shadow-md ring-1 ring-gray-900/5 p-4 md:p-5">
       <h3 className="font-semibold mb-3">프로필 / 데모 액션</h3>
       <div className="text-sm mb-2">
         ID: {user.id} / {user.email} / role: {user.role}
@@ -23,7 +23,7 @@ export default function ProfileActions() {
         {isAdmin && (
           <>
             <button
-              className="bg-indigo-600 text-white px-3 py-2 rounded text-sm hover:bg-indigo-700"
+              className="bg-[#0F766E] text-white px-3 py-2 rounded-2xl text-xs sm:text-sm font-medium hover:bg-[#115e57] shadow-sm hover:shadow-md transition-colors"
               onClick={async () => {
                 setMsg(null)
                 try {
@@ -39,7 +39,7 @@ export default function ProfileActions() {
               잔액 +100 (세밀 조정)
             </button>
             <button
-              className="bg-indigo-500 text-white px-3 py-2 rounded text-sm hover:bg-indigo-600"
+              className="bg-[#0F766E] text-white px-3 py-2 rounded-2xl text-xs sm:text-sm font-medium hover:bg-[#115e57] shadow-sm hover:shadow-md transition-colors"
               onClick={async () => {
                 setMsg(null)
                 try {
@@ -55,7 +55,7 @@ export default function ProfileActions() {
               잔액 +100,000원 (관리자 테스트)
             </button>
             <button
-              className="bg-gray-800 text-white px-3 py-2 rounded text-sm hover:bg-gray-900"
+              className="bg-slate-900 text-white px-3 py-2 rounded-2xl text-xs sm:text-sm font-medium hover:bg-slate-950 shadow-sm hover:shadow-md transition-colors"
               onClick={async () => {
                 setMsg(null)
                 try {
@@ -77,7 +77,7 @@ export default function ProfileActions() {
         {isGuest && (
           <>
             <button
-              className="bg-sky-600 text-white px-3 py-2 rounded text-sm hover:bg-sky-700"
+              className="bg-[#0F766E] text-white px-3 py-2 rounded-2xl text-xs sm:text-sm font-medium hover:bg-[#115e57] shadow-sm hover:shadow-md transition-colors"
               onClick={async () => {
                 setMsg(null)
                 try {
@@ -93,7 +93,7 @@ export default function ProfileActions() {
               잔액 +100,000원 (테스트 충전)
             </button>
             <button
-              className="bg-gray-200 text-gray-800 px-3 py-2 rounded text-sm hover:bg-gray-300"
+              className="bg-slate-100 text-slate-800 px-3 py-2 rounded-2xl text-xs sm:text-sm font-medium hover:bg-slate-200 transition-colors"
               onClick={async () => {
                 setMsg(null)
                 try {
@@ -113,7 +113,7 @@ export default function ProfileActions() {
         )}
 
         <button
-          className="bg-red-50 text-red-700 px-3 py-2 rounded text-sm border border-red-300 hover:bg-red-100"
+          className="bg-rose-50 text-rose-700 px-3 py-2 rounded-2xl text-xs sm:text-sm font-medium border border-rose-200 hover:bg-rose-100 transition-colors"
           onClick={async () => {
             if (!window.confirm('모든 사용자에 대해 상태가 cancelled 인 예약을 삭제합니다. 계속할까요?')) return
             setMsg(null)

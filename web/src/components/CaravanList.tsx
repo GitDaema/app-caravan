@@ -28,29 +28,29 @@ export default function CaravanList() {
   const caravans = data || []
 
   return (
-    <div className="bg-white rounded shadow p-4">
+    <div className="bg-white rounded-2xl shadow-md ring-1 ring-gray-900/5 p-4 md:p-5">
       <h3 className="font-semibold mb-3">카라반 목록</h3>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
         <input
-          className="border p-2 rounded text-sm"
+          className="border border-slate-200 bg-slate-50 rounded-2xl px-3 py-2 text-xs md:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0F766E] focus:border-[#0F766E] transition-colors"
           placeholder="위치"
           value={filters.location}
           onChange={(e) => setFilters({ ...filters, location: e.target.value })}
         />
         <input
-          className="border p-2 rounded text-sm"
+          className="border border-slate-200 bg-slate-50 rounded-2xl px-3 py-2 text-xs md:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0F766E] focus:border-[#0F766E] transition-colors"
           placeholder="최소 가격"
           value={filters.min_price}
           onChange={(e) => setFilters({ ...filters, min_price: e.target.value })}
         />
         <input
-          className="border p-2 rounded text-sm"
+          className="border border-slate-200 bg-slate-50 rounded-2xl px-3 py-2 text-xs md:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0F766E] focus:border-[#0F766E] transition-colors"
           placeholder="최대 가격"
           value={filters.max_price}
           onChange={(e) => setFilters({ ...filters, max_price: e.target.value })}
         />
         <input
-          className="border p-2 rounded text-sm"
+          className="border border-slate-200 bg-slate-50 rounded-2xl px-3 py-2 text-xs md:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0F766E] focus:border-[#0F766E] transition-colors"
           placeholder="최소 인원"
           value={filters.min_capacity}
           onChange={(e) => setFilters({ ...filters, min_capacity: e.target.value })}
@@ -65,8 +65,10 @@ export default function CaravanList() {
           {caravans.map((c: any) => (
             <li
               key={c.id}
-              className={`border rounded p-2 flex items-center gap-3 justify-between text-sm ${
-                selectedCaravanId === c.id ? 'ring-2 ring-sky-500' : ''
+              className={`border rounded-2xl p-3 flex items-center gap-3 justify-between text-sm transition-colors ${
+                selectedCaravanId === c.id
+                  ? 'border-[#0F766E] bg-teal-50/60'
+                  : 'border-slate-200 bg-white hover:bg-slate-50'
               }`}
             >
               <div className="flex gap-3 items-center">
@@ -80,7 +82,7 @@ export default function CaravanList() {
               </div>
               <div className="flex gap-2">
                 <button
-                  className="px-2 py-1 rounded border text-sky-700 border-sky-600 hover:bg-sky-50"
+                  className="px-2.5 py-1.5 rounded-full border text-sm font-medium text-[#0F766E] border-[#0F766E] bg-white hover:bg-teal-50 transition-colors"
                   onClick={() => setSelectedCaravanId(c.id)}
                   aria-label={`이 카라반 예약 선택: ${c.name}`}
                 >
@@ -94,4 +96,3 @@ export default function CaravanList() {
     </div>
   )
 }
-

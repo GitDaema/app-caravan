@@ -6,13 +6,13 @@ import MessageThread from './MessageThread'
 
 function StatusChip({ status }: { status: string }) {
   const colors: Record<string, string> = {
-    confirmed: 'bg-green-100 text-green-800 border-green-300',
-    pending: 'bg-amber-100 text-amber-800 border-amber-300',
-    cancelled: 'bg-gray-100 text-gray-700 border-gray-300',
+    confirmed: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+    pending: 'bg-amber-50 text-amber-700 border-amber-200',
+    cancelled: 'bg-slate-50 text-slate-700 border-slate-200',
   }
-  const cls = colors[status] || 'bg-gray-100 text-gray-700 border-gray-300'
+  const cls = colors[status] || 'bg-slate-50 text-slate-700 border-slate-200'
   return (
-    <span className={`px-2 py-0.5 rounded border text-xs ${cls}`} aria-label={`status ${status}`}>
+    <span className={`px-2 py-0.5 rounded-full border text-xs font-medium ${cls}`} aria-label={`status ${status}`}>
       {status}
     </span>
   )
@@ -46,7 +46,7 @@ export default function HostPanel() {
   // Only show for hosts
   if (!isHost) return null
   return (
-    <div className="bg-white rounded shadow p-4">
+    <div className="bg-white rounded-2xl shadow-md ring-1 ring-gray-900/5 p-4 md:p-5">
       <h3 className="font-semibold mb-3">호스트 예약 관리</h3>
       {isLoading && <div>불러오는 중...</div>}
       {error && <div className="text-red-600 text-sm">예약 목록을 불러오지 못했습니다.</div>}
@@ -54,32 +54,32 @@ export default function HostPanel() {
         <div className="overflow-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left border-b">
-                <th className="py-1 pr-2">ID</th>
-                <th className="py-1 pr-2">Caravan</th>
-                <th className="py-1 pr-2">Dates</th>
-                <th className="py-1 pr-2">Price</th>
-                <th className="py-1 pr-2">Status</th>
-                <th className="py-1 pr-2">Actions</th>
+              <tr className="text-left border-b border-slate-100 text-xs font-medium uppercase tracking-wide text-slate-500">
+                <th className="py-2 pr-2">ID</th>
+                <th className="py-2 pr-2">Caravan</th>
+                <th className="py-2 pr-2">Dates</th>
+                <th className="py-2 pr-2">Price</th>
+                <th className="py-2 pr-2">Status</th>
+                <th className="py-2 pr-2">Actions</th>
               </tr>
             </thead>
             <tbody>
               {(data || []).map((r: any) => (
-                <tr key={r.id} className="border-b hover:bg-gray-50">
-                  <td className="py-1 pr-2">#{r.id}</td>
-                  <td className="py-1 pr-2">{r.caravan_id}</td>
-                  <td className="py-1 pr-2">
+                <tr key={r.id} className="border-b border-slate-100 hover:bg-slate-50">
+                  <td className="py-2 pr-2 whitespace-nowrap text-slate-700">#{r.id}</td>
+                  <td className="py-2 pr-2 whitespace-nowrap text-slate-700">{r.caravan_id}</td>
+                  <td className="py-2 pr-2 whitespace-nowrap text-slate-700">
                     {r.start_date} ~ {r.end_date}
                   </td>
-                  <td className="py-1 pr-2">{r.price}</td>
-                  <td className="py-1 pr-2">
+                  <td className="py-2 pr-2 whitespace-nowrap text-slate-700">{r.price}</td>
+                  <td className="py-2 pr-2">
                     <StatusChip status={r.status} />
                   </td>
                   <td className="py-1 pr-2">
                     {/* 단일 액션 버튼: pending -> 확인, confirmed -> 취소, cancelled -> 비활성 */}
                     {r.status === 'pending' && (
                       <button
-                        className="px-2 py-1 rounded border text-green-700 border-green-600 hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-green-400 disabled:opacity-50"
+                        className="px-2.5 py-1.5 rounded-full border text-xs font-medium text-emerald-700 border-emerald-300 hover:bg-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-300 disabled:opacity-50"
                         aria-label={`예약 #${r.id} 확인`}
                         disabled={mutation.isPending}
                         onClick={() =>
@@ -91,7 +91,7 @@ export default function HostPanel() {
                     )}
                     {r.status === 'confirmed' && (
                       <button
-                        className="px-2 py-1 rounded border text-gray-700 border-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-400 disabled:opacity-50"
+                        className="px-2.5 py-1.5 rounded-full border text-xs font-medium text-slate-700 border-slate-300 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-300 disabled:opacity-50"
                         aria-label={`예약 #${r.id} 취소`}
                         disabled={mutation.isPending}
                         onClick={() => {
@@ -104,7 +104,7 @@ export default function HostPanel() {
                     )}
                     {r.status === 'cancelled' && (
                       <button
-                        className="px-2 py-1 rounded border text-gray-400 border-gray-300 bg-gray-50 cursor-not-allowed"
+                        className="px-2.5 py-1.5 rounded-full border text-xs font-medium text-slate-400 border-slate-200 bg-slate-50 cursor-not-allowed"
                         aria-label={`예약 #${r.id} 취소됨`}
                         disabled
                       >
@@ -112,7 +112,7 @@ export default function HostPanel() {
                       </button>
                     )}
                     <button
-                      className="ml-2 px-2 py-1 rounded border text-sky-700 border-sky-600 hover:bg-sky-50 focus:outline-none focus:ring-2 focus:ring-sky-400 disabled:opacity-50"
+                      className="ml-2 px-2.5 py-1.5 rounded-full border text-xs font-medium text-[#0F766E] border-[#0F766E] hover:bg-teal-50 focus:outline-none focus:ring-2 focus:ring-[#0F766E]/30 disabled:opacity-50"
                       aria-label={`예약 #${r.id} 메시지 보기`}
                       disabled={mutation.isPending}
                       onClick={() => setActiveReservationId(activeReservationId === r.id ? null : r.id)}

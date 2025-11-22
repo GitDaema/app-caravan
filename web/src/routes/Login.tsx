@@ -78,7 +78,7 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-8 bg-gradient-to-br from-sky-100 via-white to-indigo-100">
+    <div className="min-h-screen flex items-center justify-center px-4 py-10 bg-gradient-to-br from-[#F8FAFC] via-white to-slate-100">
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
@@ -88,11 +88,13 @@ export default function Login() {
         <Card>
           <h2 className="text-2xl font-semibold mb-6 text-center">로그인</h2>
 
-          <div className="flex gap-2 mb-4">
+          <div className="flex gap-2 mb-6 bg-slate-50 p-1 rounded-full">
             <button
               type="button"
-              className={`flex-1 px-3 py-2 rounded border text-sm ${
-                mode === 'login' ? 'border-sky-600 text-sky-700 bg-sky-50' : 'border-gray-300 text-gray-700'
+              className={`flex-1 px-3 py-2 rounded-full text-xs sm:text-sm font-medium transition-colors ${
+                mode === 'login'
+                  ? 'bg-white text-[#0F766E] shadow-sm ring-1 ring-[#0F766E]/20'
+                  : 'text-slate-500 hover:text-slate-700'
               }`}
               onClick={() => setMode('login')}
             >
@@ -100,8 +102,10 @@ export default function Login() {
             </button>
             <button
               type="button"
-              className={`flex-1 px-3 py-2 rounded border text-sm ${
-                mode === 'register' ? 'border-sky-600 text-sky-700 bg-sky-50' : 'border-gray-300 text-gray-700'
+              className={`flex-1 px-3 py-2 rounded-full text-xs sm:text-sm font-medium transition-colors ${
+                mode === 'register'
+                  ? 'bg-white text-[#0F766E] shadow-sm ring-1 ring-[#0F766E]/20'
+                  : 'text-slate-500 hover:text-slate-700'
               }`}
               onClick={() => setMode('register')}
             >
@@ -113,6 +117,7 @@ export default function Login() {
             <Button
               type="button"
               variant="primary"
+              className="w-full justify-center"
               onClick={() => {
                 window.location.href = `${API_BASE}/auth/google`
               }}
@@ -122,6 +127,7 @@ export default function Login() {
             <Button
               type="button"
               variant="secondary"
+              className="w-full justify-center"
               onClick={() => {
                 window.location.href = `${API_BASE}/auth/naver`
               }}
@@ -131,6 +137,7 @@ export default function Login() {
             <Button
               type="button"
               variant="ghost"
+              className="w-full justify-center"
               onClick={() => {
                 window.location.href = `${API_BASE}/auth/kakao`
               }}
@@ -140,7 +147,7 @@ export default function Login() {
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div className="text-sm text-gray-500 mb-1">
+            <div className="text-xs sm:text-sm text-slate-500 mb-2">
               {mode === 'login' ? '이메일과 비밀번호로 로그인' : '이메일로 새 계정 만들기'}
             </div>
             <div>

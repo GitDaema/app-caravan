@@ -9,11 +9,11 @@ export default function App({ children }: { children?: ReactNode }) {
   const location = useLocation()
 
   return (
-    <div className="min-h-full flex flex-col bg-gradient-to-b from-sky-50 via-white to-blue-50">
+    <div className="min-h-full flex flex-col bg-gradient-to-b from-[#F8FAFC] via-white to-slate-100">
       <Header />
       <PwaInstallBanner />
       <OfflineBanner />
-      <main className="container mx-auto p-4 flex-1">
+      <main className="container mx-auto max-w-6xl px-4 py-6 flex-1">
         <AnimatePresence mode="wait">
           <motion.div
             key={location.pathname}

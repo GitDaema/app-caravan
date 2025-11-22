@@ -10,7 +10,7 @@ export default function BalanceCard() {
   if (!data) return null
 
   return (
-    <div className="bg-white rounded shadow p-4">
+    <div className="bg-white rounded-2xl shadow-md ring-1 ring-gray-900/5 p-4 md:p-5">
       <h3 className="font-semibold mb-2">현재 잔액</h3>
       <div className="text-2xl">
         {Number(data.balance).toLocaleString('ko-KR')}원
@@ -18,4 +18,3 @@ export default function BalanceCard() {
     </div>
   )
 }
-

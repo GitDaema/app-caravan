@@ -39,7 +39,7 @@ export default function CaravanCalendar() {
 
   if (!selectedCaravanId) {
     return (
-      <div className="bg-white rounded shadow p-4" aria-live="polite">
+      <div className="bg-white rounded-2xl shadow-md ring-1 ring-gray-900/5 p-4 md:p-5" aria-live="polite">
         <h3 className="font-semibold mb-3">예약 캘린더</h3>
         <div className="text-sm text-gray-600">
           카라반을 선택하면 해당 카라반의 예약 상황이 캘린더로 표시됩니다.
@@ -49,7 +49,7 @@ export default function CaravanCalendar() {
   }
 
   return (
-    <div className="bg-white rounded shadow p-4">
+    <div className="bg-white rounded-2xl shadow-md ring-1 ring-gray-900/5 p-4 md:p-5">
       <h3 className="font-semibold mb-3">예약 캘린더 (Caravan #{selectedCaravanId})</h3>
       {isLoading && <div>불러오는 중...</div>}
       {error && <div className="text-red-600 text-sm">캘린더를 불러오지 못했습니다.</div>}
@@ -70,8 +70,10 @@ export default function CaravanCalendar() {
               return (
                 <div
                   key={iso}
-                  className={`aspect-square rounded border flex items-center justify-center text-sm select-none ${
-                    isReserved ? 'bg-red-100 text-red-800 border-red-300' : 'bg-white'
+                  className={`aspect-square rounded-xl border flex items-center justify-center text-sm select-none ${
+                    isReserved
+                      ? 'bg-[#0F766E]/10 text-[#0F766E] border-[#0F766E]/40'
+                      : 'bg-white border-slate-200 hover:bg-slate-50'
                   }`}
                   aria-label={`${iso}${isReserved ? ' 예약됨' : ''}`}
                 >
@@ -85,4 +87,3 @@ export default function CaravanCalendar() {
     </div>
   )
 }
-

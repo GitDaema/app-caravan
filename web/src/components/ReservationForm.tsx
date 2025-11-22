@@ -39,7 +39,7 @@ export default function ReservationForm() {
   })
 
   return (
-    <div className="bg-white rounded shadow p-4">
+    <div className="bg-white rounded-2xl shadow-md ring-1 ring-gray-900/5 p-4 md:p-5">
       <h3 className="font-semibold mb-3">예약 생성</h3>
       <div className="grid gap-2">
         <div className="text-sm text-gray-700">
@@ -55,7 +55,7 @@ export default function ReservationForm() {
         </label>
         <input
           id="startDate"
-          className="border p-2 rounded"
+          className="border border-slate-200 bg-slate-50 rounded-2xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0F766E] focus:border-[#0F766E] transition-colors"
           type="date"
           value={start}
           onChange={e => setStart(e.target.value)}
@@ -66,14 +66,14 @@ export default function ReservationForm() {
         </label>
         <input
           id="endDate"
-          className="border p-2 rounded"
+          className="border border-slate-200 bg-slate-50 rounded-2xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0F766E] focus:border-[#0F766E] transition-colors"
           type="date"
           value={end}
           onChange={e => setEnd(e.target.value)}
         />
 
         <button
-          className="bg-sky-600 text-white px-3 py-2 rounded disabled:opacity-60 disabled:cursor-not-allowed"
+          className="bg-[#0F766E] text-white px-3 py-2 rounded-2xl text-sm font-medium disabled:opacity-60 disabled:cursor-not-allowed hover:bg-[#115e57] transition-colors shadow-sm hover:shadow-md"
           onClick={() => {
             if (!canSubmit || isOffline) return
             mutation.mutate()
@@ -98,4 +98,3 @@ export default function ReservationForm() {
     </div>
   )
 }
-
