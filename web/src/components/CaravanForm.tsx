@@ -5,7 +5,7 @@ import { useAuthStore } from '../store/auth'
 import { CarFront } from 'lucide-react'
 
 const IMAGE_PLACEHOLDER =
-  'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=800&auto=format&fit=crop'
+  'https://images.unsplash.com/photo-1527786356703-4b100091cd2c?q=80&w=1000&auto=format&fit=crop'
 
 export default function CaravanForm() {
   const { user } = useAuthStore()
@@ -67,7 +67,7 @@ export default function CaravanForm() {
           <input
             type="text"
             className="w-full h-12 border border-slate-200 bg-slate-50 rounded-xl px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#0F766E] focus:border-[#0F766E] transition-colors"
-            placeholder="예: https://images.unsplash.com/..."
+            placeholder="예: https://images.unsplash.com/photo-1527786356703-4b100091cd2c?q=80&w=1000&auto=format&fit=crop"
             value={form.imageUrl}
             onChange={(e) => {
               setForm({ ...form, imageUrl: e.target.value })
@@ -135,4 +135,3 @@ export default function CaravanForm() {
     </div>
   )
 }
-

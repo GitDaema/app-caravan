@@ -10,10 +10,10 @@ type ReservationFormProps = {
 }
 
 const fallbackImages = [
-  'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=800&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1523419409543-3e4f83b9b8f2?q=80&w=800&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1500534314211-0a24cd03f2c0?q=80&w=800&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1518684079-3c830dcef090?q=80&w=800&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1527786356703-4b100091cd2c?q=80&w=1000&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1527786356703-4b100091cd2c?q=80&w=1000&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1527786356703-4b100091cd2c?q=80&w=1000&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1527786356703-4b100091cd2c?q=80&w=1000&auto=format&fit=crop',
 ]
 
 export default function ReservationForm({ selectedCaravan, onSelectCaravanRequest }: ReservationFormProps) {

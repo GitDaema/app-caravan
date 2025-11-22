@@ -10,7 +10,7 @@ type CaravanListProps = {
 }
 
 const FALLBACK_IMAGE =
-  'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=800&auto=format&fit=crop'
+  'https://images.unsplash.com/photo-1527786356703-4b100091cd2c?q=80&w=1000&auto=format&fit=crop'
 
 export default function CaravanList({ onBookClick }: CaravanListProps) {
   const { user } = useAuthStore()
@@ -133,4 +133,3 @@ export default function CaravanList({ onBookClick }: CaravanListProps) {
     </div>
   )
 }
-
