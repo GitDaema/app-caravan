@@ -136,7 +136,7 @@ Gemini CLI 작업이 중단되었어. 이어서 부탁할게. `@GEMINI.md`의 �
 # Continuation Prompt (개발 이어가기)
 
 ## 역할
-GEMINI.md와 GOAL.md의 지침을 준수하는 풀스택 개발자. FastAPI 백엔드와 Vite+React(PWA) 프론트엔드로 “카라반 공유 플랫폼”의 MVP를 단계적으로 완성하고, 서비스/리포지토리/서비스 계층 아키텍처를 유지한다.
+GEMINI.md와 GOAL.md의 지침을 준수하는 풀스택 개발자. FastAPI 백엔드와 Vite+React(PWA) 프론트엔드로 "카라반 공유 플랫폼"의 MVP를 단계적으로 완성하고, 서비스/리포지토리/서비스 계층 아키텍처를 유지한다.
 
 ## 목표
 사용자/로그인/캐러밴/예약의 기본 흐름이 로컬에서 동작하고, UI 기반 테스트가 자연스럽게 가능하도록 개발 생산성을 높인다.
@@ -172,7 +172,7 @@ GEMINI.md와 GOAL.md의 지침을 준수하는 풀스택 개발자. FastAPI 백�
 
 ### 사용자/권한 관리
 * **HOST 승격 API(관리자 전용) 추가:** `POST /users/{id}/role` 또는 전용 topup/promote 엔드포인트.
-* **UI:** 로그인 후 프로필 영역에 “호스트 전환/잔액충전(개발용)” 버튼 추가.
+* **UI:** 로그인 후 프로필 영역에 "호스트 전환/잔액충전(개발용)" 버튼 추가.
 
 ### 캐러밴 UX 보강
 * **UI:** 캐러밴 등록/내 캐러밴 목록 화면 추가.
@@ -456,7 +456,7 @@ GEMINI.md와 GOAL.md의 지침을 준수하는 풀스택 개발자. FastAPI 백�
 #### AI 개발 프롬프트
 
 # 역할
-당신은 FastAPI 백엔드와 Vite+React+TS PWA 프론트엔드를 사용하는 CaravanShare(app-caravan) 프로젝트의 Day 4 페어 프로그래밍 어시스턴트입니다. 목표는 이 코드베이스를 “설치 가능한 PWA + Capacitor 래핑 준비” 상태로 끌어올리는 것입니다.
+당신은 FastAPI 백엔드와 Vite+React+TS PWA 프론트엔드를 사용하는 CaravanShare(app-caravan) 프로젝트의 Day 4 페어 프로그래밍 어시스턴트입니다. 목표는 이 코드베이스를 "설치 가능한 PWA + Capacitor 래핑 준비" 상태로 끌어올리는 것입니다.
 
 # 전체 컨텍스트 요약
 - 전체 개요/요구사항: 루트 `GOAL.md`, `GEMINI.md` 참고
@@ -476,20 +476,20 @@ GEMINI.md와 GOAL.md의 지침을 준수하는 풀스택 개발자. FastAPI 백�
     - 프론트엔드: `cd web && npm install && npm run dev`, `npm run test:run`
     - 빠른 안내: `docs/QUICKSTART.md`, `web/README.md`, `backend/README.md`
 
-이 Day 4 작업에서, 기존 도메인/인증/예약 로직은 “되도록 건드리지 않고”, PWA 품질과 모바일 래핑 준비에 집중합니다.
+이 Day 4 작업에서, 기존 도메인/인증/예약 로직은 "되도록 건드리지 않고", PWA 품질과 모바일 래핑 준비에 집중합니다.
 
 # Day 4 핵심 목표
 1. **PWA 매니페스트/아이콘/메타데이터 정비**
-   - 브라우저에서 “설치 가능(Installable)” 판정을 확실히 받도록 PWA 관련 설정을 보강합니다.
+   - 브라우저에서 "설치 가능(Installable)" 판정을 확실히 받도록 PWA 관련 설정을 보강합니다.
    - 다양한 해상도 아이콘을 준비하고, 이름/short_name/start_url/display/theme_color 등 메타데이터를 정리합니다.
 
 2. **서비스워커/캐싱 전략 개선**
-   - `vite-plugin-pwa` 설정을 활용해, 최소한 “앱 쉘(라우팅/기본 UI)”은 오프라인에서도 열리도록 precache 전략을 설계합니다.
+   - `vite-plugin-pwa` 설정을 활용해, 최소한 "앱 쉘(라우팅/기본 UI)"은 오프라인에서도 열리도록 precache 전략을 설계합니다.
    - API 호출은 완전 오프라인 지원이 아니라, 네트워크 우선(혹은 적절한 캐시) 전략으로 설계하되, 실패 시 UI에서 명확한 피드백(토스트/메시지)을 제공하도록 합니다.
 
 3. **설치/업데이트 UX 개선**
-   - PWA 설치 배너/힌트를 위한 간단한 컴포넌트 또는 훅을 추가합니다 (예: “앱 설치하기” 안내 바).
-   - 서비스워커 업데이트 시 새 버전이 다운로드되면, “새 버전 사용하기” 정도의 안내 혹은 자동 reload 전략을 마련합니다.
+   - PWA 설치 배너/힌트를 위한 간단한 컴포넌트 또는 훅을 추가합니다 (예: "앱 설치하기" 안내 바).
+   - 서비스워커 업데이트 시 새 버전이 다운로드되면, "새 버전 사용하기" 정도의 안내 혹은 자동 reload 전략을 마련합니다.
 
 4. **Capacitor 기반 모바일 빌드 준비**
    - 이 리포를 모노레포/루트 기준으로, Capacitor v6 구성을 문서와 스크립트 차원에서 준비합니다.
@@ -512,8 +512,8 @@ GEMINI.md와 GOAL.md의 지침을 준수하는 풀스택 개발자. FastAPI 백�
   - `manifest.icons` 가 현재 비어있다면, 일반적인 PWA 아이콘 세트를 추가하세요.
     - 예: 192x192, 512x512 PNG 경로 (예: `/icons/icon-192.png`, `/icons/icon-512.png` 등)
   - 필요하다면 `/public/icons/` 디렉터리를 만들고 아이콘 파일 경로를 전제로 한 구성을 넣되,
-    - 실제 바이너리 이미지는 생성하지 않고, README에 “아이콘 파일은 디자인 완료 후 이 경로에 배치” 정도로 명시해도 괜찮습니다.
-- `name`, `short_name`, `start_url`, `display`, `background_color`, `theme_color` 가 GOAL/GEMINI의 브랜드(“CaravanShare”)와 일관되도록 정리합니다.
+    - 실제 바이너리 이미지는 생성하지 않고, README에 "아이콘 파일은 디자인 완료 후 이 경로에 배치" 정도로 명시해도 괜찮습니다.
+- `name`, `short_name`, `start_url`, `display`, `background_color`, `theme_color` 가 GOAL/GEMINI의 브랜드("CaravanShare")와 일관되도록 정리합니다.
 
 ## 2) 서비스워커/캐싱 전략 설계
 - `VitePWA` 옵션에 다음을 고려해 설정합니다. (필요시 `registerType`, `workbox` 등 사용)
@@ -521,15 +521,15 @@ GEMINI.md와 GOAL.md의 지침을 준수하는 풀스택 개발자. FastAPI 백�
   - API 호출(`/api/`)은 네트워크 우선 + fallback 정도로 처리하거나, 명시적으로 캐시 대상에서 제외.
 - 오프라인 상태에서:
   - 랜딩(`/`)과 기본 UI는 열리지만,
-  - API가 안 될 때는 예약/목록 등의 버튼에서 “오프라인 상태입니다. 네트워크 연결 후 다시 시도해주세요.” 같은 메시지가 보이도록 합니다.
+  - API가 안 될 때는 예약/목록 등의 버튼에서 "오프라인 상태입니다. 네트워크 연결 후 다시 시도해주세요." 같은 메시지가 보이도록 합니다.
 - 필요하면 React Query의 글로벌 에러 핸들링 또는 간단한 에러 토스트 컴포넌트로 통일된 UX를 제공하도록 권장합니다.
 
 ## 3) 설치/업데이트 UX
 - 예시 구현 방향:
   - `web/src/hooks/usePwaInstallPrompt.ts` (또는 유사 이름) 훅을 만들어 `beforeinstallprompt` 이벤트를 받아 상태를 저장.
-  - `Header` 또는 `Dashboard` 상단에 “앱 설치하기” 버튼/배너를 보여주고, 클릭 시 `prompt()` 호출.
+  - `Header` 또는 `Dashboard` 상단에 "앱 설치하기" 버튼/배너를 보여주고, 클릭 시 `prompt()` 호출.
 - 서비스워커 업데이트:
-  - `web/src/pwa.ts` 에서 `registerSW` 콜백을 활용해 새 버전이 준비되면 `window.location.reload()` 또는 “새 버전 사용하기” 버튼을 보여주는 패턴 중 하나를 채택.
+  - `web/src/pwa.ts` 에서 `registerSW` 콜백을 활용해 새 버전이 준비되면 `window.location.reload()` 또는 "새 버전 사용하기" 버튼을 보여주는 패턴 중 하나를 채택.
 
 ## 4) Capacitor 스캐폴딩 (설정/문서 중심)
 - 코드베이스 구조를 고려해, Capacitor 프로젝트 루트를 어떻게 둘지 제안하고 설정 파일을 추가합니다.
@@ -547,17 +547,17 @@ GEMINI.md와 GOAL.md의 지침을 준수하는 풀스택 개발자. FastAPI 백�
 
 ## 5) 문서 업데이트
 - `web/README.md`:
-  - “PWA & 설치 방법” 섹션 추가 (지원 범위: 앱 쉘 오프라인 지원, 예약/API는 온라인 필요 등).
-  - “모바일 빌드(Capacitor)” 섹션에 기본 명령/흐름 정리.
+  - "PWA & 설치 방법" 섹션 추가 (지원 범위: 앱 쉘 오프라인 지원, 예약/API는 온라인 필요 등).
+  - "모바일 빌드(Capacitor)" 섹션에 기본 명령/흐름 정리.
 - `docs/QUICKSTART.md`:
-  - 기존 백엔드/웹 실행 안내 아래에 “PWA 설치”와 “모바일 빌드 준비” 짧은 섹션 추가.
+  - 기존 백엔드/웹 실행 안내 아래에 "PWA 설치"와 "모바일 빌드 준비" 짧은 섹션 추가.
 - 필요하다면 `backend/README.md` 에도 PWA/Capacitor와 연동되는 환경 변수나 CORS 관련 참고를 한 줄 정도 첨언.
 
 # 제약 조건
 - `GOAL.md` 의 설계 원칙(SRP, OCP, DIP, 예외 처리, 테스트 가능 구조)을 가능한 한 준수하세요.
 - 이미 구현된 인증/예약/권한 로직을 불필하게 변경하지 마세요.
 - 기존 테스트(`pytest`, `npm run test:run`)가 깨지면, 원인을 분석하고 **우선 기존 동작을 보존하는 방향**으로 수정하세요.
-- 새로운 기능/설정은 “Day 4 작업”임을 `DEVELOPMENT_LOG.md` 에 요약 추가하는 것을 권장합니다 (가능하다면).
+- 새로운 기능/설정은 "Day 4 작업"임을 `DEVELOPMENT_LOG.md` 에 요약 추가하는 것을 권장합니다 (가능하다면).
 
 # 산출물(예상 파일 목록)
 - PWA/프론트엔드
@@ -596,8 +596,8 @@ GEMINI.md와 GOAL.md의 지침을 준수하는 풀스택 개발자. FastAPI 백�
 
 - **설치/오프라인 UX**
   - `web/src/hooks/usePwaInstallPrompt.ts`: `beforeinstallprompt` 이벤트를 캡처해 상태로 보존하고, `prompt()`를 노출하는 커스텀 훅 추가.
-  - `web/src/components/PwaInstallBanner.tsx`: 설치 가능 시 “앱 설치하기” 배너를 보여주고 클릭 시 설치 프롬프트 실행.
-  - `web/src/components/OfflineBanner.tsx`: `online`/`offline` 이벤트를 구독해 오프라인 상태일 때 상단 배너로 “오프라인 상태입니다. 네트워크 연결 후 다시 시도해주세요.” 메시지 표시.
+  - `web/src/components/PwaInstallBanner.tsx`: 설치 가능 시 "앱 설치하기" 배너를 보여주고 클릭 시 설치 프롬프트 실행.
+  - `web/src/components/OfflineBanner.tsx`: `online`/`offline` 이벤트를 구독해 오프라인 상태일 때 상단 배너로 "오프라인 상태입니다. 네트워크 연결 후 다시 시도해주세요." 메시지 표시.
   - `web/src/App.tsx`: 공통 레이아웃에 PWA 설치 배너와 오프라인 배너를 삽입해 대시보드 뷰에서 항상 노출.
   - `web/src/lib/api.ts`: fetch 공통 래퍼(`request`)를 추가해 네트워크 오류나 오프라인 상태일 때 명시적인 한글 오류 메시지로 변환.
 
@@ -654,7 +654,7 @@ GEMINI.md와 GOAL.md의 지침을 준수하는 풀스택 개발자. FastAPI 백�
 
 **역할** : 당신은 FastAPI 백엔드와 Vite+React+TS PWA 프론트엔드를 사용하는 **CaravanShare(app-caravan)** 프로젝트의 Day 5 페어 프로그래밍 어시스턴트입니다.
 
-**오늘 목표**: Day 1~4에서 구축된 구조를 유지한 채, 이 코드베이스를 **“모바일 실전 적용 + 가벼운 점검”** 단계까지 끌어올리는 것입니다.
+**오늘 목표**: Day 1~4에서 구축된 구조를 유지한 채, 이 코드베이스를 **"모바일 실전 적용 + 가벼운 점검"** 단계까지 끌어올리는 것입니다.
 
 ---
 
@@ -678,7 +678,7 @@ GEMINI.md와 GOAL.md의 지침을 준수하는 풀스택 개발자. FastAPI 백�
 1.  **모바일 네트워크 경로 안정화**: 모바일 기기/에뮬레이터에서 API 연동이 안정적으로 동작하도록 **`VITE_API_BASE_URL`**·**CORS**·**Capacitor `server.url`** 경로를 정리하고 검증한다.
 2.  **모바일 레이아웃 스모크 테스트**: `/login`, `/app` 핵심 플로우(로그인 → 대시보드 → 예약/취소)가 세로 위주의 모바일 화면에서 깨지지 않도록 반응형 레이아웃을 스모크 테스트한다.
 3.  **오프라인/에러 UX 정돈**: 오프라인/에러 흐름(오프라인 배너, 예약 버튼 비활성화, API 에러 메시지)을 헷갈리지 않고 조용하지만 분명한 UX로 정돈한다.
-4.  **환경/인증 전략 문서화**: **“PC 로컬 개발용 / 에뮬레이터·실기기용” `.env` 패턴**, Capacitor 운용 플로우, 1차 인증 전략(로컬 로그인 중심 + Google/Firebase는 실험 수준)을 문서로 정리한다.
+4.  **환경/인증 전략 문서화**: **"PC 로컬 개발용 / 에뮬레이터·실기기용" `.env` 패턴**, Capacitor 운용 플로우, 1차 인증 전략(로컬 로그인 중심 + Google/Firebase는 실험 수준)을 문서로 정리한다.
 
 ---
 
@@ -703,26 +703,26 @@ GEMINI.md와 GOAL.md의 지침을 준수하는 풀스택 개발자. FastAPI 백�
 
 * **문구 통일**: `web/src/components/OfflineBanner.tsx`, `web/src/components/ReservationForm.tsx`, `web/src/lib/api.ts`를 기준으로:
     * 오프라인 시 배너 메시지, 예약 버튼 비활성화 상태, API 에러 메시지가 서로 모순 없이 같은 톤으로 보이도록 한국어 문구를 정리해 주세요.
-* **UX 시나리오**: **“오프라인 → 버튼이 비활성화 → 사용자가 이해할 수 있는 짧은 안내”**가 되는 하나의 UX 시나리오를 상정하고 메시지를 맞춰 주세요.
+* **UX 시나리오**: **"오프라인 → 버튼이 비활성화 → 사용자가 이해할 수 있는 짧은 안내"**가 되는 하나의 UX 시나리오를 상정하고 메시지를 맞춰 주세요.
 
 ### 4. 환경·Capacitor·인증 전략 문서화
 
 * `docs/QUICKSTART.md`, `web/README.md`에 다음을 2~3줄씩 추가/보완하는 형태로 제안해 주세요.
-    * “PC용 / 에뮬레이터·디바이스용” `VITE_API_BASE_URL` 예시
+    * "PC용 / 에뮬레이터·디바이스용" `VITE_API_BASE_URL` 예시
     * Capacitor `web/capacitor.config.ts`의 **`server.url`**은 **개발 중에만** Vite dev 서버에 붙고, **실제 빌드에서는 제거/주석 처리**한다는 운영 플로우
-    * Day 5 기준 인증 전략: “로컬 로그인(`admin@example.com` / `password`) 중심, Google/Firebase 로그인은 선택적 실험(웹뷰/외부 브라우저 전환 이슈는 TODO로 남김)”
+    * Day 5 기준 인증 전략: "로컬 로그인(`admin@example.com` / `password`) 중심, Google/Firebase 로그인은 선택적 실험(웹뷰/외부 브라우저 전환 이슈는 TODO로 남김)"
 
 ### 5. (선택) 모바일 빌드/실기기 확인 플로우 정리
 
 * 이미 정의된 스크립트(`npm run build:pwa`, `npm run cap:sync`, `npm run cap:android`/`npm run cap:ios`)를 활용해,
-* “실제 기기나 에뮬레이터에서 확인할 때의 최소 단계”를 5~7줄 정도의 체크리스트로 정리해 주세요.
+* "실제 기기나 에뮬레이터에서 확인할 때의 최소 단계"를 5~7줄 정도의 체크리스트로 정리해 주세요.
 
 ### 6. UX 테스트 가이드 요청 (사용자 관점, 시각적 테스트)
 
 * 각 주요 작업(네트워크 설정, 레이아웃 조정, 오프라인 UX, 문서화) 이후에,
 * 실제 사용자가 모바일에서 앱을 써본다고 가정하고 따라 할 수 있는 **시각적인 테스트 시나리오**를 bullet 목록으로 제안해 주세요.
-    * 예: “DevTools 모바일 뷰(iPhone 14 등)에서 `/login`을 열고, 이메일/비밀번호를 입력한 뒤 로그인 버튼을 눌렀을 때 어떤 화면/메시지가 보여야 하는지”
-    * 예: “에뮬레이터/실기기에서 네트워크를 끊은 뒤 예약 버튼의 상태와 배너 문구가 어떻게 바뀌어야 하는지”
+    * 예: "DevTools 모바일 뷰(iPhone 14 등)에서 `/login`을 열고, 이메일/비밀번호를 입력한 뒤 로그인 버튼을 눌렀을 때 어떤 화면/메시지가 보여야 하는지"
+    * 예: "에뮬레이터/실기기에서 네트워크를 끊은 뒤 예약 버튼의 상태와 배너 문구가 어떻게 바뀌어야 하는지"
 
 ---
 
@@ -730,7 +730,7 @@ GEMINI.md와 GOAL.md의 지침을 준수하는 풀스택 개발자. FastAPI 백�
 
 * **제약**: `GOAL.md`, `GEMINI.md`의 아키텍처·책임 분리 원칙을 해치지 않도록, 변경은 설정/문구/문서/간단한 Tailwind 보정 수준에 한정합니다.
 * **Day 5 종료 시점에는**:
-    * 모바일에서 “로컬 로그인 → 대시보드 진입 → 예약 생성/취소” 플로우를 직관적으로, 시각적으로 테스트할 수 있는 시나리오가 정리되어 있고,
+    * 모바일에서 "로컬 로그인 → 대시보드 진입 → 예약 생성/취소" 플로우를 직관적으로, 시각적으로 테스트할 수 있는 시나리오가 정리되어 있고,
     * .env 프로파일링, CORS/Capacitor 운용, 1차 인증 전략이 `docs/QUICKSTART.md`, `web/README.md`에 짧게나마 반영되어 있어야 합니다.
 
 - [Day 5 Codex 전체 대화 로그 보기](./codex_logs/Day5-Log.md)
@@ -1092,7 +1092,7 @@ GEMINI.md와 GOAL.md의 지침을 준수하는 풀스택 개발자. FastAPI 백�
     - `api/prisma/seed.cjs`: `admin@example.com` (admin), `host@example.com` (host), `guest@example.com` (guest) 유저와 데모 카라반/예약 데이터를 생성하는 Prisma Seed 스크립트 추가 (:1)
     - `web/src/components/HostPanel.tsx`: `user.role === 'HOST'`일 때만 렌더링, 예약 상태 변경(confirmed/cancelled) 버튼 로직 구현 (:1)
     - `web/src/components/AdminReservations.tsx`: `user.role === 'ADMIN'`일 때만 전체 예약 목록 표시 (:1)
-    - `web/src/components/ProfileActions.tsx`: Admin 전용 “잔액 충전 (+100)” 버튼(PUT /api/users/me/balance) 추가.
+    - `web/src/components/ProfileActions.tsx`: Admin 전용 "잔액 충전 (+100)" 버튼(PUT /api/users/me/balance) 추가.
     - `api/src/routes/caravans.ts`: 예약 캘린더용 `GET /api/caravans/:id/calendar` API 구현 (:31)
 
 - **환경변수/배포**
@@ -1131,6 +1131,310 @@ GEMINI.md와 GOAL.md의 지침을 준수하는 풀스택 개발자. FastAPI 백�
 - **Prisma와 OAuth ID 타입 일관성**: Prisma를 사용할 때 외부 OAuth Provider(예: Kakao)가 고유 ID를 숫자(Int)로 제공하더라도, DB 모델에서 해당 ID를 **String**으로 정의했다면 반드시 입력 시 **`String()` 캐스팅**을 적용하여 타입 불일치로 인한 런타임 에러를 방지해야 한다는 사실을 깨달음.
 - **도메인 기반 OAuth의 필수성**: Google과 같은 주요 OAuth Provider는 보안을 이유로 **순수 IP 주소**를 콜백 URI로 허용하지 않으니 Azure VM 등 공용 IP 환경에서 소셜 로그인을 테스트하려면 **도메인(TLD)**을 연결하고 해당 도메인을 콜백 URI로 등록하는 것이 필수적임을 확인.
 - **DB 권한/데모 데이터 관리**: 실제 서비스와 유사한 시나리오(Host/Admin 권한, 예약 상태 변경)를 데모하려면 **Prisma Seed 스크립트**를 작성하여 관리자/호스트 유저와 데모 데이터를 자동으로 생성하고 초기화하는 프로세스를 구축하는 것이 가장 올바른 길임을 실감.
+
+
+---
+
+
+### Day 8 — HTTPS 적용 · OAuth 재정비 · Nginx/PM2 안정화 · 프론트 오류 수정 · VM 문제 복구  
+
+---
+
+#### AI 개발 프롬프트
+
+# My request for Codex (Day8):
+
+당신은 내 로컬 PC와 Azure VM에 배포된 `C:\ForUnivProjects\app-caravan` / `~/app-caravan` 프로젝트에서 작업하는 숙련된 풀스택 개발 도우미다.
+이 레포는 대학 과제 제출용이며, Day1~Day7까지의 진행 내역은 `GOAL.md`, `DEVELOPMENT_LOG.md`, `docs/QUICKSTART.md`, `docs/DEPLOY_AZURE.md`에 정리되어 있다.
+
+## 현재 Day7까지의 상태 (요약)
+
+**프로젝트 이름:** CaravanShare (카라반 공유 플랫폼)
+
+### 백엔드
+- Node.js 20 + TypeScript + Express + Prisma + MariaDB
+- 주요 모델: User, Caravan, Reservation, SocialAccount
+
+### 인증
+- 세션 기반(`express-session` + `express-mysql-session` / SESSION_STORE)
+- Passport 전략: local, Google, Naver, Kakao
+- `/auth/login`, `/auth/register`, `/auth/logout`, `/auth/me`, `/auth/*`, `/auth/*/callback`
+
+### 배포
+- Azure VM(Ubuntu) 상에 Express API 실행 (PM2로 `caravanshare-api` 관리)
+- MariaDB 로컬 설치(`caravanshare` DB, `caravan` 유저)
+- Nginx: `caravanshare.xyz` 도메인, `/` 정적 웹, `/api/` → `127.0.0.1` (line 3000) 프록시
+
+### 프론트엔드
+- React 18 + TypeScript + Vite + Tailwind + React Router + React Query + Zustand
+- PWA 세팅(`vite-plugin-pwa`), 베이직 Offline/PWA UX 존재
+- 주요 페이지: `/(Landing)`, `/login`, `/app(Dashboard)`
+
+### 소셜 로그인
+- 로컬 개발 환경(`localhost`)에서 Google/Naver/Kakao 모두 성공적으로 동작
+- Azure VM + 도메인(`caravanshare.xyz`) 기준:
+  - Naver/Kakao: `http://caravanshare.xyz/api/auth/naver|kakao/callback` 기준으로 잘 동작
+  - Google: 도메인 확보 전까지는 IP 기반 콜백 제한 때문에 VM 기준 테스트는 보류 상태였으나, 이제 `caravanshare.xyz` 도메인까지 연결 완료
+
+### 배포/도메인
+- Namecheap에서 `caravanshare.xyz` 도메인 구입
+- A 레코드: `caravanshare.xyz` -> `40.82.143.52` (Azure VM 공용 IP)
+- VM 내 Nginx `server_name caravanshare.xyz;`, React 빌드 `/var/www/caravanshare-web`에서 서빙
+- `FRONTEND_BASE_URL` 및 각 Provider의 `*_CALLBACK_URL`은 도메인 기반으로 1차 정리되어 있음
+
+### 보안/비밀
+- 모든 실제 OAuth Client ID/Secret, DB 비밀번호, Session Secret 등은 `.env`/환경변수로만 관리 (`.gitignore` 처리 완료)
+- 레포에는 `.env.example` / `.env.local.example`에만 예시/플레이스홀더 존재
+
+## Day8 목표
+
+Day8에서는 이미 구축된 VM + 도메인 기반 배포 위에 다음을 추가/개선하고 싶다.
+
+### 1. HTTPS 활성화 및 OAuth 정리
+- `caravanshare.xyz`에 대해 Let’s Encrypt(또는 certbot) 기반 무료 TLS 인증서를 발급 받아 Nginx에 적용한다.
+- HTTP → HTTPS 리다이렉트 설정을 추가한다.
+- Google / Naver / Kakao OAuth Redirect URI들을 `https://caravanshare.xyz/api/auth/*/callback` 기준으로 모두 정리한다.
+- 백엔드 `FRONTEND_BASE_URL` / `*_CALLBACK_URL` 환경변수를 HTTPS/도메인 기준으로 정확히 맞추고, 로컬/VM 환경이 헷갈리지 않도록 문서화한다.
+
+### 2. 접속 안정성 및 운영 안정화
+- PM2 설정을 점검해, VM 재부팅 시 API가 항상 자동으로 다시 올라오도록 하고, 프로세스 크래시 시 자동 재시작 정책을 명확히 한다.
+- Nginx 측에서 기본적인 timeout, proxy 설정을 점검해 장기 요청/오류 시에도 서비스 다운 없이 잘 동작하도록 한다.
+- `/api/health` 등 헬스 체크 엔드포인트와 Azure 관점에서의 모니터링/간단한 점검 플로우를 정리한다 (문서 수준이어도 좋다).
+- HTTP/HTTPS 포트(NSG, UFW 등) 설정을 점검해, 일반적인 PC/모바일 환경에서 접속이 막힐 가능성을 더 줄인다.
+
+### 3. 아주 기초적인 보안 강화(“과제용” 범위 내)
+- **Express 레벨에서:**
+  - helmet 설정을 HTTPS 환경에 맞게 다듬고, 불필요한 헤더 최소화.
+  - CORS 설정을 `caravanshare.xyz`/`localhost` 기반으로 명확히 제한.
+- **인증/세션:**
+  - HTTPS 환경에서 `cookie.secure`, `sameSite` 등 세션 쿠키 설정을 재검토.
+  - `/auth/*` 라우트에 대해 과도하진 않지만 기본적인 rate limit(예: IP당 초당 n회) 정도를 추가하는 것도 고려.
+- 가능하다면, 로그인 실패시 너무 자세한 에러 메시지를 노출하지 않고, 브루트포싱을 어느 정도 막겠다는 의도를 코드/문서에 남긴다.
+- 이 모든 변경은 최대한 “과제 범위” 안에서, 시스템적으로 복잡한 솔루션(예: 별도 WAF, IDS 도입 등)은 피한다.
+
+### 4. UI/UX 전면 개선 (Landing / Login / App)
+- `/` Landing:
+  - 현재 텍스트/구성을 기반으로, Tailwind + Framer Motion을 활용해 한 단계 더 완성도 높은 랜딩 페이지로 개선한다 (히어로 섹션, 특징, 간단한 스크린샷/모형 등).
+- `/login`:
+  - 소셜 로그인 버튼/로컬 로그인 폼을 시각적으로 정돈하고, 에러/로딩/안내 문구를 더 직관적으로 만든다.
+  - Google/Naver/Kakao 버튼에 Provider 별 색상/아이콘 등을 추가해 인지성을 높인다 (가능하면 클릭 영역, 키보드 접근성도 고려).
+- `/app` (Dashboard):
+  - Host/Admin/Guest 위젯 배치, 카드 스타일, 예약/카라반 리스트/캘린더를 전체적으로 정리해, “하나의 완성된 대시보드”처럼 보이도록 개선한다.
+  - 반응형(모바일/태블릿/PC) 레이아웃을 점검하고, 최소한의 브레이크포인트를 확실히 정의한다.
+- UI 변경은 Tailwind + 기존 headless UI 컴포넌트 스타일과 일관되게 진행하고, 새로운 디자인/레이아웃을 추가하되 불필요하게 파편화하지 않는다.
+
+## 우선순위
+1. HTTPS 활성화 + OAuth Redirect 정리 (인프라 변경)
+2. 접속 안정성/PM2/Nginx 설정 + 헬스 체크 플로우 정리
+3. 기초 보안 강화(helmet/CORS/쿠키 설정 + 약간의 rate limit)
+4. Landing / Login / App UI 전면 개선 (필요하면 3개 중 일부부터 순차 적용)
+
+*가능하다면, 1–3번은 “동작” 위주로 먼저 구현하고, 4번 UI 개선은 남은 시간/토큰 범위 안에서 최대한 진행해 주면 좋겠다.*
+
+## 작업 방식 / 요구 사항
+- **Day7까지와 마찬가지로:**
+  - 기존 코드베이스 구조를 존중하고, 최소한의 변경으로 목표를 달성하는 것을 우선한다.
+  - 비밀 값은 `.env`/환경변수로만 관리하고, 코드/문서에는 placeholder만 넣는다.
+  - Nginx/PM2/HTTPS 설정은 실제로 VM 환경에서 사용할 수 있는 형태로 작성하되, 필요한 경우 예시 config와 적용 명령을 문서(`docs/DEPLOY_AZURE.md` 또는 새 문서)에도 반영한다.
+- **UI/UX 변경 시:** 기존 Tailwind 코드 스타일과 애니메이션 패턴(Framer Motion)을 유지/확장하도록 한다.
+- **명령어/설정 파일/코드 수정:** 실제로 적용해 주되, 위험할 수 있는 조작(예: 중요한 데이터 삭제)은 피하고, 필요한 경우 항상 설명을 덧붙여라.
+- **가능한 경우:**
+  - 중요한 단계마다 간단한 self-check: curl로 `/api/health`, `/auth/me` 등 확인.
+  - Vite/React 빌드/테스트(`npm run build`, `npm test`)는 필요 시에만 수행하되, 시간이 많이 걸리면 우선순위가 높은 작업에 집중한다.
+
+## Day8에서 당신에게 바라는 첫 액션
+현재 레포(로컬 + VM) 기준으로:
+1. HTTPS 관련 설정 파일 및 문서(`infra/nginx...`, `docs/DEPLOY_AZURE.md`, `api/.env.example`, `web/.env.local.example` 등)를 다시 한 번 훑고,
+2. `caravanshare.xyz` + Azure VM 배포 상태를 기준으로 어떤 HTTPS 접근(예: certbot + Nginx)이 가장 현실적인지 판단해라.
+3. 짧은 실행 계획(1–2단계)부터 제안한 뒤, HTTPS 설정 → OAuth Redirect 정리부터 차례대로 구현해 달라.
+4. 이후 여력이 되면 안정성 보강 → 보안 강화 → UI 개선까지 순서대로 진행해 줘.
+
+이제 위 Day8 목표와 우선순위를 기준으로, 먼저 현재 설정을 검토하고, 구체적인 실행 계획(Plan)부터 제안한 뒤 작업을 시작해라.
+
+---
+
+## 요약 실행 계획 (Day8, 1–2번 우선)
+
+**1단계(HTTPS):** Azure VM 시나리오 B 기준으로 Nginx에서 TLS 종료 + `certbot --nginx`로 `caravanshare.xyz`에 무료 인증서를 발급하고, HTTP→HTTPS 리다이렉트를 켠다.
+
+**2단계(OAuth/환경변수):** 프로덕션 기준 콜백을 `https://caravanshare.xyz/api/auth/*/callback`으로 통일하고, 로컬/VM 각각의 `FRONTEND_BASE_URL`, `VITE_API_BASE_URL`, `*_CALLBACK_URL` 값을 명확히 분리해 문서/예시 `.env`에 반영한다.
+
+### 이미 이 계획에 맞춰 다음까지 적용해 두었습니다.
+
+- `docs/DEPLOY_AZURE.md`:
+  - 시나리오 B를 “Node + PM2 + Nginx + HTTPS(TLS)”로 재정리.
+  - `/etc/nginx/sites-available/caravanshare` HTTP 설정 예제와, `sudo certbot --nginx -d caravanshare.xyz` 실행 후 만들어질 HTTPS(+80→443 리다이렉트) 구성 예제 추가.
+  - Azure NSG / ufw 에서 80·443 허용, `curl https://caravanshare.xyz/api/health`로 헬스 체크하는 플로우 포함.
+  - OAuth Redirect URI 를 `https://caravanshare.xyz/api/auth/google|naver|kakao/callback`으로 통일하도록 명시.
+- `api/.env.example`:
+  - 위에 “Production example (Azure VM + caravanshare.xyz)” 블록을 주석으로 추가하여, `NODE_ENV=production`, `FRONTEND_BASE_URL=https://caravanshare.xyz`, `*_CALLBACK_URL=https://caravanshare.xyz/api/auth/*/callback` 예시를 명시.
+- 루트 `.env.example`:
+  - Docker Compose용과 프로덕션(도메인)용을 주석으로 구분하고, 도메인 기준 콜백 예시(`https://caravanshare.xyz/api/auth/*/callback`)를 추가.
+- `web/.env.local.example`:
+  - 로컬: `VITE_API_BASE_URL=http://localhost` (line 3000) 유지.
+  - 프로덕션용 예시(`web/.env.production`에 `VITE_API_BASE_URL=https://caravanshare.xyz/api`) 주석으로 추가.
+- `api/src/app.ts`:
+  - Nginx 뒤에서 HTTPS를 쓸 때 세션 쿠키 secure 플래그가 제대로 동작하도록 `app.set('trust proxy', 1);` 추가. (Nginx가 이미 X-Forwarded-Proto를 보내고 있으므로, 이제 Express가 이를 신뢰합니다.)
+
+### 다음에 하시면 되는 실제 VM 명령 플로우(요약)
+
+1. VM에서 API/웹 빌드 & 배포 (`docs/DEPLOY_AZURE.md` 3-2~3-4 따라 `.env`, `npm run build`, `pm2 start` 등).
+2. `/etc/nginx/sites-available/caravanshare`를 문서의 HTTP 예제로 맞춘 뒤 `nginx -t && systemctl reload nginx`.
+3. `sudo apt install certbot python3-certbot-nginx` 후
+4. `sudo certbot --nginx -d caravanshare.xyz` 실행 → 리다이렉트 옵션 “사용” 선택.
+5. Google/Naver/Kakao 콘솔의 Redirect URI를 모두 `https://caravanshare.xyz/api/auth/<provider>/callback` 으로 맞추고, VM의 `api/.env`에서도 같은 값으로 설정.
+6. 이 상태에서 `https://caravanshare.xyz` 접속 및 `/api/health`, 소셜 로그인 플로우를 한 번씩 점검해 보시면 됩니다. 원하시면 다음 단계로 PM2 설정/헬스체크 정리나 helmet/CORS/rate limit 쪽도 이어서 손봐 드리겠습니다.
+
+실제 VM 명령 플로우에서 실수하지 않기 위해 하나씩 가이드해줘.
+
+- [Day 8 Codex 전체 대화 로그 보기](./codex_logs/Day8-Log.md)
+
+## 개요  
+HTTPS 전환 과정에서 Azure NSG, Nginx, certbot, OAuth 콜백, React Hook 오류, VM Git 충돌 등이 발생했다.
+그만큼 **배포·보안·네트워크·프론트엔드까지 모든 층위에서 복합 장애를 해결한 날**이다.
+따라서 AI 어시스턴스 활용을 통한 문제 해결 과정을 중심적으로 기록한다.
+
+---
+
+## 1. HTTPS 적용 — certbot + Nginx 설정 정비 및 Azure NSG 문제 해결
+
+### 1-1. Nginx 구조 점검 및 server_name 충돌 확인  
+- `/etc/nginx/sites-enabled`에서 사용 중인 사이트 설정 링크를 먼저 점검  
+- `sudo nginx -T | grep -n "caravanshare.xyz"`로 caravanshare.xyz가 어느 파일에서 선언되는지 추출  
+- 기존 구성에서 **default server와 혼용된 server_name**이 남아 있어, certbot 실행 시 충돌 위험 존재  
+  → AI가 즉시 "실제 사용 중인 파일만 남기고 정리"라고 지시함
+
+### 1-2. certbot으로 TLS 인증서 발급  
+- Day8 대화 중 가장 중요한 단계  
+- 다음 명령을 VM에서 실행:
+  - `sudo apt update && sudo apt install certbot python3-certbot-nginx -y`
+  - `sudo certbot --nginx -d caravanshare.xyz`
+- 이메일/약관 동의 후 Let’s Encrypt 인증서 발급 성공  
+- `/etc/letsencrypt/live/caravanshare.xyz/` 경로에 fullchain.pem, privkey.pem 저장  
+- certbot이 자동으로  
+  - **443 서버 블록 생성**  
+  - **80 → 443 리다이렉트 설정**  
+  - **갱신 cron job 설치**  
+  까지 처리
+
+### 1-3. 가장 심각한 장애: 외부 HTTPS 타임아웃  
+- VM 내부에서는 `curl -k https://localhost/api/health` 정상  
+- 그러나 외부에서는 30초 후 타임아웃  
+- 원인: **Azure Network Security Group(NSG)에서 443 포트가 허용되지 않음**  
+- 해결: HTTPS(443) Allow 규칙 추가  
+- 그 즉시 외부에서도 HTTPS 정상 동작  
+- Day8 대화에서 가장 크게 당황한 순간이며, "내부 정상/외부 타임아웃" 패턴의 대표적인 배포 실수 사례로 기록됨
+
+---
+
+## 2. OAuth Redirect URI 전체 재정비 — HTTP/HTTPS 혼재 문제 근본 해결
+
+### 2-1. 기존 문제  
+- Google은 도메인 확보 전에는 테스트 불가(대화에서 이 부분 상세 논의)  
+- Naver/Kakao는 HTTP 기반 콜백을 사용 중  
+- 프론트·백엔드·문서·Provider 콘솔에서 Redirect URI가 제각각이라 **배포 환경에서 실패**
+
+### 2-2. 해결 — HTTPS 기준으로 완전 통일  
+다음 URI로 모든 Provider를 일괄 정리:
+
+https://caravanshare.xyz/api/auth/google/callback
+https://caravanshare.xyz/api/auth/naver/callback
+https://caravanshare.xyz/api/auth/kakao/callback
+
+### 2-3. 환경변수 및 문서 전체 수정  
+- api/.env  
+- api/.env.example  
+- web/.env.production  
+- web/.env.local.example  
+- docs/DEPLOY_AZURE.md  
+
+위 모든 파일에서 **HTTPS 기준 콜백/도메인 재정비**  
+
+---
+
+## 3. Nginx/PM2 운영 안정화 — VM 재부팅, 프록시, 타임아웃 문제 점검
+
+### 3-1. trust proxy 문제 (세션 secure 쿠키 무효화 원인)  
+배포 환경(HTTPS)에서 Express 세션이 안정적으로 유지되려면 다음 설정이 필요:
+app.set('trust proxy', 1);
+
+### 3-2. PM2 문제  
+- VM에서 PM2가 로컬 수정된 파일을 감지해 충돌 발생  
+- 특히 `api/tsconfig.json`이 VM에 로컬로 변형되어 `git pull`이 실패  
+- AI 지시에 따라:
+  - `git restore api/tsconfig.json`
+  - 이후 다시 `git pull` 성공  
+→ VM 코드와 GitHub 코드를 완전히 동기화
+
+### 3-3. Nginx 타임아웃/헬스체크 플로우 정리  
+- `curl https://caravanshare.xyz/api/health` 를 기준으로 모든 상태 점검  
+- docs/DEPLOY_AZURE.md에 **헬스체크 절차와 배포 검증 루틴**을 추가함
+
+---
+
+## 4. 프론트엔드 장애 — React Hook Ordering Error(#300) 해결
+
+### 4-1. 문제 상황  
+`/login` 또는 `/app` 로딩 시 다음 오류 발생:
+Unexpected Application Error! Minified React error #300
+
+AI가 검토한 결과:
+- Role별 조건부 렌더링에서 Hook 호출 순서가 달라짐  
+- React Query, Zustand, useEffect, useQueryClient 등이 **조건부 호출**되어 오류 발생
+
+### 4-2. 해결  
+- 모든 Hook을 최상단에서 "무조건 같은 순서로" 호출  
+- 렌더링 분기는 다음 방식으로 변경:
+  - `enabled` 옵션  
+  - 혹은 `return null` 방식
+
+---
+
+## 5. VM Git 충돌 · SSH 경고 · 프록시 오류 등 부수적 장애 해결
+
+### 5-1. SSH Host Key 경고  
+- IP로 접속한 적이 있어 host key가 이미 known_hosts에 존재  
+- 도메인으로 처음 접속하자 "다른 이름으로 저장된 동일 키"라는 경고 발생  
+- AI가 "정상, yes 입력"이라고 분석하여 진행 가능
+
+### 5-2. server_name 다중 선언  
+- certbot 이전 파일들이 남아 있어 nginx가 여러 파일을 함께 로드  
+- AI가 이를 감지해 `sites-enabled` 구조 정리 권고  
+- 이후 certbot 적용이 정상적으로 동작
+
+### 5-3. API Prefix 중복 가능성 점검  
+- `/api/api/...` 형태로 호출될 위험성이 Day8 후반에 드러남  
+- 실제 호출 로그 점검 후 이상 없음 확인  
+- docs/DEPLOY_AZURE.md에 "프록시 prefix 중복 주의" 항목 추가
+
+---
+
+## 6. 프론트 재배포 — HTTPS 기반 빌드 및 dist 재배치
+
+### 6-1. production env 생성  
+VITE_API_BASE_URL=https://caravanshare.xyz/api
+
+### 6-2. 빌드 및 배포  
+- `npm run build`  
+- `/var/www/caravanshare-web/` 에 dist 복사  
+- nginx reload 후 HTTPS 정적 웹 확인  
+- `/login` `/app` 모두 HTTPS 요청으로 전환됨
+
+---
+
+## 7. Day8 학습 내용
+
+- **HTTPS 전환은 "내부 OK → 외부 실패" 패턴이 가장 위험하고 흔한 장애**  
+  → NSG/방화벽 확인을 최우선으로 해야 함  
+- **OAuth Redirect URI는 ‘한 글자라도 다르면’ OAuth 전 과정이 무력화됨**  
+  → Provider 콘솔/백엔드/프론트/문서 전부 싱크가 필요  
+- **React Hook은 절대 조건부 호출하면 안 된다**  
+  → 로컬 개발에서는 안정적으로 보이더라도 배포에서만 터질 수 있음  
+- **PM2 + Git 조합에서 VM 내부 수정본은 반드시 제거하고 pull**  
+  → 작은 tsconfig 수정도 전체 배포를 망가뜨릴 수 있음  
+- **certbot은 Nginx server_name 충돌이 있을 경우 예측 불가능한 설정을 만들어버림**  
+  → Day8에서 실제로 발생한 문제  
+- Day8은 "시스템, 보안, 배포, 프론트" 모든 층위를 아우르는 **실제 인프라 공부의 핵심 경험**
 
 
 ---
