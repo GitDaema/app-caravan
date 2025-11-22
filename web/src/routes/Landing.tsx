@@ -10,7 +10,7 @@ const popularCaravans = [
     location: '강원도 동해',
     price: '₩180,000 / 박',
     image:
-      'https://images.unsplash.com/photo-1527786356703-4b100091cd2c?q=80&w=1000&auto=format&fit=crop',
+      'https://unsplash.com/photos/vintage-camper-van-parked-by-the-ocean-at-sunset-PvQ4RPTuXOQ',
     superHost: true,
   },
   {
@@ -19,7 +19,7 @@ const popularCaravans = [
     location: '제주 애월',
     price: '₩210,000 / 박',
     image:
-      'https://images.unsplash.com/photo-1527786356703-4b100091cd2c?q=80&w=1000&auto=format&fit=crop',
+      'https://unsplash.com/photos/white-and-green-camper-trailer-sPig58MKN58',
     superHost: true,
   },
   {
@@ -28,7 +28,7 @@ const popularCaravans = [
     location: '강릉 경포대',
     price: '₩150,000 / 박',
     image:
-      'https://images.unsplash.com/photo-1527786356703-4b100091cd2c?q=80&w=1000&auto=format&fit=crop',
+      'https://unsplash.com/photos/white-rv-qaYwmYOpUDE',
     superHost: false,
   },
   {
@@ -37,7 +37,7 @@ const popularCaravans = [
     location: '부산 기장',
     price: '₩190,000 / 박',
     image:
-      'https://images.unsplash.com/photo-1527786356703-4b100091cd2c?q=80&w=1000&auto=format&fit=crop',
+      'https://unsplash.com/photos/green-and-orange-rv-parked-near-mountain-M3zDlLrJAsU',
     superHost: true,
   },
 ]
@@ -51,7 +51,7 @@ export default function Landing() {
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
             backgroundImage:
-              "url('https://images.unsplash.com/photo-1527786356703-4b100091cd2c?q=80&w=1000&auto=format&fit=crop')",
+              "url('https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=1920&auto=format&fit=crop')",
           }}
         />
         <div className="absolute inset-0 bg-black/50" />
