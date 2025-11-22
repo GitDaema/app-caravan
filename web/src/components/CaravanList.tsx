@@ -9,6 +9,9 @@ type CaravanListProps = {
   onBookClick?: (caravan: any) => void
 }
 
+const FALLBACK_IMAGE =
+  'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=800&auto=format&fit=crop'
+
 export default function CaravanList({ onBookClick }: CaravanListProps) {
   const { user } = useAuthStore()
   const { selectedCaravanId, setSelectedCaravanId } = useUIStore()
@@ -69,40 +72,63 @@ export default function CaravanList({ onBookClick }: CaravanListProps) {
       ) : caravans.length === 0 ? (
         <div className="text-sm text-gray-500">조건에 맞는 카라반이 없습니다.</div>
       ) : (
-        <ul className="space-y-2">
-          {caravans.map((c: any) => (
-            <li
-              key={c.id}
-              className={`border rounded-2xl p-3 flex items-center gap-3 justify-between text-sm transition-colors ${
-                selectedCaravanId === c.id
-                  ? 'border-[#0F766E] bg-teal-50/60'
-                  : 'border-slate-200 bg-white hover:bg-slate-50'
-              }`}
-            >
-              <div className="flex gap-3 items-center">
-                <span className="font-medium">{c.name}</span>
-                <span className="text-gray-500">{c.location}</span>
-                <span>{c.capacity}명</span>
-                <span>{c.price_per_day}원/박</span>
-                {user && c.host_id === user.id && (
-                  <span className="text-emerald-700 text-xs">내 카라반</span>
-                )}
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {caravans.map((c: any) => {
+            const imageSrc = c.imageUrl || FALLBACK_IMAGE
+            const isSelected = selectedCaravanId === c.id
+            return (
+              <div
+                key={c.id}
+                className={`bg-white rounded-2xl border overflow-hidden shadow-md transition-transform duration-150 hover:-translate-y-1 ${
+                  isSelected ? 'border-[#0F766E] shadow-lg' : 'border-slate-200'
+                }`}
+              >
+                <div className="relative w-full h-48 bg-slate-200">
+                  <img
+                    src={imageSrc}
+                    alt={c.name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.onerror = null
+                      e.currentTarget.src = FALLBACK_IMAGE
+                    }}
+                  />
+                </div>
+                <div className="p-4 md:p-5 flex flex-col gap-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <div>
+                      <div className="text-sm font-semibold text-slate-900">{c.name}</div>
+                      <div className="text-xs text-slate-500">{c.location}</div>
+                    </div>
+                    {user && c.host_id === user.id && (
+                      <span className="text-[11px] font-medium text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-full px-2 py-0.5">
+                        내 카라반
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-between text-xs text-slate-600">
+                    <span>최대 {c.capacity}명</span>
+                    <span className="font-semibold text-slate-900">
+                      {c.price_per_day?.toLocaleString?.('ko-KR') ?? c.price_per_day}원/박
+                    </span>
+                  </div>
+                  <div className="mt-2 flex justify-end">
+                    <button
+                      className="px-3 py-1.5 rounded-full border text-xs font-medium text-[#0F766E] border-[#0F766E] bg-white hover:bg-teal-50 transition-colors"
+                      onClick={() => {
+                        setSelectedCaravanId(c.id)
+                        onBookClick?.(c)
+                      }}
+                      aria-label={`카라반 예약 선택: ${c.name}`}
+                    >
+                      예약
+                    </button>
+                  </div>
+                </div>
               </div>
-              <div className="flex gap-2">
-                <button
-                  className="px-2.5 py-1.5 rounded-full border text-sm font-medium text-[#0F766E] border-[#0F766E] bg-white hover:bg-teal-50 transition-colors"
-                  onClick={() => {
-                    setSelectedCaravanId(c.id)
-                    onBookClick?.(c)
-                  }}
-                  aria-label={`카라반 예약 선택: ${c.name}`}
-                >
-                  예약
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
+            )
+          })}
+        </div>
       )}
     </div>
   )

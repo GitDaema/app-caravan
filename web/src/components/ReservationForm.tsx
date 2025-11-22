@@ -63,7 +63,9 @@ export default function ReservationForm({ selectedCaravan, onSelectCaravanReques
   }, [selectedCaravan, start, end])
 
   const thumbnailUrl =
-    selectedCaravan && selectedCaravan.id
+    selectedCaravan?.imageUrl && typeof selectedCaravan.imageUrl === 'string'
+      ? selectedCaravan.imageUrl
+      : selectedCaravan && selectedCaravan.id
       ? fallbackImages[selectedCaravan.id % fallbackImages.length]
       : null
 
@@ -94,7 +96,15 @@ export default function ReservationForm({ selectedCaravan, onSelectCaravanReques
         <div className="flex items-center gap-3 mb-4">
           <div className="w-24 h-24 rounded-lg bg-slate-200 overflow-hidden flex-shrink-0 flex items-center justify-center">
             {thumbnailUrl ? (
-              <img src={thumbnailUrl} alt={selectedCaravan.name} className="w-full h-full object-cover" />
+              <img
+                src={thumbnailUrl}
+                alt={selectedCaravan.name}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.onerror = null
+                  e.currentTarget.src = fallbackImages[0]
+                }}
+              />
             ) : (
               <ImageOff className="w-6 h-6 text-slate-400" />
             )}
@@ -181,4 +191,3 @@ export default function ReservationForm({ selectedCaravan, onSelectCaravanReques
     </div>
   )
 }
-
