@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom'
-import hero from '../assets/ai/hero.svg'
 import { motion } from 'framer-motion'
 
 export default function Landing() {
@@ -8,8 +7,11 @@ export default function Landing() {
       {/* Hero Section - full-bleed background image */}
       <section className="relative min-h-[60vh]">
         <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${hero})` }}
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage:
+              "url('https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=1920&auto=format&fit=crop')",
+          }}
         />
         <div className="absolute inset-0 bg-black/50" />
         <div className="relative z-10 max-w-3xl mx-auto px-6 py-24 flex flex-col items-center justify-center text-center text-white">
@@ -167,4 +169,3 @@ export default function Landing() {
     </div>
   )
 }
-
