@@ -9,10 +9,13 @@ import { Button } from '../components/ui/Button'
 import { Input } from '../components/ui/Input'
 import { Card } from '../components/ui/Card'
 import { motion } from 'framer-motion'
+import { FaGoogle } from 'react-icons/fa'
+import { SiNaver } from 'react-icons/si'
+import { RiKakaoTalkFill } from 'react-icons/ri'
 
 const loginSchema = z.object({
-  email: z.string().email('유효한 이메일을 입력해주세요'),
-  password: z.string().min(4, '4자 이상 비밀번호를 입력해주세요'),
+  email: z.string().email('유효한 이메일을 입력해 주세요'),
+  password: z.string().min(4, '4자 이상 비밀번호를 입력해 주세요'),
 })
 
 const registerSchema = loginSchema.extend({
@@ -22,23 +25,23 @@ const registerSchema = loginSchema.extend({
 type FormValues = z.infer<typeof registerSchema>
 
 const SOCIAL_ERROR_MESSAGES: Record<string, string> = {
-  google: 'Google 로그인에 실패했습니다. 다시 시도해주세요',
+  google: 'Google 로그인에 실패했습니다. 다시 시도해 주세요.',
   google_no_email: 'Google에서 이메일 정보를 제공하지 않았습니다.',
-  google_cancelled: 'Google 로그인을 사용자가 취소했습니다.',
-  google_server: 'Google 로그인 중 서버 오류가 발생했습니다.',
-  google_login: 'Google 계정으로 로그인하는 데 문제가 발생했습니다.',
+  google_cancelled: 'Google 로그인을 취소했습니다.',
+  google_server: 'Google 로그인 서버 오류가 발생했습니다.',
+  google_login: 'Google 계정으로 로그인 중 문제가 발생했습니다.',
 
-  naver: 'Naver 로그인에 실패했습니다. 다시 시도해주세요',
+  naver: 'Naver 로그인에 실패했습니다. 다시 시도해 주세요.',
   naver_no_email: 'Naver에서 이메일 정보를 제공하지 않았습니다.',
-  naver_cancelled: 'Naver 로그인을 사용자가 취소했습니다.',
-  naver_server: 'Naver 로그인 중 서버 오류가 발생했습니다.',
-  naver_login: 'Naver 계정으로 로그인하는 데 문제가 발생했습니다.',
+  naver_cancelled: 'Naver 로그인을 취소했습니다.',
+  naver_server: 'Naver 로그인 서버 오류가 발생했습니다.',
+  naver_login: 'Naver 계정으로 로그인 중 문제가 발생했습니다.',
 
-  kakao: 'Kakao 로그인에 실패했습니다. 다시 시도해주세요',
+  kakao: 'Kakao 로그인에 실패했습니다. 다시 시도해 주세요.',
   kakao_no_email: 'Kakao에서 이메일 정보를 제공하지 않았습니다.',
-  kakao_cancelled: 'Kakao 로그인을 사용자가 취소했습니다.',
-  kakao_server: 'Kakao 로그인 중 서버 오류가 발생했습니다.',
-  kakao_login: 'Kakao 계정으로 로그인하는 데 문제가 발생했습니다.',
+  kakao_cancelled: 'Kakao 로그인을 취소했습니다.',
+  kakao_server: 'Kakao 로그인 서버 오류가 발생했습니다.',
+  kakao_login: 'Kakao 계정으로 로그인 중 문제가 발생했습니다.',
 }
 
 export default function Login() {
@@ -52,7 +55,7 @@ export default function Login() {
     urlErrorCode && SOCIAL_ERROR_MESSAGES[urlErrorCode]
       ? SOCIAL_ERROR_MESSAGES[urlErrorCode]
       : urlErrorCode
-      ? '소셜 로그인에 실패했습니다. 다시 시도해주세요'
+      ? '소셜 로그인에 실패했습니다. 다시 시도해 주세요.'
       : null
 
   const {
@@ -83,10 +86,10 @@ export default function Login() {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.25 }}
-        className="w-full max-w-md"
+        className="w-full max-w-[400px] mx-auto"
       >
         <Card>
-          <h2 className="text-2xl font-semibold mb-6 text-center">로그인</h2>
+          <h2 className="text-2xl font-semibold mb-6 text-center">로그인 / 회원가입</h2>
 
           <div className="flex gap-2 mb-6 bg-slate-100 p-1 rounded-full">
             <button
@@ -113,42 +116,47 @@ export default function Login() {
             </button>
           </div>
 
-          <div className="space-y-3 mb-6">
+          <div className="flex flex-col gap-3 mb-6">
             <Button
               type="button"
-              className="w-full justify-center border border-gray-300 rounded-2xl text-sm font-medium shadow-sm hover:shadow-md transition-transform duration-150"
+              className="w-full h-12 justify-center border border-gray-300 rounded-2xl text-sm font-medium shadow-sm hover:shadow-md transition-transform duration-150 flex items-center gap-3"
               style={{ backgroundColor: '#FFFFFF', color: '#374151' }}
               onClick={() => {
                 window.location.href = `${API_BASE}/auth/google`
               }}
             >
-              Google로 계속하기
+              <FaGoogle className="w-5 h-5" />
+              <span className="text-sm">Google로 계속하기</span>
             </Button>
             <Button
               type="button"
-              className="w-full justify-center rounded-2xl text-sm font-medium shadow-sm hover:shadow-md transition-transform duration-150"
+              className="w-full h-12 justify-center rounded-2xl text-sm font-medium shadow-sm hover:shadow-md transition-transform duration-150 flex items-center gap-3"
               style={{ backgroundColor: '#03C75A', color: '#FFFFFF' }}
               onClick={() => {
                 window.location.href = `${API_BASE}/auth/naver`
               }}
             >
-              Naver로 계속하기
+              <SiNaver className="w-5 h-5" />
+              <span className="text-sm">Naver로 계속하기</span>
             </Button>
             <Button
               type="button"
-              className="w-full justify-center rounded-2xl text-sm font-medium shadow-sm hover:shadow-md transition-transform duration-150"
+              className="w-full h-12 justify-center rounded-2xl text-sm font-medium shadow-sm hover:shadow-md transition-transform duration-150 flex items-center gap-3"
               style={{ backgroundColor: '#FEE500', color: '#000000' }}
               onClick={() => {
                 window.location.href = `${API_BASE}/auth/kakao`
               }}
             >
-              Kakao로 계속하기
+              <RiKakaoTalkFill className="w-5 h-5" />
+              <span className="text-sm">Kakao로 계속하기</span>
             </Button>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="text-xs sm:text-sm text-slate-500 mb-2">
-              {mode === 'login' ? '이메일과 비밀번호로 로그인' : '이메일로 새 계정 만들기'}
+              {mode === 'login'
+                ? '이메일과 비밀번호로 로그인할 수 있어요.'
+                : '이메일과 비밀번호로 새 계정을 만들 수 있어요.'}
             </div>
             <div>
               <Input placeholder="email" type="email" {...register('email')} />
@@ -175,3 +183,4 @@ export default function Login() {
     </div>
   )
 }
+

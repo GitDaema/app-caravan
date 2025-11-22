@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   children: ReactNode
   variant?: 'primary' | 'secondary' | 'ghost'
+  className?: string
 }
 
 const base =
@@ -23,11 +24,11 @@ const variants: Record<string, string> = {
     'bg-transparent text-slate-700 hover:bg-slate-100 focus-visible:ring-slate-300 focus-visible:ring-offset-slate-50',
 }
 
-export function Button({ children, variant = 'primary', ...props }: ButtonProps) {
+export function Button({ children, variant = 'primary', className, ...props }: ButtonProps) {
   return (
     <motion.button
       whileTap={{ scale: 0.97 }}
-      className={`${base} ${variants[variant]}`}
+      className={`${base} ${variants[variant]} ${className ?? ''}`}
       {...props}
     >
       {children}

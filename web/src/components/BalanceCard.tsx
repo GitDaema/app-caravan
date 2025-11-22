@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { api } from '../lib/api'
+import { Wallet } from 'lucide-react'
 
 export default function BalanceCard() {
   const { data } = useQuery({
