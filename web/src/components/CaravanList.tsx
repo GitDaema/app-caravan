@@ -5,7 +5,11 @@ import { useAuthStore } from '../store/auth'
 import { useUIStore } from '../store/ui'
 import { Search } from 'lucide-react'
 
-export default function CaravanList() {
+type CaravanListProps = {
+  onBookClick?: (caravan: any) => void
+}
+
+export default function CaravanList({ onBookClick }: CaravanListProps) {
   const { user } = useAuthStore()
   const { selectedCaravanId, setSelectedCaravanId } = useUIStore()
   const [filters, setFilters] = useState({
@@ -87,7 +91,10 @@ export default function CaravanList() {
               <div className="flex gap-2">
                 <button
                   className="px-2.5 py-1.5 rounded-full border text-sm font-medium text-[#0F766E] border-[#0F766E] bg-white hover:bg-teal-50 transition-colors"
-                  onClick={() => setSelectedCaravanId(c.id)}
+                  onClick={() => {
+                    setSelectedCaravanId(c.id)
+                    onBookClick?.(c)
+                  }}
                   aria-label={`카라반 예약 선택: ${c.name}`}
                 >
                   예약

@@ -17,6 +17,8 @@ type TabKey = 'overview' | 'trips' | 'explore' | 'host' | 'admin'
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState<TabKey>('overview')
+  const [selectedCaravanMeta, setSelectedCaravanMeta] = useState<any | null>(null)
+  const [justBooked, setJustBooked] = useState(false)
   const { user } = useAuthStore()
 
   const isHost = user?.role === 'HOST'
@@ -170,15 +172,37 @@ export default function Dashboard() {
 
           {activeTab === 'trips' && (
             <>
+              {justBooked && (
+                <div className="rounded-xl bg-slate-900 text-white text-sm px-4 py-3 shadow-md flex items-center justify-between">
+                  <span>예약 정보를 입력해 주세요.</span>
+                  <button
+                    type="button"
+                    className="text-xs text-slate-200 hover:text-white underline"
+                    onClick={() => setJustBooked(false)}
+                  >
+                    닫기
+                  </button>
+                </div>
+              )}
               <ReservationList onEmptyNavigateExplore={() => setActiveTab('explore')} />
               <CaravanCalendar />
-              <ReservationForm />
+              <ReservationForm
+                selectedCaravan={selectedCaravanMeta}
+                onSelectCaravanRequest={() => setActiveTab('explore')}
+              />
             </>
           )}
 
           {activeTab === 'explore' && (
             <>
-              <CaravanList />
+              <CaravanList
+                onBookClick={(caravan) => {
+                  setSelectedCaravanMeta(caravan)
+                  setActiveTab('trips')
+                  setJustBooked(true)
+                  window.scrollTo({ top: 0, behavior: 'smooth' })
+                }}
+              />
               <ReviewSection />
             </>
           )}
