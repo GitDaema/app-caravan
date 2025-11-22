@@ -10,7 +10,7 @@ const popularCaravans = [
     location: '강원도 동해',
     price: '₩180,000 / 박',
     image:
-      'https://images.unsplash.com/photo-1525183995014-bd94c0750cd5?q=80&w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1516939884455-1445c8652f83?q=80&w=1000&auto=format&fit=crop',
     superHost: true,
   },
   {
@@ -19,7 +19,7 @@ const popularCaravans = [
     location: '제주 애월',
     price: '₩210,000 / 박',
     image:
-      'https://images.unsplash.com/photo-1627483262769-04d0a1401487?q=80&w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1592351763700-b9b35a6465ea?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     superHost: true,
   },
   {
@@ -28,7 +28,7 @@ const popularCaravans = [
     location: '강릉 경포대',
     price: '₩150,000 / 박',
     image:
-      'https://images.unsplash.com/photo-1510312305653-8ed496efae75?q=80&w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1626680114529-3f6ffa002b80?q=80&w=685&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     superHost: false,
   },
   {
@@ -37,7 +37,7 @@ const popularCaravans = [
     location: '부산 기장',
     price: '₩190,000 / 박',
     image:
-      'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1523987355523-c7b5b0dd90a7?q=80&w=1000&auto=format&fit=crop',
     superHost: true,
   },
 ]
