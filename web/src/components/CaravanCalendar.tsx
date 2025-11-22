@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { api } from '../lib/api'
 import { useUIStore } from '../store/ui'
+import { CalendarRange } from 'lucide-react'
 
 function daysInMonth(year: number, monthIndexZeroBased: number) {
   return new Date(year, monthIndexZeroBased + 1, 0).getDate()
@@ -39,24 +40,35 @@ export default function CaravanCalendar() {
 
   if (!selectedCaravanId) {
     return (
-      <div className="bg-white rounded-2xl shadow-md ring-1 ring-gray-900/5 p-4 md:p-5" aria-live="polite">
-        <h3 className="font-semibold mb-3">예약 캘린더</h3>
+      <div
+        className="bg-white rounded-2xl border border-slate-100 shadow-md p-4 md:p-5"
+        aria-live="polite"
+      >
+        <div className="flex items-center mb-3">
+          <CalendarRange className="w-5 h-5 text-slate-400 mr-2" />
+          <h3 className="text-sm font-semibold text-slate-900">예약 캘린더</h3>
+        </div>
         <div className="text-sm text-gray-600">
-          카라반을 선택하면 해당 카라반의 예약 상황이 캘린더로 표시됩니다.
+          카라반을 선택하면 해당 카라반의 예약 현황을 캘린더로 확인할 수 있어요.
         </div>
       </div>
     )
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-md ring-1 ring-gray-900/5 p-4 md:p-5">
-      <h3 className="font-semibold mb-3">예약 캘린더 (Caravan #{selectedCaravanId})</h3>
+    <div className="bg-white rounded-2xl border border-slate-100 shadow-md p-4 md:p-5">
+      <div className="flex items-center mb-3">
+        <CalendarRange className="w-5 h-5 text-slate-400 mr-2" />
+        <h3 className="text-sm font-semibold text-slate-900">
+          예약 캘린더 (Caravan #{selectedCaravanId})
+        </h3>
+      </div>
       {isLoading && <div>불러오는 중...</div>}
-      {error && <div className="text-red-600 text-sm">캘린더를 불러오지 못했습니다.</div>}
+      {error && <div className="text-red-600 text-sm">캘린더를 불러오지 못했어요.</div>}
       {!isLoading && !error && (
         <div>
           <div className="grid grid-cols-7 gap-1 text-xs text-gray-600 mb-1">
-            {['월', '화', '수', '목', '금', '토', '일'].map((d) => (
+            {['일', '월', '화', '수', '목', '금', '토'].map((d) => (
               <div key={d} className="text-center font-medium">
                 {d}
               </div>
@@ -87,3 +99,4 @@ export default function CaravanCalendar() {
     </div>
   )
 }
+

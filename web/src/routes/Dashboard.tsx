@@ -23,7 +23,7 @@ export default function Dashboard() {
   const isAdmin = user?.role === 'ADMIN'
 
   return (
-    <div className="flex flex-col md:flex-row min-h-[calc(100vh-4rem)] bg-[#F8FAFC]">
+    <div className="flex flex-col md:flex-row min-h-[calc(100vh-4rem)] bg-[#F1F5F9]">
       {/* Sidebar - desktop */}
       <aside className="hidden md:flex md:flex-col w-64 bg-white border-r border-slate-200 px-4 py-6">
         <div className="mb-8">
@@ -163,14 +163,14 @@ export default function Dashboard() {
             <>
               <BalanceCard />
               <ProfileActions />
-              <ReservationList />
+              <ReservationList onEmptyNavigateExplore={() => setActiveTab('explore')} />
               <DemoOverview />
             </>
           )}
 
           {activeTab === 'trips' && (
             <>
-              <ReservationList />
+              <ReservationList onEmptyNavigateExplore={() => setActiveTab('explore')} />
               <CaravanCalendar />
               <ReservationForm />
             </>

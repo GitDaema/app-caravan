@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from '../lib/api'
 import { useAuthStore } from '../store/auth'
+import { MessageCircle } from 'lucide-react'
 
 type Props = {
   reservationId: number
@@ -28,16 +29,21 @@ export default function MessageThread({ reservationId }: Props) {
   })
 
   return (
-    <div className="border rounded-2xl p-3 bg-white/80 backdrop-blur-sm border-slate-200 shadow-sm">
+    <div className="border rounded-2xl p-3 bg-white/80 backdrop-blur-sm border-slate-200 shadow-md">
       <div className="flex items-center justify-between mb-2 text-sm">
-        <span className="font-medium">메시지</span>
+        <div className="flex items-center gap-2">
+          <MessageCircle className="w-4 h-4 text-slate-400" />
+          <span className="font-medium text-slate-900">메시지</span>
+        </div>
         <span className="text-gray-500">예약 #{reservationId}</span>
       </div>
       {isLoading && <div className="text-sm">불러오는 중...</div>}
       {error && <div className="text-sm text-red-600">메시지를 불러오지 못했어요.</div>}
       {!isLoading && !error && (
         <ul className="space-y-1 max-h-48 overflow-auto mb-2">
-          {(data || []).length === 0 && <li className="text-xs text-gray-600">아직 대화가 없어요.</li>}
+          {(data || []).length === 0 && (
+            <li className="text-xs text-gray-600">아직 메시지가 없어요.</li>
+          )}
           {(data || []).map((m: any) => {
             const isMine = user?.id === m.sender_id
             return (
@@ -67,7 +73,7 @@ export default function MessageThread({ reservationId }: Props) {
         onSubmit={(e) => {
           e.preventDefault()
           if (!content.trim()) {
-            alert('메시지를 입력해 주세요.')
+            alert('메시지 내용을 입력해 주세요.')
             return
           }
           mutation.mutate()
@@ -81,7 +87,7 @@ export default function MessageThread({ reservationId }: Props) {
         />
         <button
           type="submit"
-          className="px-3 py-2 rounded-2xl border text-xs font-medium text-[#0F766E] border-[#0F766E] bg-white hover:bg-teal-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm hover:shadow-md"
+          className="px-3 py-2 rounded-2xl border text-xs font-medium text-[#0F766E] border-[#0F766E] bg-white hover:bg-teal-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-md"
           disabled={mutation.isPending}
         >
           전송
@@ -90,3 +96,4 @@ export default function MessageThread({ reservationId }: Props) {
     </div>
   )
 }
+

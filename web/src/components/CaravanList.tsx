@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { api } from '../lib/api'
 import { useAuthStore } from '../store/auth'
 import { useUIStore } from '../store/ui'
+import { Search } from 'lucide-react'
 
 export default function CaravanList() {
   const { user } = useAuthStore()
@@ -28,8 +29,11 @@ export default function CaravanList() {
   const caravans = data || []
 
   return (
-    <div className="bg-white rounded-2xl shadow-md ring-1 ring-gray-900/5 p-4 md:p-5">
-      <h3 className="font-semibold mb-3">카라반 목록</h3>
+    <div className="bg-white rounded-2xl border border-slate-100 shadow-md p-4 md:p-5">
+      <div className="flex items-center mb-3">
+        <Search className="w-5 h-5 text-slate-400 mr-2" />
+        <h3 className="text-sm font-semibold text-slate-900">카라반 목록</h3>
+      </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
         <input
           className="border border-slate-200 bg-slate-50 rounded-2xl px-3 py-2 text-xs md:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0F766E] focus:border-[#0F766E] transition-colors"
@@ -74,8 +78,8 @@ export default function CaravanList() {
               <div className="flex gap-3 items-center">
                 <span className="font-medium">{c.name}</span>
                 <span className="text-gray-500">{c.location}</span>
-                <span>{c.capacity}인</span>
-                <span>{c.price_per_day}원/일</span>
+                <span>{c.capacity}명</span>
+                <span>{c.price_per_day}원/박</span>
                 {user && c.host_id === user.id && (
                   <span className="text-emerald-700 text-xs">내 카라반</span>
                 )}
@@ -84,7 +88,7 @@ export default function CaravanList() {
                 <button
                   className="px-2.5 py-1.5 rounded-full border text-sm font-medium text-[#0F766E] border-[#0F766E] bg-white hover:bg-teal-50 transition-colors"
                   onClick={() => setSelectedCaravanId(c.id)}
-                  aria-label={`이 카라반 예약 선택: ${c.name}`}
+                  aria-label={`카라반 예약 선택: ${c.name}`}
                 >
                   예약
                 </button>
@@ -96,3 +100,4 @@ export default function CaravanList() {
     </div>
   )
 }
+

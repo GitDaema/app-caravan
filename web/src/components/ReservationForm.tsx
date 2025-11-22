@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { api } from '../lib/api'
 import { useUIStore } from '../store/ui'
+import { CalendarPlus } from 'lucide-react'
 
 export default function ReservationForm() {
   const qc = useQueryClient()
@@ -39,8 +40,11 @@ export default function ReservationForm() {
   })
 
   return (
-    <div className="bg-white rounded-2xl shadow-md ring-1 ring-gray-900/5 p-4 md:p-5">
-      <h3 className="font-semibold mb-3">예약 생성</h3>
+    <div className="bg-white rounded-2xl border border-slate-100 shadow-md p-4 md:p-5">
+      <div className="flex items-center mb-3">
+        <CalendarPlus className="w-5 h-5 text-slate-400 mr-2" />
+        <h3 className="text-sm font-semibold text-slate-900">예약 생성</h3>
+      </div>
       <div className="grid gap-2">
         <div className="text-sm text-gray-700">
           {selectedCaravanId ? (
@@ -58,7 +62,7 @@ export default function ReservationForm() {
           className="border border-slate-200 bg-slate-50 rounded-2xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0F766E] focus:border-[#0F766E] transition-colors"
           type="date"
           value={start}
-          onChange={e => setStart(e.target.value)}
+          onChange={(e) => setStart(e.target.value)}
         />
 
         <label className="text-sm text-gray-700" htmlFor="endDate">
@@ -69,18 +73,18 @@ export default function ReservationForm() {
           className="border border-slate-200 bg-slate-50 rounded-2xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0F766E] focus:border-[#0F766E] transition-colors"
           type="date"
           value={end}
-          onChange={e => setEnd(e.target.value)}
+          onChange={(e) => setEnd(e.target.value)}
         />
 
         <button
-          className="bg-[#0F766E] text-white px-3 py-2 rounded-2xl text-sm font-medium disabled:opacity-60 disabled:cursor-not-allowed hover:bg-[#115e57] transition-colors shadow-sm hover:shadow-md"
+          className="bg-[#0F766E] text-white px-3 py-2 rounded-2xl text-sm font-medium disabled:opacity-60 disabled:cursor-not-allowed hover:bg-[#115e57] transition-colors shadow-md"
           onClick={() => {
             if (!canSubmit || isOffline) return
             mutation.mutate()
           }}
           disabled={mutation.isPending || !canSubmit}
         >
-          {mutation.isPending ? '생성 중...' : isOffline ? '오프라인 상태에서는 예약을 만들 수 없습니다.' : '예약하기'}
+          {mutation.isPending ? '예약 생성 중...' : isOffline ? '오프라인 상태에서는 예약할 수 없어요.' : '예약하기'}
         </button>
 
         {isOffline && (
@@ -98,3 +102,4 @@ export default function ReservationForm() {
     </div>
   )
 }
+

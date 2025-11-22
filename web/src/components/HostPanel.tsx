@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '../lib/api'
 import { useAuthStore } from '../store/auth'
 import MessageThread from './MessageThread'
+import { Users } from 'lucide-react'
 
 function StatusChip({ status }: { status: string }) {
   const colors: Record<string, string> = {
@@ -12,7 +13,10 @@ function StatusChip({ status }: { status: string }) {
   }
   const cls = colors[status] || 'bg-slate-50 text-slate-700 border-slate-200'
   return (
-    <span className={`px-2 py-0.5 rounded-full border text-xs font-medium ${cls}`} aria-label={`status ${status}`}>
+    <span
+      className={`px-2 py-0.5 rounded-full border text-xs font-medium ${cls}`}
+      aria-label={`status ${status}`}
+    >
       {status}
     </span>
   )
@@ -35,7 +39,6 @@ export default function HostPanel() {
       api.post(`/api/reservations/${vars.id}/status`, { status: vars.status }),
     onSuccess: (_data, vars) => {
       qc.invalidateQueries({ queryKey: ['host-reservations'] })
-      // 캘린더도 함께 갱신
       qc.invalidateQueries({ queryKey: ['caravan-calendar', vars.caravan_id] })
     },
     onError: (e: any) => {
@@ -43,13 +46,15 @@ export default function HostPanel() {
     },
   })
 
-  // Only show for hosts
   if (!isHost) return null
   return (
-    <div className="bg-white rounded-2xl shadow-md ring-1 ring-gray-900/5 p-4 md:p-5">
-      <h3 className="font-semibold mb-3">호스트 예약 관리</h3>
+    <div className="bg-white rounded-2xl border border-slate-100 shadow-md p-4 md:p-5">
+      <div className="flex items-center mb-3">
+        <Users className="w-5 h-5 text-slate-400 mr-2" />
+        <h3 className="text-sm font-semibold text-slate-900">호스트 예약 관리</h3>
+      </div>
       {isLoading && <div>불러오는 중...</div>}
-      {error && <div className="text-red-600 text-sm">예약 목록을 불러오지 못했습니다.</div>}
+      {error && <div className="text-red-600 text-sm">예약 목록을 불러오지 못했어요.</div>}
       {!isLoading && !error && (
         <div className="overflow-auto">
           <table className="w-full text-sm">
@@ -76,17 +81,16 @@ export default function HostPanel() {
                     <StatusChip status={r.status} />
                   </td>
                   <td className="py-1 pr-2">
-                    {/* 단일 액션 버튼: pending -> 확인, confirmed -> 취소, cancelled -> 비활성 */}
                     {r.status === 'pending' && (
                       <button
                         className="px-2.5 py-1.5 rounded-full border text-xs font-medium text-emerald-700 border-emerald-300 hover:bg-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-300 disabled:opacity-50"
-                        aria-label={`예약 #${r.id} 확인`}
+                        aria-label={`예약 #${r.id} 승인`}
                         disabled={mutation.isPending}
                         onClick={() =>
                           mutation.mutate({ id: r.id, status: 'confirmed', caravan_id: r.caravan_id })
                         }
                       >
-                        확인
+                        승인
                       </button>
                     )}
                     {r.status === 'confirmed' && (
@@ -95,7 +99,7 @@ export default function HostPanel() {
                         aria-label={`예약 #${r.id} 취소`}
                         disabled={mutation.isPending}
                         onClick={() => {
-                          if (!window.confirm(`예약 #${r.id} 을(를) 정말 취소하시겠습니까?`)) return
+                          if (!window.confirm(`예약 #${r.id}을 정말 취소하시겠어요?`)) return
                           mutation.mutate({ id: r.id, status: 'cancelled', caravan_id: r.caravan_id })
                         }}
                       >
@@ -134,3 +138,4 @@ export default function HostPanel() {
     </div>
   )
 }
+
