@@ -78,7 +78,7 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-10 bg-gradient-to-br from-[#F8FAFC] via-white to-slate-100">
+    <div className="min-h-screen flex items-center justify-center px-4 py-10 bg-[#F5F7FA]">
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
@@ -88,12 +88,12 @@ export default function Login() {
         <Card>
           <h2 className="text-2xl font-semibold mb-6 text-center">로그인</h2>
 
-          <div className="flex gap-2 mb-6 bg-slate-50 p-1 rounded-full">
+          <div className="flex gap-2 mb-6 bg-slate-100 p-1 rounded-full">
             <button
               type="button"
               className={`flex-1 px-3 py-2 rounded-full text-xs sm:text-sm font-medium transition-colors ${
                 mode === 'login'
-                  ? 'bg-white text-[#0F766E] shadow-sm ring-1 ring-[#0F766E]/20'
+                  ? 'bg-slate-50 text-[#0F766E] shadow-sm ring-1 ring-[#0F766E]/20'
                   : 'text-slate-500 hover:text-slate-700'
               }`}
               onClick={() => setMode('login')}
@@ -104,7 +104,7 @@ export default function Login() {
               type="button"
               className={`flex-1 px-3 py-2 rounded-full text-xs sm:text-sm font-medium transition-colors ${
                 mode === 'register'
-                  ? 'bg-white text-[#0F766E] shadow-sm ring-1 ring-[#0F766E]/20'
+                  ? 'bg-slate-50 text-[#0F766E] shadow-sm ring-1 ring-[#0F766E]/20'
                   : 'text-slate-500 hover:text-slate-700'
               }`}
               onClick={() => setMode('register')}
@@ -116,8 +116,8 @@ export default function Login() {
           <div className="space-y-3 mb-6">
             <Button
               type="button"
-              variant="primary"
-              className="w-full justify-center"
+              className="w-full justify-center border border-gray-300 rounded-2xl text-sm font-medium shadow-sm hover:shadow-md transition-transform duration-150"
+              style={{ backgroundColor: '#FFFFFF', color: '#374151' }}
               onClick={() => {
                 window.location.href = `${API_BASE}/auth/google`
               }}
@@ -126,8 +126,8 @@ export default function Login() {
             </Button>
             <Button
               type="button"
-              variant="secondary"
-              className="w-full justify-center"
+              className="w-full justify-center rounded-2xl text-sm font-medium shadow-sm hover:shadow-md transition-transform duration-150"
+              style={{ backgroundColor: '#03C75A', color: '#FFFFFF' }}
               onClick={() => {
                 window.location.href = `${API_BASE}/auth/naver`
               }}
@@ -136,8 +136,8 @@ export default function Login() {
             </Button>
             <Button
               type="button"
-              variant="ghost"
-              className="w-full justify-center"
+              className="w-full justify-center rounded-2xl text-sm font-medium shadow-sm hover:shadow-md transition-transform duration-150"
+              style={{ backgroundColor: '#FEE500', color: '#000000' }}
               onClick={() => {
                 window.location.href = `${API_BASE}/auth/kakao`
               }}

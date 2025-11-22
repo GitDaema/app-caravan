@@ -9,7 +9,7 @@ export default function App({ children }: { children?: ReactNode }) {
   const location = useLocation()
 
   return (
-    <div className="min-h-full flex flex-col bg-gradient-to-b from-[#F8FAFC] via-white to-slate-100">
+    <div className="min-h-full flex flex-col bg-[#F5F7FA]">
       <Header />
       <PwaInstallBanner />
       <OfflineBanner />
