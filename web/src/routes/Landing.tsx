@@ -1,6 +1,13 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Shield, MapPin, Sparkles } from 'lucide-react'
+import {
+  Shield,
+  MapPin,
+  Sparkles,
+  ArrowRight,
+  CalendarDays,
+  ShieldCheck,
+} from 'lucide-react'
 import { FaInstagram, FaFacebook, FaTwitter } from 'react-icons/fa'
 
 const popularCaravans = [
@@ -97,45 +104,41 @@ export default function Landing() {
 
       {/* Service usage flow panel (replaces floating search bar) */}
       <section id="search" className="-mt-10 px-4 relative z-20">
-        <div className="max-w-4xl mx-auto bg-white border border-gray-200 rounded-3xl shadow-2xl shadow-gray-400/30 px-6 py-6 md:px-8 md:py-7">
-          <div className="text-center mb-4">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">
-              서비스 사용 흐름
-            </p>
-            <p className="mt-1 text-base md:text-lg font-semibold text-slate-900">
+        <div className="max-w-4xl mx-auto bg-white border border-gray-200 rounded-[2.5rem] shadow-2xl shadow-slate-200/50 px-6 py-8 md:px-10 md:py-10">
+          <div className="mb-12">
+            <p className="text-2xl md:text-3xl font-extrabold text-slate-900 text-center">
               앱 카라반, 이렇게 쓰여요
             </p>
           </div>
-          <div className="flex flex-col md:flex-row items-stretch md:items-start gap-4 md:gap-6">
-            <div className="flex-1 flex items-start gap-3">
-              <div className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-full bg-teal-50 text-teal-700 text-xs font-bold">
-                1
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+            <div className="relative flex flex-col items-center text-center">
+              <div className="inline-flex items-center justify-center rounded-full bg-blue-50 text-blue-600 p-4 mb-4">
+                <MapPin className="w-6 h-6" />
               </div>
-              <div className="flex-1">
-                <h3 className="text-sm font-semibold text-slate-900">
-                  카라반을 등록하고 찾아요
-                </h3>
-              </div>
+              <h3 className="font-bold text-lg mb-2">쉽게 찾고 등록해요</h3>
+              <p className="text-slate-500 text-sm leading-relaxed">
+                원하는 지역의 카라반을 검색하거나, 내 카라반을 간편하게 호스팅하세요.
+              </p>
+              <ArrowRight className="hidden md:block absolute -right-6 top-1/2 -translate-y-1/2 text-slate-300 w-6 h-6" />
             </div>
-            <div className="flex-1 flex items-start gap-3">
-              <div className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-full bg-teal-50 text-teal-700 text-xs font-bold">
-                2
+            <div className="relative flex flex-col items-center text-center">
+              <div className="inline-flex items-center justify-center rounded-full bg-green-50 text-green-600 p-4 mb-4">
+                <CalendarDays className="w-6 h-6" />
               </div>
-              <div className="flex-1">
-                <h3 className="text-sm font-semibold text-slate-900">
-                  일정과 이용 방식을 맞춰요
-                </h3>
-              </div>
+              <h3 className="font-bold text-lg mb-2">일정을 맞춰요</h3>
+              <p className="text-slate-500 text-sm leading-relaxed">
+                호스트와 게스트가 대화하며 완벽한 여행 날짜와 이용 방식을 조율합니다.
+              </p>
+              <ArrowRight className="hidden md:block absolute -right-6 top-1/2 -translate-y-1/2 text-slate-300 w-6 h-6" />
             </div>
-            <div className="flex-1 flex items-start gap-3">
-              <div className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-full bg-teal-50 text-teal-700 text-xs font-bold">
-                3
+            <div className="relative flex flex-col items-center text-center">
+              <div className="inline-flex items-center justify-center rounded-full bg-purple-50 text-purple-600 p-4 mb-4">
+                <ShieldCheck className="w-6 h-6" />
               </div>
-              <div className="flex-1">
-                <h3 className="text-sm font-semibold text-slate-900">
-                  안전하게 빌려주고 빌려 써요
-                </h3>
-              </div>
+              <h3 className="font-bold text-lg mb-2">안전하게 이용해요</h3>
+              <p className="text-slate-500 text-sm leading-relaxed">
+                검증된 에스크로 결제로 빌려주는 사람도, 빌리는 사람도 안심할 수 있어요.
+              </p>
             </div>
           </div>
         </div>
