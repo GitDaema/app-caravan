@@ -35,6 +35,40 @@ class ReservationService:
         self._caravan_repo = caravan_repository
         self._price_calculator = price_calculator
 
+    # Query helpers used by API layer (단순 위임으로 ReservationRepository 접근을 캡슐화)
+    def list_user_reservations(
+        self, user_id: int, skip: int = 0, limit: int = 100
+    ) -> list[Reservation]:
+        return self._reservation_repo.list_by_user(user_id=user_id, skip=skip, limit=limit)
+
+    def list_host_reservations(
+        self, host_id: int, skip: int = 0, limit: int = 200
+    ) -> list[Reservation]:
+        return self._reservation_repo.list_all(
+            skip=skip,
+            limit=limit,
+            host_id=host_id,
+        )
+
+    def list_all_reservations(
+        self,
+        *,
+        skip: int = 0,
+        limit: int = 200,
+        user_id: int | None = None,
+        caravan_id: int | None = None,
+        status: str | None = None,
+        host_id: int | None = None,
+    ) -> list[Reservation]:
+        return self._reservation_repo.list_all(
+            skip=skip,
+            limit=limit,
+            user_id=user_id,
+            caravan_id=caravan_id,
+            status=status,
+            host_id=host_id,
+        )
+
     def create_reservation(
         self, user_id: int, caravan_id: int, start_date: date, end_date: date
     ) -> Reservation:

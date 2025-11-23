@@ -31,10 +31,9 @@ def list_my_reservations(
 ):
     """
     현재 로그인한 사용자의 예약 목록을 페이징하여 반환한다.
-    실제 조회는 ReservationRepository.list_by_user 에 위임된다.
+    실제 조회는 ReservationService.list_user_reservations 에 위임된다.
     """
-    # TODO: 향후 ReservationService 에 전용 메서드를 추가해 _reservation_repo 직접 접근을 제거한다.
-    return reservation_service._reservation_repo.list_by_user(current_user.id, skip=skip, limit=limit)
+    return reservation_service.list_user_reservations(current_user.id, skip=skip, limit=limit)
 
 
 @router.get("/host", response_model=list[reservation_schema.Reservation])
@@ -51,11 +50,10 @@ def list_host_reservations(
     """
     if current_user.role != UserRole.HOST:
         raise HTTPException(status_code=403, detail="host_only")
-    # TODO: 향후 ReservationService 를 통해 조회하도록 추상화를 강화한다.
-    return reservation_service._reservation_repo.list_all(
+    return reservation_service.list_host_reservations(
+        host_id=current_user.id,
         skip=skip,
         limit=limit,
-        host_id=current_user.id,
     )
 
 
@@ -109,12 +107,12 @@ def list_all_reservations(
     """
     if current_user.role != UserRole.ADMIN:
         raise HTTPException(status_code=403, detail="admin_only")
-    return reservation_service._reservation_repo.list_all(
+    return reservation_service.list_all_reservations(
         skip=skip,
         limit=limit,
         user_id=user_id,
         caravan_id=caravan_id,
-        status=(status_q.value if hasattr(status_q, 'value') and status_q else status_q),
+        status=(status_q.value if hasattr(status_q, "value") and status_q else status_q),
         host_id=host_id,
     )
 
