@@ -29,6 +29,11 @@ def list_my_reservations(
     skip: int = 0,
     limit: int = 100,
 ):
+    """
+    현재 로그인한 사용자의 예약 목록을 페이징하여 반환한다.
+    실제 조회는 ReservationRepository.list_by_user 에 위임된다.
+    """
+    # TODO: 향후 ReservationService 에 전용 메서드를 추가해 _reservation_repo 직접 접근을 제거한다.
     return reservation_service._reservation_repo.list_by_user(current_user.id, skip=skip, limit=limit)
 
 
@@ -40,8 +45,13 @@ def list_host_reservations(
     skip: int = 0,
     limit: int = 200,
 ):
+    """
+    호스트가 자신의 카라반들에 대한 예약 목록을 조회하는 엔드포인트.
+    HOST 가 아닌 경우 403 host_only 를 반환한다.
+    """
     if current_user.role != UserRole.HOST:
         raise HTTPException(status_code=403, detail="host_only")
+    # TODO: 향후 ReservationService 를 통해 조회하도록 추상화를 강화한다.
     return reservation_service._reservation_repo.list_all(
         skip=skip,
         limit=limit,
@@ -56,6 +66,10 @@ def create_reservation(
     current_user: user_model.User = Depends(deps.get_current_active_user),
     reservation_in: reservation_schema.ReservationCreate,
 ):
+    """
+    현재 로그인한 사용자를 예약 주체로 하여 카라반 예약을 생성한다.
+    도메인 예외를 HTTP 상태 코드(400/402/404/409/500)로 매핑한다.
+    """
     try:
         created = reservation_service.create_reservation(
             user_id=current_user.id,
@@ -89,6 +103,10 @@ def list_all_reservations(
     status_q: ReservationStatus | None = None,
     host_id: int | None = None,
 ):
+    """
+    ADMIN 이 전체 예약 목록을 필터 조건(사용자/카라반/상태/호스트)과 함께 조회한다.
+    ADMIN 이 아닌 사용자는 403 admin_only 로 거부된다.
+    """
     if current_user.role != UserRole.ADMIN:
         raise HTTPException(status_code=403, detail="admin_only")
     return reservation_service._reservation_repo.list_all(
@@ -107,6 +125,11 @@ def get_reservation(
     reservation_service: ReservationService = Depends(deps.get_reservation_service),
     current_user: user_model.User = Depends(deps.get_current_active_user),
 ):
+    """
+    단일 예약 상세를 조회한다.
+    - 예약이 없으면 404 reservation_not_found
+    - 다른 사용자의 예약이면 403 forbidden
+    """
     r = reservation_service._reservation_repo.get_by_id(reservation_id)
     if not r:
         raise HTTPException(status_code=404, detail="reservation_not_found")
@@ -122,6 +145,10 @@ def cancel_reservation(
     reservation_service: ReservationService = Depends(deps.get_reservation_service),
     current_user: user_model.User = Depends(deps.get_current_active_user),
 ):
+    """
+    예약을 사용자가 직접 취소하는 엔드포인트.
+    ReservationService.cancel_by_user 에서 발생한 도메인 오류를 HTTP 상태 코드로 변환한다.
+    """
     try:
         return reservation_service.cancel_by_user(reservation_id=reservation_id, user_id=current_user.id)
     except ValueError as e:
@@ -145,6 +172,13 @@ def update_reservation_status(
     reservation_service: ReservationService = Depends(deps.get_reservation_service),
     current_user: user_model.User = Depends(deps.get_current_active_user),
 ):
+    """
+    호스트가 예약 상태를 변경하는 엔드포인트.
+
+    - host 권한이 아닌 사용자는 403 host_only
+    - 예약/카라반 미존재, 권한 없음, 잘못된 상태 전이는 ReservationService 예외를
+      404/403/409/400 으로 매핑한다.
+    """
     if current_user.role.value != "host":
         raise HTTPException(status_code=403, detail="host_only")
     try:

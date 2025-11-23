@@ -1138,8 +1138,6 @@ GEMINI.md와 GOAL.md의 지침을 준수하는 풀스택 개발자. FastAPI 백�
 
 ### Day 8 — HTTPS 적용 · OAuth 재정비 · Nginx/PM2 안정화 · 프론트 오류 수정 · VM 문제 복구  
 
----
-
 #### AI 개발 프롬프트
 
 # My request for Codex (Day8):
@@ -1440,3 +1438,75 @@ VITE_API_BASE_URL=https://caravanshare.xyz/api
 ---
 
 
+### Day 9 - High-End UI/UX 리팩토링 및 반응형 디자인 완성
+
+#### AI 개발 프롬프트
+
+# Role & Goal
+너는 여행 플랫폼 'CaravanShare'의 Lead UI/UX Designer야. 현재 기능 위주로 구현된 Tailwind CSS 스타일을 'Airbnb'나 'Traveloka' 같은 상용 서비스 수준의 고급스러운 디자인으로 리팩토링해야 해.
+
+# Design Guidelines (Strictly Follow)
+1. **Color Palette:** 기본 파란색/빨간색 대신, 브랜드 컬러를 정의해.
+   - Primary: 신뢰감 있는 Deep Teal (#0F766E) 또는 Ocean Blue.
+   - Background: 단순 회색(#eee) 대신 Warm Neutral (#F8FAFC) 또는 Off-white 사용.
+   - Surface: 순백색(#FFFFFF)에 미세한 테두리(border-gray-100)와 부드러운 그림자(shadow-sm, shadow-md) 적용.
+2. **Typography:** 가독성을 위해 Heading(제목)은 Tight하게, Body(본문)는 Relaxed하게 설정. 계층 구조(Hierarchy)를 명확히 해.
+3. **Shadows & Borders:** '검은 테두리' 금지. 대신 `ring-1 ring-gray-900/5`와 `shadow-xl` 등을 조합해 깊이감을 줘.
+4. **Rounded Corners:** 모바일 친화적인 `rounded-2xl` 또는 `rounded-3xl`을 적극 사용해.
+5. **Interactions:** 모든 버튼과 카드에 Hover 시 `scale-105` 또는 색상 변화 등 부드러운 `transition`을 필수 적용해.
+
+# Constraint
+- 로직(React State, Hooks, API Calls)은 **절대 건드리지 마.** 오직 JSX 내의 `className`과 레이아웃 구조만 수정해.
+
+- [Day 9 Codex 전체 대화 로그 보기](./codex_logs/Day9-Log.md)
+
+---
+
+#### 산출물(핵심 변경 사항)
+
+- **디자인 시스템 및 글로벌 스타일**
+  - **Color:** Primary `#0F766E`(Deep Teal), Background `#F1F5F9` (Slate-100 계열)로 명도 대비 강화.
+  - **Component:** `Button`, `Input`, `Card` 컴포넌트를 `rounded-2xl`, `shadow-md`, `ring-1` 스타일로 통일하여 입체감 부여.
+  - **Typography:** 제목은 Tight하게, 본문은 Relaxed하게 설정하여 계층 구조 명확화.
+
+- **페이지별 UI/UX 개편**
+  - **Landing (`/`)**: Unsplash 고화질 배경과 오버레이가 적용된 Hero 섹션, 화면 하단에 떠 있는 **Floating Search Bar**, 3열 Feature 그리드 및 가로 스크롤 Popular 섹션 구현.
+  - **Login (`/login`)**: 카드 너비를 `max-w-[400px]`로 제한하여 중앙 정렬, 소셜 로그인 버튼을 브랜드 고유 컬러(Hex Code 하드코딩) 및 아이콘으로 리디자인.
+  - **Dashboard (`/app`)**:
+    - **Navigation**: 데스크탑은 좌측 **Sidebar**, 모바일은 하단 **Bottom Tab**으로 반응형 네비게이션 구현.
+    - **Layout**: 12컬럼 **Bento Grid** 시스템 도입 (주요 정보는 크게, 보조 정보는 작게 배치).
+    - **Density**: 카드 헤더에 Lucide 아이콘 추가, 잔액 카드 등 주요 지표 시각화 강화.
+
+- **UX 흐름 개선**
+  - **예약 플로우 (`Explore` -> `Trips`)**: 탐색 탭에서 '예약' 클릭 시 `Trips` 탭으로 자동 전환되며 상단에 Toast 메시지 노출. 예약 폼 상단에 **Product Summary Card**를 추가하여 선택한 카라반 정보(썸네일, 가격) 즉시 확인 가능.
+  - **이미지 등록 (MVP)**: 호스트가 파일 업로드 대신 **이미지 URL**을 입력하면 즉시 미리보기가 뜨고, `onError` 처리를 통해 깨진 이미지를 방어하는 로직 적용.
+
+#### 실행/검증 명령
+- **웹 실행**: `cd web && npm run dev`
+- **시각적 테스트**:
+  - `http://localhost:5173/` 접속 후 랜딩 페이지의 반응형 동작(모바일/데스크탑) 확인.
+  - 로그인 페이지 소셜 버튼 디자인 및 카드 그림자 확인.
+  - 대시보드 진입 후 사이드바(PC)와 하단 탭(모바일) 전환 확인.
+  - '탐색' 탭에서 예약 버튼 클릭 시 '내 일정' 탭으로 자연스럽게 넘어가는지 검증.
+
+#### 문제 및 해결
+
+1) **시각적 밋밋함 및 계층 구조 부재**
+   - **현상**: 배경과 카드가 모두 흰색이거나 구분이 모호하여 정보의 중요도가 눈에 들어오지 않음.
+   - **대응**: 앱 배경을 짙은 회색(`bg-slate-100`)으로 깔고, 카드는 흰색(`bg-white`)에 `shadow-xl`과 `ring-1`을 적용하여 **"회색 바다 위의 흰색 섬"** 컨셉으로 깊이감을 형성.
+
+2) **모바일 레이아웃 깨짐 (Stretched UI)**
+   - **현상**: 로그인 버튼이 가로로 너무 길어지거나, 대시보드 그리드가 모바일에서 찌그러짐.
+   - **대응**: 로그인 카드에 `max-w-md` 및 `mx-auto`를 적용하여 너비를 강제 제한. 대시보드 그리드는 모바일에서 `grid-cols-1`, 데스크탑에서 `grid-cols-12`로 동작하도록 Tailwind Breakpoint 재설정.
+
+3) **예약 경험의 단절**
+   - **현상**: 탐색 탭에서 예약을 눌러도 아무런 반응이 없어 사용자가 예약이 된 것인지 알 수 없음.
+   - **대응**: `CaravanList`의 예약 버튼 클릭 이벤트를 상위로 올려 `activeTab`을 'trips'로 변경하고, 스크롤을 최상단으로 올리며 "예약 정보를 입력해주세요"라는 Toast UI를 띄우도록 흐름 연결.
+
+4) **데모 이미지 관리**
+   - **현상**: 여러 곳에서 제각각인 Unsplash 링크를 사용하여 일관성이 없고 일부 링크가 만료됨.
+   - **대응**: `CaravanForm`, `CaravanList`, `Landing` 등 전역에서 사용하는 예시 이미지와 Fallback 이미지를 신뢰할 수 있는 특정 Unsplash URL로 통일하여 데모 품질 확보.
+
+#### 학습 내용
+- **Logic-Safe Refactoring**: 비즈니스 로직(State, Hooks)을 건드리지 않고 `className`과 JSX 구조만 변경하는 것만으로도 앱의 가치를 완전히 다르게 보이게 할 수 있음.
+- **Micro-Interactions**: 버튼의 `active:scale-95`, 카드의 `hover:-translate-y-1` 같은 미세한 인터랙션이 앱을 훨씬 "반응성 있고 살아있는" 느낌으로 만듦.

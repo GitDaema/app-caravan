@@ -38,6 +38,16 @@ class ReservationService:
     def create_reservation(
         self, user_id: int, caravan_id: int, start_date: date, end_date: date
     ) -> Reservation:
+        """
+        주어진 사용자와 카라반에 대해 예약을 생성한다.
+
+        흐름:
+        1) 사용자/카라반 존재 여부를 검증하고, 없으면 UserNotFoundError/CaravanNotFoundError 를 발생시킨다.
+        2) 예약 가능 여부와 결제 가능 여부를 ReservationValidator/PriceCalculator 를 통해 검증한다.
+        3) 하나의 세션에서 잔액 차감과 예약 생성 후 commit 하고, 중간 오류가 발생하면 rollback 한다.
+
+        도메인 예외는 그대로 전파하고, 알 수 없는 예외는 ReservationError 로 래핑한다.
+        """
         try:
             user = self._user_repo.get_by_id(user_id)
             if not user:
@@ -113,6 +123,18 @@ class ReservationService:
     def update_status_by_host(
         self, *, reservation_id: int, host_id: int, status: ReservationStatus
     ) -> Reservation:
+        """
+        호스트가 자신의 카라반 예약 상태를 변경한다.
+
+        상태 전이 규칙:
+        - CANCELLED 상태는 종료 상태로, 다른 상태로 변경할 수 없다.
+        - PENDING -> {CONFIRMED, CANCELLED} 허용
+        - CONFIRMED -> {CANCELLED} 허용
+        - 동일 상태로의 전이는 그대로 현재 예약을 반환한다.
+
+        상태 변경과 관련 DB 작업은 하나의 세션에서 수행하며,
+        실패 시 rollback 후 예외를 다시 전파한다.
+        """
         r = self._reservation_repo.get_by_id(reservation_id)
         if not r:
             raise ValueError("reservation_not_found")

@@ -32,6 +32,16 @@ def verify_google_id_token(
     payload: GoogleVerifyRequest,
     db: Session = Depends(deps.get_db),
 ):
+    """
+    Google/Firebase ID 토큰을 검증하고, 필요 시 최초 로그인 사용자를 생성한 뒤
+    애플리케이션용 액세스 토큰을 발급한다.
+
+    검증 단계:
+    1) GOOGLE_CLIENT_ID 가 설정된 경우: Google OAuth ID 토큰을 audience 포함해 검증한다.
+    2) 실패하고 FIREBASE_PROJECT_ID 가 설정된 경우: Firebase ID 토큰으로 재검증한다.
+
+    모든 검증이 실패하거나 이메일이 없으면 401 invalid_google_token 으로 응답한다.
+    """
     request = grequests.Request()
     info = None
     email = None
@@ -66,6 +76,7 @@ def verify_google_id_token(
     if info is None or not email:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="invalid_google_token")
 
+    # TODO: 향후 DI 컨테이너를 통해 UserRepository 를 주입받도록 개선한다.
     user_repo = UserRepository(db)
     user = user_repo.get_user_by_email(email=email)
 
