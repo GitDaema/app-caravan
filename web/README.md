@@ -1,137 +1,118 @@
-Web (Vite + React + TS)
-========================
+Web Frontend (Vite + React PWA)
+================================
 
-`web/` 디렉터리는 CaravanShare의 **React 기반 PWA 프론트엔드**입니다.  
-Node 기반 API (`api/`) 와 **세션 쿠키**를 사용해 통신하며, Google/Naver/Kakao 소셜 로그인과  
-로컬 이메일/비밀번호 로그인을 모두 지원합니다.
+`web/` 디렉터리는 Vite + React + TypeScript 기반으로 구현된 **PWA 지원 카라반 공유 웹 프론트엔드**입니다.  
+브라우저 및 모바일(브라우저 설치 / Capacitor 빌드)에서 동작하며, 백엔드 API와 HTTP를 통해 통신합니다.
 
 ---
 
-Local development
------------------
+## 1. 프론트엔드 개요
 
-- 권장 Node 버전: **18+**
-- 최초 설치:
-  - `cd web`
-  - `npm install`
-- 개발 서버 실행:
-  - `npm run dev`
-  - 기본 주소: http://localhost:5173
+- React + Vite 기반 SPA
+- TypeScript 사용
+- PWA 지원 (서비스 워커, 오프라인 캐시, 설치 가능 웹앱)
+- Capacitor 를 사용한 선택적 모바일 앱 패키징 지원
 
-Env (.env.local)
-----------------
+프론트엔드는 **백엔드에서 제공하는 REST API**를 호출하여:
 
-`web/.env.local.example` 를 복사해 `.env.local` 로 사용합니다.
+- 로그인/로그아웃 및 사용자 세션 관리
+- 카라반 목록·검색 및 상세 조회
+- 예약 생성/취소 및 목록 조회
+- 유저 잔액 조회/충전 등
+
+과 같은 기능을 화면으로 제공합니다.  
+구체적인 API 스펙 자체는 백엔드에서 정의되며, 이 문서에서는 “어떻게 연결하는지(환경 설정)”에 초점을 맞춥니다.
+
+---
+
+## 2. 설치 및 실행 (Setup & Run)
+
+아래 모든 명령은 `web/` 디렉터리 기준입니다.
+
+### 의존성 설치
+
+```bash
+cd web
+npm install
+```
+
+권장 Node.js 버전은 **18 이상**입니다.
+
+### 개발 서버 실행
+
+```bash
+npm run dev
+```
+
+- 기본 개발 주소: `http://localhost:5173`
+- 백엔드 API 서버가 별도로 떠 있어야 UI가 정상적으로 동작합니다  
+  (예: FastAPI 백엔드가 `http://localhost:8000` 혹은 `http://localhost:3000` 등에서 실행 중).
+
+### 환경 변수 (.env)
+
+프론트엔드는 Vite 규칙에 따라 **환경 변수는 모두 `VITE_` prefix** 를 사용합니다.
+
+1. 예시 파일 복사
+
+```bash
+cp .env.local.example .env.local
+```
+
+2. 핵심 변수 설정
 
 - `VITE_API_BASE_URL`
-  - 기본(로컬): `http://localhost:3000`
-  - 프로덕션: `https://caravanshare.xyz/api`
-  - 이 값은 프론트에서 호출하는 **백엔드 루트 URL** 입니다.
-    - `/auth/login`, `/auth/register`, `/auth/logout`, `/auth/me`
-    - `/auth/google|naver|kakao`
-    - `/api/users/*`, `/api/caravans/*`, `/api/reservations/*`
-    - `/api/reviews/*`, `/api/messages/*`
-    - `/dev/overview`
-- (선택) `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`
-  - 현재는 Passport 기반 소셜 로그인이 기본이며,  
-    추후 Firebase 연동을 위한 옵션 값입니다.
+  - 백엔드 API의 루트 URL 입니다.
+  - 예시:
+    - FastAPI 개발 서버를 직접 사용할 때: `http://localhost:8000`
+    - 리버스 프록시 또는 Node API 게이트웨이를 경유할 때: `http://localhost:3000`
+  - 프론트엔드는 이 값을 기준으로 `fetch` 요청을 구성합니다. 예:
+    - `${VITE_API_BASE_URL}/api/v1/login/access-token`
+    - `${VITE_API_BASE_URL}/api/v1/users/…`
+    - `${VITE_API_BASE_URL}/api/v1/caravans/…`
+    - `${VITE_API_BASE_URL}/api/v1/reservations/…`
 
-Routes
-------
+- 기타 선택적 변수 (예: Firebase, 추가 외부 서비스 연동)에 대한 설명은 필요 시 확장할 수 있도록 `.env.local.example` 에 주석으로 남기는 것을 원칙으로 합니다.
 
-- `/`
-  - 랜딩 페이지 (서비스 소개, 진입 버튼 등)
-- `/login`
-  - 소셜 로그인(Google/Naver/Kakao) + 로컬 로그인(이메일/비밀번호)
-  - 소셜 로그인 버튼:
-    - `${VITE_API_BASE_URL}/auth/google`
-    - `${VITE_API_BASE_URL}/auth/naver`
-    - `${VITE_API_BASE_URL}/auth/kakao`
-  - 로그인 성공 시 `/app` 으로 이동
-- `/app`
-  - 보호된 대시보드 영역
-  - `ProtectedRoute` 가 `GET {VITE_API_BASE_URL}/auth/me` 로 세션을 검증
-  - 주요 카드/위젯:
-    - Caravan 리스트 및 예약 생성/예약 목록
-    - Host/관리자용 패널
-    - 잔액 조회 및 충전(`BalanceCard`)
-    - 카라반별 예약 캘린더(`CaravanCalendar`)
-    - 카라반 리뷰(`ReviewSection`)
-    - 예약별 메시지 쓰레드(`MessageThread`)
-    - DemoOverview (`/dev/overview` 데이터를 요약 출력)
+**중요:**  
+프론트엔드 입장에서는 “백엔드가 어떤 기술로 구현되었는지”보다  
+“REST API가 어느 URL에서, 어떤 스킴(HTTP/HTTPS)으로 제공되는지”가 중요합니다.  
+운영/스테이징/로컬 환경별로 `VITE_API_BASE_URL` 을 적절히 분리해 사용하는 것을 권장합니다.
 
-Auth strategy (현재)
---------------------
+---
 
-- 세션 기반 인증 (JWT 토큰 대신 **서버 세션 + 쿠키** 사용)
-  - 백엔드: `express-session` + `express-mysql-session`
-  - 프론트: `fetch(..., { credentials: 'include' })` 로 쿠키를 항상 포함
-- auth 스토어: `web/src/store/auth.ts`
-  - `fetchMe()` → `GET {API_BASE}/auth/me`
-  - `loginLocal(email, password)` → `POST {API_BASE}/auth/login`
-  - `registerLocal(email, password, fullName?)` → `POST {API_BASE}/auth/register`
-  - `logout()` → `POST {API_BASE}/auth/logout`
-- 라우트 가드:
-  - `PublicRoute`
-    - 마운트 시 `fetchMe()` 호출
-    - 로딩 상태에서 `"세션 확인 중.."` 과 같은 메시지 출력
-    - 이미 로그인된 사용자는 `/app` 으로 리다이렉트
-  - `ProtectedRoute`
-    - 마운트 시 `fetchMe()` 호출
-    - 비로그인 사용자는 `/login` 으로 리다이렉트
+## 3. 폴더 구조 요약
 
-PWA & Service Worker
---------------------
+아래는 프론트엔드 소스 코드의 주요 위치만 간략히 정리한 것입니다.  
+구체적인 컴포넌트/훅/스토어 구조는 코드와 주석을 함께 참고하면 됩니다.
 
-- PWA/서비스 워커는 `vite-plugin-pwa` 와 `web/src/pwa.ts` 에서 설정합니다.
-- 주요 포인트
-  - HTML/JS/CSS/정적 자산 App shell 을 precache
-  - `/api/` 경로는 `NetworkFirst` 전략 사용
-  - `navigateFallbackDenylist: [/^\/api\//]` 설정으로  
-    `/api/auth/*` 같은 OAuth 리다이렉트 요청이 React 404 로 처리되지 않도록 함
-- 브라우저 설치
-  - 지원 환경에서는 브라우저가 제공하는 PWA 설치 배너를 통해 설치 가능
-  - `OfflineBanner`, `PwaInstallBanner` 컴포넌트로 UX 보조
+```text
+web/
+  ├── index.html          # Vite 진입 HTML
+  ├── vite.config.ts      # Vite 설정
+  ├── capacitor.config.ts # (선택) Capacitor 모바일 빌드 설정
+  └── src/
+      ├── main.tsx        # React 엔트리 포인트
+      ├── App.tsx         # 라우팅 및 글로벌 레이아웃
+      ├── pages/          # 페이지 단위 화면 (예: 로그인, 대시보드, 예약 목록 등)
+      ├── components/     # 재사용 가능한 UI 컴포넌트 (폼, 카드, 모달 등)
+      ├── hooks/          # 커스텀 훅 (예: 데이터 페칭, 인증 상태 관리)
+      ├── store/          # 전역 상태 관리(예: auth 상태, 사용자 정보 등)
+      ├── api/            # 백엔드 API 호출 래퍼/클라이언트 (fetch/axios 등)
+      ├── styles/         # 전역 스타일, 테마, 유틸리티 CSS
+      └── pwa.ts          # PWA 등록/서비스 워커 관련 설정
+```
 
-New UI (요약)
--------------
+### 백엔드와의 통신 관점 정리
 
-- Host Panel
-  - 호스트가 자신의 카라반 예약을 확인/상태 변경
-- Admin Reservations
-  - 관리자용 전체 예약 목록/상태 확인
-- Caravan Calendar
-  - 선택한 카라반의 예약 날짜 범위를 캘린더로 표시
-- Reservation List
-  - 사용자의 예약 목록 및 취소 버튼
-- Balance Card
-  - 현재 잔액 조회 및 잔액 충전 버튼
-- Review Section
-  - 카라반별 별점(1~5) + 코멘트 리뷰 목록/작성
-  - API: `GET/POST {API_BASE}/api/reviews`
-- Message Thread
-  - 예약별 게스트↔호스트 간 1:1 메시지 쓰레드
-  - API: `GET/POST {API_BASE}/api/messages`
+- 모든 API 호출은 `VITE_API_BASE_URL` 을 기준으로 구성된 HTTP 요청입니다.
+- 인증/세션 전략(예: JWT, 세션 쿠키 등)에 따라:
+  - `Authorization` 헤더에 토큰을 붙이거나,
+  - `credentials: "include"` 옵션으로 쿠키 기반 세션을 함께 전송합니다.
+- 이러한 세부 구현은 `src/api/` 또는 `src/store/` 레이어에서 캡슐화하여,  
+  개별 컴포넌트는 “데이터를 가져오고, 상태를 갱신한다”는 역할에 집중할 수 있도록 합니다.
 
-Tests
------
+---
 
-- 유닛/컴포넌트 테스트
-  - `npm run test` (watch 모드)
-  - `npm run test:run` (CI 용 단발 실행)
-
-Mobile build (Capacitor, 선택)
-------------------------------
-
-현재는 **PWA 중심**으로 사용하며, 필요 시 Capacitor 로 모바일 빌드를 생성할 수 있습니다.
-
-- Capacitor 설정: `web/capacitor.config.ts` (`webDir: "dist"`)
-- 기본 플로우:
-  - `npm run build` (또는 `npm run build:pwa`)
-  - `npm run cap:sync`
-  - `npm run cap:android`
-  - `npm run cap:ios`
-- 개발 중에는 `capacitor.config.ts` 의 `server.url` 을 Vite dev 서버로 지정해  
-  실시간 개발이 가능하지만, **실제 배포 빌드에서는 제거하고**  
-  `dist` 빌드 결과를 번들에 포함해야 합니다.
+프론트엔드와 백엔드의 전체적인 아키텍처 및 도메인 설계 의도는 루트의 `DESIGN.md` 를 참고하면 됩니다.  
+이 문서는 어디까지나 “프론트엔드를 어떻게 띄우고, 어디를 고쳐야 백엔드와 잘 통신하는지”를 안내하는 것을 목표로 합니다.
 
