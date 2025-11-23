@@ -8,23 +8,23 @@ const popularCaravans = [
     id: 1,
     title: '동해 오션뷰 카라반',
     location: '강원도 동해',
-    price: '₩180,000 / 박',
+    price: '₩80,000 / 박',
     image:
       'https://images.unsplash.com/photo-1516939884455-1445c8652f83?q=80&w=1000&auto=format&fit=crop',
     superHost: true,
   },
   {
     id: 2,
-    title: '제주 노을 캠핑 트레일러',
-    location: '제주 애월',
-    price: '₩210,000 / 박',
+    title: '제주 감성 캠핑 트레일러',
+    location: '제주 서귀포',
+    price: '₩110,000 / 박',
     image:
       'https://images.unsplash.com/photo-1592351763700-b9b35a6465ea?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     superHost: true,
   },
   {
     id: 3,
-    title: '강릉 감성 캠핑카',
+    title: '강릉 바다 감성 캠핑',
     location: '강릉 경포대',
     price: '₩150,000 / 박',
     image:
@@ -33,7 +33,7 @@ const popularCaravans = [
   },
   {
     id: 4,
-    title: '부산 비치 사이드 캠퍼',
+    title: '부산 비치 뷰 캠퍼',
     location: '부산 기장',
     price: '₩190,000 / 박',
     image:
@@ -72,8 +72,9 @@ export default function Landing() {
             transition={{ duration: 0.35, delay: 0.05 }}
             className="text-base md:text-lg text-slate-100/90 mb-6 leading-relaxed"
           >
-            CaravanShare에서 호스트와 게스트가 직접 연결되는 카라반 공유 여행을 경험해 보세요.
-            주말 캠핑부터 장거리 로드트립까지, 일정과 예산에 맞는 카라반을 쉽게 찾을 수 있습니다.
+            CaravanShare에서 호스트와 게스트가 직접 연결되는 카라반 공유 경험을 만나보세요.
+            주말 캠핑부터 장기 로드트립까지, 서로의 카라반을 나누며 더 유연한 여행을 떠날 수
+            있습니다.
           </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 8 }}
@@ -94,47 +95,49 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Floating search bar */}
-      <section className="-mt-10 px-4 relative z-20">
-        <div className="max-w-4xl mx-auto bg-white border border-gray-200 rounded-full shadow-2xl shadow-gray-400/30 px-4 py-3 md:px-6 md:py-4 flex flex-col md:flex-row items-stretch md:items-center gap-3 md:gap-4">
-          <div className="flex-1 flex flex-col gap-1">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">
-              위치
-            </span>
-            <input
-              type="text"
-              placeholder="어디로 떠나시나요?"
-              className="w-full bg-transparent text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none"
-            />
+      {/* Service usage flow panel (replaces floating search bar) */}
+      <section id="search" className="-mt-10 px-4 relative z-20">
+        <div className="max-w-4xl mx-auto bg-white border border-gray-200 rounded-3xl shadow-2xl shadow-gray-400/30 px-6 py-6 md:px-8 md:py-7">
+          <div className="text-center mb-4">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">
+              서비스 사용 흐름
+            </p>
+            <p className="mt-1 text-base md:text-lg font-semibold text-slate-900">
+              앱 카라반, 이렇게 쓰여요
+            </p>
           </div>
-          <div className="hidden md:block w-px h-8 bg-slate-200" />
-          <div className="flex-1 flex flex-col gap-1">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">
-              날짜
-            </span>
-            <input
-              type="text"
-              placeholder="언제부터 언제까지"
-              className="w-full bg-transparent text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none"
-            />
+          <div className="flex flex-col md:flex-row items-stretch md:items-start gap-4 md:gap-6">
+            <div className="flex-1 flex items-start gap-3">
+              <div className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-full bg-teal-50 text-teal-700 text-xs font-bold">
+                1
+              </div>
+              <div className="flex-1">
+                <h3 className="text-sm font-semibold text-slate-900">
+                  카라반을 등록하고 찾아요
+                </h3>
+              </div>
+            </div>
+            <div className="flex-1 flex items-start gap-3">
+              <div className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-full bg-teal-50 text-teal-700 text-xs font-bold">
+                2
+              </div>
+              <div className="flex-1">
+                <h3 className="text-sm font-semibold text-slate-900">
+                  일정과 이용 방식을 맞춰요
+                </h3>
+              </div>
+            </div>
+            <div className="flex-1 flex items-start gap-3">
+              <div className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-full bg-teal-50 text-teal-700 text-xs font-bold">
+                3
+              </div>
+              <div className="flex-1">
+                <h3 className="text-sm font-semibold text-slate-900">
+                  안전하게 빌려주고 빌려 써요
+                </h3>
+              </div>
+            </div>
           </div>
-          <div className="hidden md:block w-px h-8 bg-slate-200" />
-          <div className="flex-1 flex flex-col gap-1">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">
-              인원
-            </span>
-            <input
-              type="text"
-              placeholder="인원 수"
-              className="w-full bg-transparent text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none"
-            />
-          </div>
-          <button
-            type="button"
-            className="shrink-0 w-full md:w-auto h-11 rounded-full bg-[#0F766E] text-white text-sm font-semibold flex items-center justify-center px-5 hover:bg-[#115e57] hover:-translate-y-0.5 transition-transform transition-colors duration-150 shadow-md"
-          >
-            검색
-          </button>
         </div>
       </section>
 
@@ -142,10 +145,10 @@ export default function Landing() {
       <section className="py-16 px-4">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-center text-sm font-bold uppercase tracking-wider text-gray-500 mb-2">
-            왜 CaravanShare 인가?
+            왜 CaravanShare인가요?
           </h2>
           <p className="text-center text-2xl font-semibold text-slate-900 mb-10">
-            여행을 더 빠르고, 안전하고, 특별하게
+            카라반 공유를 더 쉽고, 안전하고, 특별하게
           </p>
           <div className="grid gap-6 md:grid-cols-3">
             <div className="bg-white border border-gray-200 rounded-2xl shadow-xl shadow-gray-400/20 p-6">
@@ -154,10 +157,10 @@ export default function Landing() {
                   <MapPin className="w-6 h-6 text-blue-500" />
                 </div>
               </div>
-              <h3 className="font-bold text-xl text-slate-900 mb-2">한 눈에 보이는 여행지</h3>
+              <h3 className="font-bold text-xl text-slate-900 mb-2">어디서든 만나는 카라반</h3>
               <p className="text-sm text-gray-500 leading-relaxed">
-                지도를 기반으로 원하는 지역의 카라반을 빠르게 탐색하고, 위치와 주변 환경을 직관적으로 확인할
-                수 있습니다.
+                다양한 지역의 카라반이 한곳에 모여 있어, 게스트는 가까운 카라반을 찾고 호스트는
+                자신의 카라반을 쉽게 소개할 수 있습니다.
               </p>
             </div>
             <div className="bg-white border border-gray-200 rounded-2xl shadow-xl shadow-gray-400/20 p-6">
@@ -166,10 +169,10 @@ export default function Landing() {
                   <Shield className="w-6 h-6 text-blue-500" />
                 </div>
               </div>
-              <h3 className="font-bold text-xl text-slate-900 mb-2">안전한 결제와 보호</h3>
+              <h3 className="font-bold text-xl text-slate-900 mb-2">안전한 예약과 결제</h3>
               <p className="text-sm text-gray-500 leading-relaxed">
-                에스크로 결제와 명확한 취소 정책으로, 예기치 못한 상황에도 호스트와 게스트 모두를 안전하게
-                보호합니다.
+                플랫폼을 통한 예약과 정산으로, 예상치 못한 상황에서도 게스트와 호스트 모두를
+                안전하게 보호합니다.
               </p>
             </div>
             <div className="bg-white border border-gray-200 rounded-2xl shadow-xl shadow-gray-400/20 p-6">
@@ -178,10 +181,10 @@ export default function Landing() {
                   <Sparkles className="w-6 h-6 text-blue-500" />
                 </div>
               </div>
-              <h3 className="font-bold text-xl text-slate-900 mb-2">검증된 슈퍼호스트</h3>
+              <h3 className="font-bold text-xl text-slate-900 mb-2">검증된 슈퍼 호스트</h3>
               <p className="text-sm text-gray-500 leading-relaxed">
-                실제 이용 후기와 평점, 응답률 데이터를 바탕으로 신뢰할 수 있는 호스트와 특별한 경험을
-                만들어 보세요.
+                이용 후기와 응답률을 기반으로 한 슈퍼 호스트 배지로, 신뢰할 수 있는 카라반과의
+                만남을 도와줍니다.
               </p>
             </div>
           </div>
@@ -193,9 +196,9 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-bold uppercase tracking-wider text-gray-500">
-              인기 카라반 추천
+              인기 카라반 살펴보기
             </h2>
-            <span className="text-xs text-slate-500">실제 서비스 화면과 유사한 데모</span>
+            <span className="text-xs text-slate-500">현재는 예시 이미지와 가격입니다</span>
           </div>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {popularCaravans.map((c) => (
@@ -207,20 +210,22 @@ export default function Landing() {
                   <img src={c.image} alt={c.title} className="h-48 w-full object-cover" />
                   {c.superHost && (
                     <span className="absolute top-3 left-3 rounded-full bg-white/90 px-3 py-1 text-[11px] font-semibold text-amber-700 shadow-sm">
-                      슈퍼호스트
+                      슈퍼 호스트
                     </span>
                   )}
                 </div>
                 <div className="p-4 flex flex-col gap-2">
                   <div className="text-xs text-slate-500">{c.location}</div>
                   <div className="flex items-center justify-between gap-2">
-                    <h3 className="text-sm font-semibold text-slate-900 line-clamp-2">{c.title}</h3>
+                    <h3 className="text-sm font-semibold text-slate-900 line-clamp-2">
+                      {c.title}
+                    </h3>
                     <span className="text-xs font-semibold text-slate-700 bg-slate-100 rounded-full px-2 py-1">
                       4.8 ★
                     </span>
                   </div>
                   <div className="mt-1 flex items-center justify-between text-xs">
-                    <span className="text-slate-500">최대 4인 · 전기 · 샤워 · 주방</span>
+                    <span className="text-slate-500">최대 4인 · 취침 · 주방</span>
                     <span className="font-semibold text-slate-900">{c.price}</span>
                   </div>
                 </div>
@@ -244,7 +249,7 @@ export default function Landing() {
               홈
             </Link>
             <a href="#search" className="hover:text-white transition-colors">
-              검색
+              서비스 흐름
             </a>
             <Link to="/login" className="hover:text-white transition-colors">
               로그인
@@ -266,3 +271,4 @@ export default function Landing() {
     </div>
   )
 }
+
