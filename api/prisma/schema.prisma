@@ -80,6 +80,7 @@ model Caravan {
 
   reservations Reservation[]
   reviews      Review[]
+  preReservationMessages PreReservationMessage[]
 
   createdAt    DateTime        @default(now())
   updatedAt    DateTime        @updatedAt
