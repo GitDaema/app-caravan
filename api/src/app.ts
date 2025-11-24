@@ -13,6 +13,7 @@ import { caravansRouter } from './routes/caravans';
 import { reservationsRouter } from './routes/reservations';
 import { reviewsRouter } from './routes/reviews';
 import { messagesRouter } from './routes/messages';
+import { preMessagesRouter } from './routes/preMessages';
 import { devRouter } from './routes/dev';
 
 export function createApp() {
@@ -49,6 +50,7 @@ export function createApp() {
   app.use('/api/reservations', reservationsRouter);
   app.use('/api/reviews', reviewsRouter);
   app.use('/api/messages', messagesRouter);
+  app.use('/api/pre-messages', preMessagesRouter);
 
   app.use(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

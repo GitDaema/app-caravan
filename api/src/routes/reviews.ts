@@ -55,6 +55,27 @@ reviewsRouter.post('/', requireAuth, async (req, res, next) => {
       return res.status(404).json({ message: 'Caravan not found' });
     }
 
+    // Only allow reviews from users who have a completed reservation
+    // (CONFIRMED and end_date in the past) for this caravan.
+    const now = new Date();
+    const completedReservation = await prisma.reservation.findFirst({
+      where: {
+        caravan_id: caravanId,
+        user_id: user.id,
+        status: 'confirmed',
+        end_date: {
+          lt: now,
+        },
+      },
+    });
+
+    if (!completedReservation) {
+      return res.status(403).json({
+        message:
+          '종료된 예약이 있는 카라반에만 리뷰를 남길 수 있습니다. 예약 종료일 이후에 다시 시도해 주세요.',
+      });
+    }
+
     const review = await prisma.review.create({
       data: {
         caravan_id: caravanId,

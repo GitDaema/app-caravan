@@ -4,6 +4,7 @@ import { api } from '../lib/api'
 import { useAuthStore } from '../store/auth'
 import { useUIStore } from '../store/ui'
 import { Search } from 'lucide-react'
+import PreMessageThread from './PreMessageThread'
 
 type CaravanListProps = {
   onBookClick?: (caravan: any) => void
@@ -21,6 +22,7 @@ export default function CaravanList({ onBookClick }: CaravanListProps) {
     max_price: '',
     min_capacity: '',
   })
+  const [openInquiryId, setOpenInquiryId] = useState<number | null>(null)
 
   const { data, isLoading } = useQuery({
     queryKey: ['caravans'],
@@ -68,7 +70,7 @@ export default function CaravanList({ onBookClick }: CaravanListProps) {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
         <input
           className="border border-slate-200 bg-slate-50 rounded-2xl px-3 py-2 text-xs md:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0F766E] focus:border-[#0F766E] transition-colors"
-          placeholder="위치"
+          placeholder="이름 또는 위치"
           value={filters.location}
           onChange={(e) => setFilters({ ...filters, location: e.target.value })}
         />
@@ -136,8 +138,19 @@ export default function CaravanList({ onBookClick }: CaravanListProps) {
                       {c.price_per_day?.toLocaleString?.('ko-KR') ?? c.price_per_day}원/박
                     </span>
                   </div>
-                  <div className="mt-2 flex justify-end">
+                  <div className="mt-2 flex justify-end gap-2">
                     <button
+                      type="button"
+                      className="px-3 py-1.5 rounded-full border text-xs font-medium text-slate-600 border-slate-300 bg-white hover:bg-slate-50 transition-colors"
+                      onClick={() => {
+                        setOpenInquiryId(openInquiryId === c.id ? null : c.id)
+                      }}
+                      aria-label={`카라반 문의: ${c.name}`}
+                    >
+                      문의
+                    </button>
+                    <button
+                      type="button"
                       className="px-3 py-1.5 rounded-full border text-xs font-medium text-[#0F766E] border-[#0F766E] bg-white hover:bg-teal-50 transition-colors"
                       onClick={() => {
                         setSelectedCaravanId(c.id)
@@ -154,6 +167,12 @@ export default function CaravanList({ onBookClick }: CaravanListProps) {
           })}
         </div>
       )}
+      {openInquiryId && (
+        <div className="mt-4">
+          <PreMessageThread caravanId={openInquiryId} />
+        </div>
+      )}
     </div>
   )
 }
+

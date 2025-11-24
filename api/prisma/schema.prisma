@@ -46,6 +46,9 @@ model User {
   sentMessages   Message[]        @relation("SentMessages")
   receivedMessages Message[]      @relation("ReceivedMessages")
 
+  preReservationSentMessages     PreReservationMessage[] @relation("PreReservationSentMessages")
+  preReservationReceivedMessages PreReservationMessage[] @relation("PreReservationReceivedMessages")
+
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
 }
@@ -130,6 +133,23 @@ model Message {
   receiver       User        @relation("ReceivedMessages", fields: [receiver_id], references: [id])
 
   @@index([reservation_id])
+  @@index([sender_id])
+  @@index([receiver_id])
+}
+
+model PreReservationMessage {
+  id          Int      @id @default(autoincrement())
+  caravan_id  Int
+  sender_id   Int
+  receiver_id Int
+  content     String
+  createdAt   DateTime @default(now())
+
+  caravan     Caravan  @relation(fields: [caravan_id], references: [id])
+  sender      User     @relation("PreReservationSentMessages", fields: [sender_id], references: [id])
+  receiver    User     @relation("PreReservationReceivedMessages", fields: [receiver_id], references: [id])
+
+  @@index([caravan_id])
   @@index([sender_id])
   @@index([receiver_id])
 }
