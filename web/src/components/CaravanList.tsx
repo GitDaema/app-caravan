@@ -22,18 +22,42 @@ export default function CaravanList({ onBookClick }: CaravanListProps) {
     min_capacity: '',
   })
 
-  const query = new URLSearchParams()
-  if (filters.location) query.set('location', filters.location)
-  if (filters.min_price) query.set('min_price', filters.min_price)
-  if (filters.max_price) query.set('max_price', filters.max_price)
-  if (filters.min_capacity) query.set('min_capacity', filters.min_capacity)
-
   const { data, isLoading } = useQuery({
-    queryKey: ['caravans', query.toString()],
-    queryFn: async () => api.get(`/api/caravans?${query.toString()}`),
+    queryKey: ['caravans'],
+    queryFn: async () => api.get('/api/caravans'),
   })
 
-  const caravans = (data || []).filter((c: any) => c.status !== 'maintenance')
+  const caravans = (data || [])
+    .filter((c: any) => c.status !== 'maintenance')
+    .filter((c: any) => {
+      let ok = true
+      const term = filters.location.trim()
+      if (term) {
+        const lower = term.toLowerCase()
+        const name = (c.name || '').toLowerCase()
+        const loc = (c.location || '').toLowerCase()
+        ok = name.includes(lower) || loc.includes(lower)
+      }
+      if (filters.min_price) {
+        const min = Number(filters.min_price)
+        if (!Number.isNaN(min)) {
+          ok = ok && typeof c.price_per_day === 'number' && c.price_per_day >= min
+        }
+      }
+      if (filters.max_price) {
+        const max = Number(filters.max_price)
+        if (!Number.isNaN(max)) {
+          ok = ok && typeof c.price_per_day === 'number' && c.price_per_day <= max
+        }
+      }
+      if (filters.min_capacity) {
+        const minCap = Number(filters.min_capacity)
+        if (!Number.isNaN(minCap)) {
+          ok = ok && typeof c.capacity === 'number' && c.capacity >= minCap
+        }
+      }
+      return ok
+    })
 
   return (
     <div className="bg-white rounded-2xl border border-slate-100 shadow-md p-4 md:p-5">

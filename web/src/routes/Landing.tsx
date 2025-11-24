@@ -170,11 +170,6 @@ export default function Landing() {
                       alt={c.title || c.name}
                       className="h-48 w-full object-cover"
                     />
-                    {(c.superHost || c.host_id) && (
-                      <span className="absolute top-3 left-3 rounded-full bg-white/90 px-3 py-1 text-[11px] font-semibold text-amber-700 shadow-sm">
-                        슈퍼 호스트
-                      </span>
-                    )}
                   </div>
                   <div className="p-4 flex flex-col gap-2">
                     <div className="text-xs text-slate-500">
@@ -184,13 +179,10 @@ export default function Landing() {
                       <h3 className="text-sm font-semibold text-slate-900 line-clamp-2">
                         {c.title || c.name}
                       </h3>
-                      <span className="text-xs font-semibold text-slate-700 bg-slate-100 rounded-full px-2 py-1">
-                        4.8 ★
-                      </span>
                     </div>
                     <div className="mt-1 flex items-center justify-between text-xs">
                       <span className="text-slate-500">
-                        최대 {c.capacity ?? 4}명 · 취침 · 주방
+                        최대 {c.capacity ?? 4}명
                       </span>
                       <span className="font-semibold text-slate-900">
                         {c.price
@@ -244,4 +236,3 @@ export default function Landing() {
     </div>
   )
 }
-
