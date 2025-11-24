@@ -1,161 +1,154 @@
-# CaravanShare Monorepo
+# CaravanShare (Caravan P2P Marketplace)
 
-카라반 공유·예약을 위한 웹 애플리케이션 모노레포입니다.  
-**P2P 카라반 공유** 시나리오를 기반으로, 게스트(여행자)·호스트(카라반 소유자)·관리자 역할을 모두 지원합니다.
+![Build Status](https://img.shields.io/github/actions/workflow/status/GitDaema/app-caravan/deploy.yml?label=CI%2FCD&style=flat-square&logo=githubactions)
+![Deployment](https://img.shields.io/badge/Deployment-Azure%20VM-0078D4?style=flat-square&logo=microsoftazure)
+![Main Stack](https://img.shields.io/badge/Stack-Node.js%20%7C%20React%20%7C%20Prisma-339933?style=flat-square)
+![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 
-- 호스트는 카라반 등록, 요금 설정, 예약 승인/취소, 예약별 메시지 확인을 할 수 있습니다.
-- 게스트는 카라반 검색·상세 조회, 기간 선택 예약, 예약 취소, 리뷰 작성, 사전 문의(Pre-message)를 할 수 있습니다.
-- 관리자는 전체 예약·사용자 상태를 모니터링하고, 잔액 충전 등 데모용 편의 기능을 제공합니다.
-- 이메일/비밀번호 로그인과 소셜 로그인(Google, Naver, Kakao)을 지원하며, 세션 기반 인증으로 동작합니다.
+> **"누구나 쉽게 카라반을 공유하고 떠날 수 있는 웹 애플리케이션"**
+>
+> 게스트(여행자), 호스트(소유자), 관리자 역할을 모두 지원하는 올인원 P2P 예약 플랫폼입니다.  
+> **Node.js(Express)** 기반의 프로덕션 환경과 Python(FastAPI) 기반의 레퍼런스 모델을 모두 포함하는 **Monorepo** 프로젝트입니다.
 
-![메인 랜딩 페이지 스크린샷](images/landing.png)
+![Landing Page](images/landing.png)
 
----
+## 📚 Table of Contents
 
-## Repository Navigation
-
-이 리포지토리는 여러 서브 프로젝트를 포함하는 **모노레포**입니다.  
-각 폴더의 상세 사용 방법은 해당 폴더의 README 및 `docs/` 문서를 참고하면 됩니다.
-
-- `api/` – **Node.js(Express + Prisma) 기반 메인 API 서버**
-  - MariaDB와 연동된 세션 기반 인증(이메일/비밀번호 + 소셜 로그인)
-  - 카라반, 예약, 리뷰, 메시지(사전 문의/예약 내 메시지) 도메인 API
-  - Jest + supertest 기반 API 테스트 (`npm test`)
-- `web/` – **Vite + React + TypeScript PWA 프론트엔드**
-  - `/landing`, `/login`, `/app`(대시보드) 등 주요 라우트
-  - React Query, Zustand 기반 상태 관리, Tailwind CSS UI
-  - Vitest + React Testing Library 기반 화면 테스트 (`npm test`)
-- `backend/` – FastAPI + SQLAlchemy 기반 **기존 Python 백엔드**
-  - 도메인 모델·비즈니스 규칙의 레퍼런스로 유지됩니다.
-  - Pytest 기반 테스트는 계속해서 `backend/tests/` 에 위치합니다.
-- `src/` – FastAPI 백엔드의 초기 단일 앱 구조(서비스/리포지토리/도메인 모델 등)
-- `tests/` – 상위 수준 테스트 진입점 설명용 폴더
-  - 실제 Pytest 테스트 코드는 `backend/tests/` 에 있습니다(자세한 내용은 `tests/README.md` 참고).
-- `docs/` – 배포 및 빠른 실행을 위한 문서들
-  - `docs/QUICKSTART.md` – **Node + MariaDB + React 전체 Quickstart (권장 진입점)**
-  - `docs/DEPLOY_AZURE.md` – Azure VM 에서 Docker / PM2 + Nginx 기반 배포 가이드
-
-추가 참고 문서:
-
-- `DESIGN.md` – 아키텍처/도메인 설계, 주요 기술·설계 결정 기록
-- `GOAL.md`, `GEMINI.md`, `DEVELOPMENT_LOG.md` – 과제 목표, 작업 로그, AI 협업 메모 등
+- [About The Project](#about-the-project)
+- [Key Features](#key-features)
+  - [🏖️ User Experience (Guest)](#-user-experience-guest)
+  - [🚐 Host Management](#-host-management)
+  - [🌦️ Utilities & Tech](#-utilities--tech)
+- [Repository Structure](#repository-structure)
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
+- [Deployment](#deployment)
 
 ---
 
-## Quick Start (권장 흐름)
+## About The Project
 
-상세 단계는 `docs/QUICKSTART.md` 에 정리되어 있습니다.  
-아래는 **로컬에서 전체 시스템을 빠르게 돌려보는** 상위 수준 요약입니다.
+**CaravanShare**는 캠핑과 여행을 사랑하는 사람들을 위한 카라반 공유 서비스입니다.
+단순한 예약 기능을 넘어, **잔액 기반 결제 시뮬레이션**, **실시간 날씨 정보**, **1:1 메시징**, **소셜 로그인** 등 실제 상용 서비스에 준하는 사용자 경험을 제공합니다.
 
-### 1. 공통 사전 준비
+---
 
-- Node.js 20 LTS
-- Docker 및 docker-compose
+## Key Features
 
-루트에서 `.env` 파일을 준비합니다:
+### 🏖️ User Experience (Guest)
+* **통합 검색 및 필터링**: 지역, 날짜, 인원수, 가격대별로 최적의 카라반을 검색할 수 있습니다.
+* **직관적인 예약 프로세스**:
+    * 가상 잔액(Wallet)을 이용한 결제 및 환불 시뮬레이션.
+    * 예약 전 호스트에게 **사전 문의(Pre-message)** 발송 가능.
+* **마이 페이지**: 내 예약 현황 확인, 예약 취소, 리뷰 작성 기능 제공.
+* **소셜 로그인**: Google, Naver, Kakao OAuth 2.0 연동을 통한 간편 가입/로그인.
 
-```bash
-cp .env.example .env
-# Windows PowerShell의 경우:
-# copy .env.example .env
-```
+### 🚐 Host Management
+* **카라반 관리**: 보유 카라반 등록, 수정, 상태 변경(유지보수 모드 등).
+* **예약 승인 및 관리**: 대시보드(HostPanel)를 통해 들어온 예약을 승인(Confirm)하거나 거절할 수 있습니다.
+* **수익 관리**: 예약 확정 시 잔액이 입금되며, 취소 시 환불 로직이 자동으로 처리됩니다.
 
-필수 값 (예시 기준):
+### 🌦️ Utilities & Tech
+* **☁️ 스마트 날씨 패널 (Weather Integration)**:
+    * **Open-Meteo API**를 활용하여 예약 시작일 기준 +2일까지의 날씨 예보를 제공합니다.
+    * 위치 정보를 지오코딩하여 자동으로 해당 지역의 기온과 기상 상태(맑음, 비 등)를 시각화합니다.
+* **💬 실시간 메시징**: 예약 확정 후 게스트와 호스트 간의 1:1 메시지 스레드를 지원합니다.
+* **📱 PWA & Offline Support**:
+    * 모바일 환경에 최적화된 **Progressive Web App**으로 설계되었습니다.
+    * 네트워크 끊김 감지(Offline Banner) 및 앱 설치 유도(Install Prompt) 기능을 포함합니다.
 
-- `MARIADB_ROOT_PASSWORD`, `MARIADB_USER`, `MARIADB_PASSWORD`
-- `DATABASE_URL` (예: `mysql://caravan:...@db:3306/caravanshare`)
-- `SESSION_SECRET`
-- `FRONTEND_BASE_URL` (로컬 개발 기본값: `http://localhost:5173`)
+---
 
-### 2. Docker Compose 로 API + DB 실행
+## Repository Structure
 
-```bash
-docker compose up -d
-```
-
-구성:
-
-- `db` – MariaDB 10.11 (포트 `3306`)
-- `api` – Node 20 + Express + Prisma (포트 `3000`)
-
-`api` 컨테이너가 뜨면 `http://localhost:3000/health` 로 상태를 확인할 수 있습니다.
-
-### 3. 프론트엔드(dev 모드) 실행
+이 프로젝트는 **Monorepo**로 구성되어 있으며, 주요 서비스는 아래와 같이 분리되어 있습니다.
 
 ```bash
-cd web
-cp .env.local.example .env.local   # 필요 시 값 수정
-npm install
-npm run dev
+├── api/             # [Main Backend] Node.js + Express + Prisma + MariaDB
+│                      → 실제 배포 및 서비스 운영을 담당하는 API 서버
+├── web/             # [Frontend] Vite + React + TypeScript + PWA
+│                      → 사용자 인터페이스 및 클라이언트 로직
+├── backend/         # [Reference Backend] Python + FastAPI + SQLAlchemy
+│                      → 도메인 모델 설계 검증 및 비즈니스 로직 레퍼런스
+├── src/             # (Legacy) FastAPI 초기 구조 아카이브
+├── docs/            # 배포(Azure), 빠른 시작 가이드 등 문서 모음
+└── tests/           # 통합 테스트 진입점 설명
 ```
 
-- 기본 개발 주소: `http://localhost:5173`
-- `.env.local` 의 `VITE_API_BASE_URL` 을 `http://localhost:3000` 으로 맞추면 됩니다.
-
-브라우저에서 `http://localhost:5173` 에 접속하면:
-
-- `/landing` – 서비스 소개 랜딩 페이지
-- `/login` – 이메일/비밀번호 + 소셜 로그인 화면
-- `/app` – 게스트/호스트/관리자 대시보드
-
-를 차례로 확인할 수 있습니다.
-
-### 4. (선택) FastAPI 백엔드 실행 및 테스트
-
-과제의 초기 목표/도메인 모델은 FastAPI 백엔드를 기준으로 설계되었습니다.  
-해당 구현을 직접 실행·검증하고 싶다면:
-
-1. 가상환경 및 의존성 설치 (루트에서)
-
-   ```bash
-   python -m venv .venv
-   source .venv/bin/activate  # Windows: .\.venv\Scripts\activate
-   pip install -r requirements.txt
-   ```
-
-2. FastAPI 서버 실행
-
-   ```bash
-   uvicorn backend.app.main:app --reload
-   ```
-
-3. Pytest 테스트 실행
-
-   ```bash
-   pytest backend/tests -q
-   ```
-
-자세한 내용은 `backend/README.md` 와 `tests/README.md` 를 참고하세요.
+> **Note**: 실제 프로덕션 배포는 `api/`와 `web/`을 사용합니다. `backend/`는 아키텍처 설계를 위한 참조 구현체입니다.
 
 ---
 
 ## Tech Stack
 
-### Production Path (Node API + React PWA)
+### 🚀 Production (Main Service)
+실제 배포 및 운영되는 서비스의 기술 스택입니다.
 
-- **Backend (api/)**
-  - Node.js 20
-  - Express
-  - Prisma ORM + MariaDB
-  - express-session + Passport (Google/Naver/Kakao OAuth 포함)
-  - Jest + supertest
+| Category | Technology |
+| :--- | :--- |
+| **Backend** | ![NodeJS](https://img.shields.io/badge/Node.js-20.x-339933?style=flat-square&logo=nodedotjs) ![Express](https://img.shields.io/badge/Express-4.x-000000?style=flat-square&logo=express) |
+| **Database** | ![MariaDB](https://img.shields.io/badge/MariaDB-10.11-003545?style=flat-square&logo=mariadb) ![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?style=flat-square&logo=prisma) |
+| **Frontend** | ![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react) ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat-square&logo=typescript) ![Tailwind](https://img.shields.io/badge/Tailwind-3.x-38B2AC?style=flat-square&logo=tailwindcss) |
+| **Mobile** | ![PWA](https://img.shields.io/badge/PWA-Supported-5A0FC8?style=flat-square&logo=pwa) |
 
-- **Frontend (web/)**
-  - React 18
-  - Vite
-  - TypeScript
-  - React Query, Zustand
-  - Tailwind CSS
-  - PWA & (선택) Capacitor
-  - Vitest + React Testing Library
+### 🧪 Reference (Experimental / Design)
+초기 도메인 설계 및 로직 검증을 위해 사용된 참조 구현체입니다.
 
-### Reference Implementation (FastAPI)
+| Category | Technology |
+| :--- | :--- |
+| **Legacy Backend** | ![FastAPI](https://img.shields.io/badge/FastAPI-Design_Ref-009688?style=flat-square&logo=fastapi) ![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=flat-square&logo=python) |
 
-- **Backend (src/, backend/)**
-  - FastAPI
-  - SQLAlchemy (SQLite / MariaDB)
-  - Pydantic / pydantic-settings
-  - Pytest (+ pytest-cov)
+---
 
-FastAPI 구현은 도메인 모델과 예약/결제/권한 비즈니스 규칙을 명확히 보여주기 위한 **참고용 구현**이며,  
-실 서비스 시나리오와 배포는 Node API + React PWA 구성을 기본으로 합니다.
+## Getting Started
+
+로컬 환경에서 전체 서비스(DB + API + Web)를 빠르게 실행하는 방법입니다.
+상세한 내용은 [docs/QUICKSTART.md](docs/QUICKSTART.md)를 참고하세요.
+
+### Prerequisites
+* Node.js 20 LTS
+* Docker & Docker Compose
+
+### 1. Environment Setup
+루트 디렉토리의 환경 변수 템플릿을 복사합니다.
+```bash
+cp .env.example .env
+# .env 파일 내 MARIADB_PASSWORD, SESSION_SECRET 등을 설정해주세요.
+```
+
+### 2. Run Backend & DB (Docker)
+MariaDB와 Express API 서버를 컨테이너로 실행합니다.
+```bash
+docker compose up -d
+# http://localhost:3000/health 접속 시 'OK' 확인 가능
+```
+
+### 3. Run Frontend (Dev Mode)
+```bash
+cd web
+cp .env.local.example .env.local  # VITE_API_BASE_URL=http://localhost:3000 확인
+npm install
+npm run dev
+```
+브라우저에서 [http://localhost:5173](http://localhost:5173)으로 접속합니다.
+
+---
+
+## Deployment
+
+이 프로젝트는 **Microsoft Azure VM** 환경에 배포되어 있습니다.
+Nginx를 리버스 프록시로 사용하며, HTTPS(Let's Encrypt)가 적용되어 있습니다.
+
+* **배포 가이드**: [docs/DEPLOY_AZURE.md](docs/DEPLOY_AZURE.md)
+* **아키텍처 설계**: [DESIGN.md](DESIGN.md)
+
+### ✅ Grading Checklist (Self-Evaluation)
+- [x] **Level 1**: Azure VM Deploy & Public IP Access
+- [x] **Level 2**: HTTPS (Certbot) & Process Management (PM2)
+- [x] **Level 3**: Custom Domain (caravanshare.xyz), CI/CD, DB Separation
+
+---
+
+## Contact
+* **Author**: GitDaema
+* **Repository**: [\[GitHub Link\]](https://github.com/GitDaema/app-caravan)
