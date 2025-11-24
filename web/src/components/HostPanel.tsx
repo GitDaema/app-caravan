@@ -6,6 +6,24 @@ import MessageThread from './MessageThread'
 import PreMessageThread from './PreMessageThread'
 import { Users } from 'lucide-react'
 
+const STATUS_LABELS: Record<string, string> = {
+  pending: '대기',
+  confirmed: '확정',
+  cancelled: '취소',
+}
+
+function formatDate(value: any): string {
+  if (!value) return ''
+  const s = typeof value === 'string' ? value : String(value)
+  return s.slice(0, 10)
+}
+
+function formatPrice(value: any): string {
+  const num = typeof value === 'number' ? value : Number(value)
+  if (Number.isNaN(num)) return String(value ?? '')
+  return `${num.toLocaleString('ko-KR')}원`
+}
+
 function StatusChip({ status }: { status: string }) {
   const colors: Record<string, string> = {
     confirmed: 'bg-emerald-50 text-emerald-700 border-emerald-200',
@@ -13,12 +31,13 @@ function StatusChip({ status }: { status: string }) {
     cancelled: 'bg-slate-50 text-slate-700 border-slate-200',
   }
   const cls = colors[status] || 'bg-slate-50 text-slate-700 border-slate-200'
+  const label = STATUS_LABELS[status] || status
   return (
     <span
       className={`px-2 py-0.5 rounded-full border text-xs font-medium ${cls}`}
-      aria-label={`status ${status}`}
+      aria-label={`예약 상태 ${label}`}
     >
-      {status}
+      {label}
     </span>
   )
 }
@@ -86,29 +105,33 @@ export default function HostPanel() {
         )}
       </div>
       {isLoading && <div>불러오는 중...</div>}
-      {error && <div className="text-red-600 text-sm">예약 목록을 불러오지 못했습니다.</div>}
+      {error && <div className="text-red-600 text-sm">예약 목록을 불러오지 못했어요.</div>}
       {!isLoading && !error && (
         <div className="overflow-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="text-left border-b border-slate-100 text-xs font-medium uppercase tracking-wide text-slate-500">
-                <th className="py-2 pr-2">ID</th>
-                <th className="py-2 pr-2">Caravan</th>
-                <th className="py-2 pr-2">Dates</th>
-                <th className="py-2 pr-2">Price</th>
-                <th className="py-2 pr-2">Status</th>
-                <th className="py-2 pr-2">Actions</th>
+                <th className="py-2 pr-2">예약 ID</th>
+                <th className="py-2 pr-2">카라반</th>
+                <th className="py-2 pr-2">기간</th>
+                <th className="py-2 pr-2">가격</th>
+                <th className="py-2 pr-2">상태</th>
+                <th className="py-2 pr-2">작업</th>
               </tr>
             </thead>
             <tbody>
               {(data || []).map((r: any) => (
                 <tr key={r.id} className="border-b border-slate-100 hover:bg-slate-50">
                   <td className="py-2 pr-2 whitespace-nowrap text-slate-700">#{r.id}</td>
-                  <td className="py-2 pr-2 whitespace-nowrap text-slate-700">{r.caravan_id}</td>
                   <td className="py-2 pr-2 whitespace-nowrap text-slate-700">
-                    {r.start_date} ~ {r.end_date}
+                    {r.caravan_name || `카라반 #${r.caravan_id}`}
                   </td>
-                  <td className="py-2 pr-2 whitespace-nowrap text-slate-700">{r.price}</td>
+                  <td className="py-2 pr-2 whitespace-nowrap text-slate-700">
+                    {formatDate(r.start_date)} ~ {formatDate(r.end_date)}
+                  </td>
+                  <td className="py-2 pr-2 whitespace-nowrap text-slate-700">
+                    {formatPrice(r.price)}
+                  </td>
                   <td className="py-2 pr-2">
                     <StatusChip status={r.status} />
                   </td>

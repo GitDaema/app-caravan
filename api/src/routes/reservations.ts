@@ -16,6 +16,7 @@ reservationsRouter.get('/', requireAuth, async (req, res, next) => {
         id: r.id,
         user_id: r.user_id,
         caravan_id: r.caravan_id,
+        caravan_name: r.caravan?.name ?? null,
         start_date: r.start_date,
         end_date: r.end_date,
         price: r.price,
@@ -179,6 +180,8 @@ reservationsRouter.get('/host', requireAuth, requireRole('HOST'), async (req, re
         id: r.id,
         user_id: r.user_id,
         caravan_id: r.caravan_id,
+        caravan_name: r.caravan?.name ?? null,
+        guest_name: r.user?.fullName || r.user?.email || null,
         start_date: r.start_date,
         end_date: r.end_date,
         price: r.price,
@@ -203,9 +206,11 @@ reservationsRouter.get('/admin/all', requireAuth, requireRole('ADMIN'), async (_
         start_date: r.start_date,
         end_date: r.end_date,
         price: r.price,
-      status: r.status,
-    })),
-  );
+        status: r.status,
+        caravan_name: r.caravan?.name ?? null,
+        guest_name: r.user?.fullName || r.user?.email || null,
+      })),
+    );
   } catch (err) {
     next(err);
   }

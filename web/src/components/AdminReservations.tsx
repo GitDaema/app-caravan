@@ -3,6 +3,18 @@ import { api } from '../lib/api'
 import { useAuthStore } from '../store/auth'
 import { ShieldCheck } from 'lucide-react'
 
+const STATUS_LABELS: Record<string, string> = {
+  pending: '대기',
+  confirmed: '확정',
+  cancelled: '취소',
+}
+
+function formatDate(value: any): string {
+  if (!value) return ''
+  const s = typeof value === 'string' ? value : String(value)
+  return s.slice(0, 10)
+}
+
 export default function AdminReservations() {
   const { user } = useAuthStore()
   const isAdmin = !!user && user.role === 'ADMIN'
@@ -25,22 +37,25 @@ export default function AdminReservations() {
       {error && <div className="text-red-600 text-sm">예약 정보를 불러오지 못했어요.</div>}
       {!isLoading && !error && (
         <ul className="space-y-1 text-sm">
-          {(data || []).map((r: any) => (
-            <li
-              key={r.id}
-              className="border rounded-2xl p-2.5 flex justify-between border-slate-200 hover:bg-slate-50 transition-colors"
-            >
-              <span>
-                #{r.id} 사용자 #{r.user_id} / 카라반 #{r.caravan_id}
-              </span>
-              <span>
-                {String(r.start_date)} ~ {String(r.end_date)} [{r.status}]
-              </span>
-            </li>
-          ))}
+          {(data || []).map((r: any) => {
+            const caravanLabel = r.caravan_name || `카라반 #${r.caravan_id}`
+            const statusText = STATUS_LABELS[r.status] || r.status
+            return (
+              <li
+                key={r.id}
+                className="border rounded-2xl p-2.5 flex justify-between border-slate-200 hover:bg-slate-50 transition-colors"
+              >
+                <span>
+                  #{r.id} · 게스트 #{r.user_id} / {caravanLabel}
+                </span>
+                <span>
+                  {formatDate(r.start_date)} ~ {formatDate(r.end_date)} [{statusText}]
+                </span>
+              </li>
+            )
+          })}
         </ul>
       )}
     </div>
   )
 }
-
