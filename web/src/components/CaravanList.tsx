@@ -108,6 +108,7 @@ export default function CaravanList({ onBookClick }: CaravanListProps) {
                 className={`bg-white rounded-2xl border overflow-hidden shadow-md transition-transform duration-150 hover:-translate-y-1 ${
                   isSelected ? 'border-[#0F766E] shadow-lg' : 'border-slate-200'
                 }`}
+                onClick={() => setSelectedCaravanId(c.id)}
               >
                 <div className="relative w-full h-48 bg-slate-200">
                   <img
@@ -142,7 +143,8 @@ export default function CaravanList({ onBookClick }: CaravanListProps) {
                     <button
                       type="button"
                       className="px-3 py-1.5 rounded-full border text-xs font-medium text-slate-600 border-slate-300 bg-white hover:bg-slate-50 transition-colors"
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation()
                         setOpenInquiryId(openInquiryId === c.id ? null : c.id)
                       }}
                       aria-label={`카라반 문의: ${c.name}`}
@@ -152,7 +154,8 @@ export default function CaravanList({ onBookClick }: CaravanListProps) {
                     <button
                       type="button"
                       className="px-3 py-1.5 rounded-full border text-xs font-medium text-[#0F766E] border-[#0F766E] bg-white hover:bg-teal-50 transition-colors"
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation()
                         setSelectedCaravanId(c.id)
                         onBookClick?.(c)
                       }}
