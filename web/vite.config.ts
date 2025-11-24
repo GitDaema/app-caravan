@@ -10,10 +10,6 @@ export default defineConfig({
       includeAssets: [
         'favicon.ico',
         'apple-touch-icon.png',
-        'icons/pwa-192x192.png',
-        'icons/pwa-512x512.png',
-        'icons/maskable-icon-192x192.png',
-        'icons/maskable-icon-512x512.png',
       ],
       manifest: {
         name: 'CaravanShare',
@@ -25,26 +21,9 @@ export default defineConfig({
         theme_color: '#0ea5e9',
         icons: [
           {
-            src: '/icons/pwa-192x192.png',
-            sizes: '192x192',
-            type: 'image/png',
-          },
-          {
-            src: '/icons/pwa-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-          },
-          {
-            src: '/icons/maskable-icon-192x192.png',
-            sizes: '192x192',
-            type: 'image/png',
-            purpose: 'maskable',
-          },
-          {
-            src: '/icons/maskable-icon-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'maskable',
+            src: '/favicon.ico',
+            sizes: '48x48 72x72 96x96 128x128 256x256',
+            type: 'image/x-icon',
           },
         ]
       },
