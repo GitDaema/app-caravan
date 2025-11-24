@@ -50,7 +50,7 @@ export default function HostPanel() {
   const [openCaravanInbox, setOpenCaravanInbox] = useState<{ id: number; name: string } | null>(
     null,
   )
-  const [hasSeenInbox, setHasSeenInbox] = useState(false)
+  const [seenInboxCount, setSeenInboxCount] = useState<number | null>(null)
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['host-reservations'],
@@ -80,6 +80,7 @@ export default function HostPanel() {
 
   const totalPreInboxCount =
     (preInbox as any[] | undefined)?.reduce((sum, item: any) => sum + (item.count || 0), 0) ?? 0
+  const hasNewInbox = totalPreInboxCount > (seenInboxCount ?? 0)
 
   return (
     <div className="bg-white rounded-2xl border border-slate-100 shadow-md p-4 md:p-5">
@@ -102,10 +103,10 @@ export default function HostPanel() {
               } else {
                 setOpenCaravanInbox(null)
               }
-              setHasSeenInbox(true)
+              setSeenInboxCount(totalPreInboxCount)
             }}
           >
-            {hasSeenInbox ? '문의함' : '새 문의'} {totalPreInboxCount}건
+            {hasNewInbox ? '새 문의' : '문의함'} {totalPreInboxCount}건
           </button>
         )}
       </div>

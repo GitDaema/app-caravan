@@ -14,6 +14,7 @@ import ReviewSection from '../components/ReviewSection'
 import WeatherPanel from '../components/WeatherPanel'
 import CaravanManager from '../components/CaravanManager'
 import PreMessageThread from '../components/PreMessageThread'
+import GuestPreMessageInbox from '../components/GuestPreMessageInbox'
 import { LayoutDashboard, CalendarDays, Compass, BriefcaseBusiness, ShieldCheck } from 'lucide-react'
 
 type TabKey = 'overview' | 'trips' | 'explore' | 'host' | 'admin'
@@ -169,6 +170,7 @@ export default function Dashboard() {
             <>
               <BalanceCard />
               <ProfileActions />
+              <GuestPreMessageInbox />
               <ReservationList onEmptyNavigateExplore={() => setActiveTab('explore')} />
               <DemoOverview />
             </>
