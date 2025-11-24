@@ -1,0 +1,43 @@
+name: Deploy to caravanshare.xyz
+
+on:
+  push:
+    branches:
+      - master    # 배포에 사용하는 브랜치 이름 (필요하면 변경)
+  workflow_dispatch:  # GitHub UI에서 수동 실행도 허용
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Start SSH agent and add key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Deploy via SSH
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          set -e
+
+          # 1) 배포 디렉터리로 이동 (실제 서버 경로로 수정 필요)
+          cd ~/app-caravan
+
+          # 2) 최신 코드 가져오기
+          git pull
+
+          # 3) 프론트엔드 빌드
+          cd web
+          npm install --omit=dev || npm install
+          npm run build
+          cd ..
+
+          # 4) Docker Compose 재빌드 + 재시작
+          docker compose -f docker-compose.prod.yml up -d --build
+
+          EOF
+
