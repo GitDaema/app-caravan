@@ -13,6 +13,7 @@ import CaravanCalendar from '../components/CaravanCalendar'
 import ReviewSection from '../components/ReviewSection'
 import WeatherPanel from '../components/WeatherPanel'
 import CaravanManager from '../components/CaravanManager'
+import PreMessageThread from '../components/PreMessageThread'
 import { LayoutDashboard, CalendarDays, Compass, BriefcaseBusiness, ShieldCheck } from 'lucide-react'
 
 type TabKey = 'overview' | 'trips' | 'explore' | 'host' | 'admin'
@@ -195,6 +196,12 @@ export default function Dashboard() {
                 onStartDateChange={setReservationStart}
                 onSelectCaravanRequest={() => setActiveTab('explore')}
               />
+              {selectedCaravanMeta && (
+                <div className="mt-3 space-y-3">
+                  <PreMessageThread caravanId={selectedCaravanMeta.id} />
+                  <ReviewSection />
+                </div>
+              )}
             </>
           )}
 

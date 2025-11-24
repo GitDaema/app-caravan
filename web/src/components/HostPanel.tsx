@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '../lib/api'
 import { useAuthStore } from '../store/auth'
 import MessageThread from './MessageThread'
+import PreMessageThread from './PreMessageThread'
 import { Users } from 'lucide-react'
 
 function StatusChip({ status }: { status: string }) {
@@ -27,10 +28,17 @@ export default function HostPanel() {
   const qc = useQueryClient()
   const isHost = !!user && user.role === 'HOST'
   const [activeReservationId, setActiveReservationId] = useState<number | null>(null)
+  const [openCaravanInboxId, setOpenCaravanInboxId] = useState<number | null>(null)
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['host-reservations'],
     queryFn: async () => api.get('/api/reservations/host'),
+    enabled: isHost,
+  })
+
+  const { data: preInbox } = useQuery({
+    queryKey: ['host-pre-messages-inbox'],
+    queryFn: async () => api.get('/api/pre-messages/inbox'),
     enabled: isHost,
   })
 
@@ -47,14 +55,29 @@ export default function HostPanel() {
   })
 
   if (!isHost) return null
+
   return (
     <div className="bg-white rounded-2xl border border-slate-100 shadow-md p-4 md:p-5">
-      <div className="flex items-center mb-3">
-        <Users className="w-5 h-5 text-slate-400 mr-2" />
-        <h3 className="text-sm font-semibold text-slate-900">호스트 예약 관리</h3>
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center">
+          <Users className="w-5 h-5 text-slate-400 mr-2" />
+          <h3 className="text-sm font-semibold text-slate-900">호스트 예약 관리</h3>
+        </div>
+        {preInbox && (preInbox as any[]).length > 0 && (
+          <button
+            type="button"
+            className="text-[11px] px-2 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100"
+            onClick={() => {
+              const first = (preInbox as any[])[0]
+              setOpenCaravanInboxId(first?.caravan_id ?? null)
+            }}
+          >
+            새 문의 {(preInbox as any[]).reduce((sum, item: any) => sum + (item.count || 0), 0)}건
+          </button>
+        )}
       </div>
       {isLoading && <div>불러오는 중...</div>}
-      {error && <div className="text-red-600 text-sm">예약 목록을 불러오지 못했어요.</div>}
+      {error && <div className="text-red-600 text-sm">예약 목록을 불러오지 못했습니다.</div>}
       {!isLoading && !error && (
         <div className="overflow-auto">
           <table className="w-full text-sm">
@@ -87,7 +110,11 @@ export default function HostPanel() {
                         aria-label={`예약 #${r.id} 승인`}
                         disabled={mutation.isPending}
                         onClick={() =>
-                          mutation.mutate({ id: r.id, status: 'confirmed', caravan_id: r.caravan_id })
+                          mutation.mutate({
+                            id: r.id,
+                            status: 'confirmed',
+                            caravan_id: r.caravan_id,
+                          })
                         }
                       >
                         승인
@@ -99,8 +126,12 @@ export default function HostPanel() {
                         aria-label={`예약 #${r.id} 취소`}
                         disabled={mutation.isPending}
                         onClick={() => {
-                          if (!window.confirm(`예약 #${r.id}을 정말 취소하시겠어요?`)) return
-                          mutation.mutate({ id: r.id, status: 'cancelled', caravan_id: r.caravan_id })
+                          if (!window.confirm(`예약 #${r.id}을 정말 취소하시겠습니까?`)) return
+                          mutation.mutate({
+                            id: r.id,
+                            status: 'cancelled',
+                            caravan_id: r.caravan_id,
+                          })
                         }}
                       >
                         취소
@@ -119,9 +150,11 @@ export default function HostPanel() {
                       className="ml-2 px-2.5 py-1.5 rounded-full border text-xs font-medium text-[#0F766E] border-[#0F766E] hover:bg-teal-50 focus:outline-none focus:ring-2 focus:ring-[#0F766E]/30 disabled:opacity-50"
                       aria-label={`예약 #${r.id} 메시지 보기`}
                       disabled={mutation.isPending}
-                      onClick={() => setActiveReservationId(activeReservationId === r.id ? null : r.id)}
+                      onClick={() =>
+                        setActiveReservationId(activeReservationId === r.id ? null : r.id)
+                      }
                     >
-                      메시지
+                      예약 메시지
                     </button>
                   </td>
                 </tr>
@@ -131,6 +164,11 @@ export default function HostPanel() {
           {activeReservationId && (
             <div className="mt-3">
               <MessageThread reservationId={activeReservationId} />
+            </div>
+          )}
+          {openCaravanInboxId && (
+            <div className="mt-3">
+              <PreMessageThread caravanId={openCaravanInboxId} />
             </div>
           )}
         </div>

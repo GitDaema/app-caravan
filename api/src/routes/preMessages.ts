@@ -41,6 +41,44 @@ preMessagesRouter.get('/', requireAuth, async (req, res, next) => {
   }
 })
 
+preMessagesRouter.get('/inbox', requireAuth, async (req, res, next) => {
+  try {
+    const user: any = req.user
+
+    const messages = await prisma.preReservationMessage.findMany({
+      where: {
+        receiver_id: user.id,
+      },
+      include: { caravan: true },
+      orderBy: { createdAt: 'desc' },
+    })
+
+    const byCaravan = new Map<
+      number,
+      { caravan_id: number; caravan_name: string; lastContent: string; lastAt: Date; count: number }
+    >()
+
+    for (const m of messages) {
+      const existing = byCaravan.get(m.caravan_id)
+      if (!existing) {
+        byCaravan.set(m.caravan_id, {
+          caravan_id: m.caravan_id,
+          caravan_name: m.caravan?.name ?? `Caravan ${m.caravan_id}`,
+          lastContent: m.content,
+          lastAt: m.createdAt,
+          count: 1,
+        })
+      } else {
+        existing.count += 1
+      }
+    }
+
+    return res.json(Array.from(byCaravan.values()))
+  } catch (err) {
+    next(err)
+  }
+})
+
 preMessagesRouter.post('/', requireAuth, async (req, res, next) => {
   try {
     const user: any = req.user
@@ -71,17 +109,35 @@ preMessagesRouter.post('/', requireAuth, async (req, res, next) => {
         .json({ message: 'This caravan does not have a host and cannot receive inquiries.' })
     }
 
+    let receiverId: number | null = null
+
     if (user.id === hostId) {
-      return res.status(403).json({
-        message: 'Hosts cannot start pre-reservation messages as guests. Use reservation messages instead.',
+      // Host replying: pick the other participant from the latest message in this thread
+      const last = await prisma.preReservationMessage.findFirst({
+        where: { caravan_id: caravanId },
+        orderBy: { createdAt: 'desc' },
       })
+      if (!last) {
+        return res.status(400).json({
+          message: '게스트 문의가 아직 없습니다. 게스트가 먼저 메시지를 보낸 후에 답장할 수 있습니다.',
+        })
+      }
+      receiverId = last.sender_id !== user.id ? last.sender_id : last.receiver_id
+      if (!receiverId || receiverId === user.id) {
+        return res.status(400).json({
+          message: '답장할 대상 게스트를 찾지 못했습니다.',
+        })
+      }
+    } else {
+      // Guest sending: always send to host
+      receiverId = hostId
     }
 
     const message = await prisma.preReservationMessage.create({
       data: {
         caravan_id: caravanId,
         sender_id: user.id,
-        receiver_id: hostId,
+        receiver_id: receiverId,
         content: messageContent,
       },
     })
@@ -98,4 +154,3 @@ preMessagesRouter.post('/', requireAuth, async (req, res, next) => {
     next(err)
   }
 })
-
