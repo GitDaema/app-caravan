@@ -16,10 +16,21 @@ caravansRouter.get('/', async (req, res, next) => {
     const where: any = {}
 
     if (location && location.trim()) {
-      where.location = {
-        contains: location.trim(),
-        mode: 'insensitive',
-      }
+      const term = location.trim()
+      where.OR = [
+        {
+          location: {
+            contains: term,
+            mode: 'insensitive',
+          },
+        },
+        {
+          name: {
+            contains: term,
+            mode: 'insensitive',
+          },
+        },
+      ]
     }
 
     const minPrice = min_price ? Number(min_price) : undefined

@@ -6,9 +6,24 @@ type WeatherPanelProps = {
     location?: string | null
     name?: string | null
   } | null
+  startDate?: string | null
 }
 
-export default function WeatherPanel({ selectedCaravan }: WeatherPanelProps) {
+function parseIsoDateOnly(value: string): Date | null {
+  if (!value) return null
+  const [y, m, d] = value.split('T')[0]?.split('-') ?? []
+  if (!y || !m || !d) return null
+  const dt = new Date(Number(y), Number(m) - 1, Number(d))
+  return Number.isNaN(dt.getTime()) ? null : dt
+}
+
+function formatMmdd(date: Date): string {
+  const m = date.getMonth() + 1
+  const d = date.getDate()
+  return `${m}/${d}`
+}
+
+export default function WeatherPanel({ selectedCaravan, startDate }: WeatherPanelProps) {
   const location = selectedCaravan?.location
 
   if (!location || !location.trim()) {
@@ -32,6 +47,50 @@ export default function WeatherPanel({ selectedCaravan }: WeatherPanelProps) {
   const title = '카라반 주변 날씨'
   const caravanName = selectedCaravan?.name || '선택한 카라반'
 
+  let daysToShow = data?.daily ?? []
+
+  if (data && data.daily.length > 0) {
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+
+    const baseDate =
+      (startDate && parseIsoDateOnly(startDate)) ||
+      today
+
+    if (baseDate) {
+      const baseMs = baseDate.getTime()
+
+      const dayMap = new Map<number, (typeof data.daily)[number]>()
+      for (const day of data.daily) {
+        const dt = parseIsoDateOnly(day.date)
+        if (!dt) continue
+        const diffDays = Math.round((dt.getTime() - baseMs) / (1000 * 60 * 60 * 24))
+        if (!dayMap.has(diffDays)) {
+          dayMap.set(diffDays, day)
+        }
+      }
+
+      const offsets =
+        startDate && parseIsoDateOnly(startDate)
+          ? [1, 2] // 시작일 기준 다음날, 다다음날
+          : [0, 1, 2] // 기본: 오늘, 내일, 모레
+
+      const selected: typeof data.daily = []
+      for (const off of offsets) {
+        const found = dayMap.get(off)
+        if (found) {
+          selected.push(found)
+        }
+      }
+
+      if (selected.length > 0) {
+        daysToShow = selected
+      } else {
+        daysToShow = data.daily.slice(0, offsets.length)
+      }
+    }
+  }
+
   return (
     <section className="bg-white rounded-2xl border border-slate-100 shadow-md p-4 md:p-5">
       <div className="flex items-center justify-between mb-3">
@@ -42,7 +101,9 @@ export default function WeatherPanel({ selectedCaravan }: WeatherPanelProps) {
           <div>
             <h3 className="text-sm font-semibold text-slate-900">{title}</h3>
             <p className="text-xs text-slate-500">
-              {caravanName} 주변의 오늘 날씨와 3일 예보를 확인해 보세요.
+              {startDate
+                ? `${caravanName} 예약 시작일을 기준으로 다음 이틀 간의 날씨를 보여줍니다.`
+                : `${caravanName} 주변의 오늘과 가까운 날씨를 미리 확인해 보세요.`}
             </p>
           </div>
         </div>
@@ -102,8 +163,8 @@ export default function WeatherPanel({ selectedCaravan }: WeatherPanelProps) {
                 </span>
               </div>
               <p className="mt-1 text-xs text-slate-500">
-                실제 체감 온도와는 다를 수 있으며, 출발 전 최신 날씨를 다시
-                확인해 주세요.
+                실제 체감 온도와는 다를 수 있으며, 출발 전 최신 날씨를 다시 확인해
+                주세요.
               </p>
             </div>
             <p className="text-[11px] text-slate-400 md:hidden">
@@ -114,29 +175,32 @@ export default function WeatherPanel({ selectedCaravan }: WeatherPanelProps) {
             </p>
           </div>
           <div className="flex-[1.8] flex flex-col sm:flex-row gap-2 text-xs">
-            {data.daily.map((day) => (
-              <div
-                key={day.label}
-                className="flex-1 rounded-xl bg-slate-50 border border-slate-100 px-3 py-2 flex flex-col justify-between"
-              >
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-[11px] font-semibold text-slate-700">
-                    {day.label}
-                  </span>
+            {daysToShow.map((day) => {
+              const dt = parseIsoDateOnly(day.date)
+              const dateLabel = dt ? formatMmdd(dt) : day.date
+              return (
+                <div
+                  key={day.date}
+                  className="flex-1 rounded-xl bg-slate-50 border border-slate-100 px-3 py-2 flex flex-col justify-between"
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[11px] font-semibold text-slate-700">
+                      {dateLabel}
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-slate-500 line-clamp-2">
+                    {day.description}
+                  </div>
+                  <div className="mt-1 text-[11px] font-semibold text-slate-900">
+                    최고 {Math.round(day.maxTemp)}° / 최저{' '}
+                    {Math.round(day.minTemp)}°
+                  </div>
                 </div>
-                <div className="text-[11px] text-slate-500 line-clamp-2">
-                  {day.description}
-                </div>
-                <div className="mt-1 text-[11px] font-semibold text-slate-900">
-                  최고 {Math.round(day.maxTemp)}° / 최저{' '}
-                  {Math.round(day.minTemp)}°
-                </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       )}
     </section>
   )
 }
-

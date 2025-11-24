@@ -7,6 +7,7 @@ import { CalendarPlus, ImageOff } from 'lucide-react'
 type ReservationFormProps = {
   selectedCaravan?: any | null
   onSelectCaravanRequest?: () => void
+  onStartDateChange?: (value: string | null) => void
 }
 
 const fallbackImages = [
@@ -19,6 +20,7 @@ const fallbackImages = [
 export default function ReservationForm({
   selectedCaravan,
   onSelectCaravanRequest,
+  onStartDateChange,
 }: ReservationFormProps) {
   const qc = useQueryClient()
   const { selectedCaravanId } = useUIStore()
@@ -168,7 +170,10 @@ export default function ReservationForm({
             className="w-full h-12 border border-slate-200 bg-slate-50 rounded-xl px-4 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#0F766E] focus:border-[#0F766E] transition-colors"
             type="date"
             value={start}
-            onChange={(e) => setStart(e.target.value)}
+            onChange={(e) => {
+              setStart(e.target.value)
+              onStartDateChange?.(e.target.value || null)
+            }}
           />
         </div>
 

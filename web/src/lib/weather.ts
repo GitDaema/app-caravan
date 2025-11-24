@@ -1,4 +1,5 @@
 export type WeatherDay = {
+  date: string
   label: string
   minTemp: number
   maxTemp: number
@@ -165,7 +166,7 @@ export async function fetchWeather(locationRaw: string): Promise<WeatherSummary>
   const codeArr: number[] = daily.weathercode
 
   const dailySummaries: WeatherDay[] = []
-  for (let i = 0; i < times.length && dailySummaries.length < 3; i += 1) {
+  for (let i = 0; i < times.length; i += 1) {
     if (
       typeof minArr[i] !== 'number' ||
       typeof maxArr[i] !== 'number' ||
@@ -173,14 +174,10 @@ export async function fetchWeather(locationRaw: string): Promise<WeatherSummary>
     ) {
       continue
     }
-    let label: string
-    if (i === 0) label = '오늘'
-    else if (i === 1) label = '내일'
-    else if (i === 2) label = '모레'
-    else label = times[i]
 
     dailySummaries.push({
-      label,
+      date: times[i],
+      label: times[i],
       minTemp: minArr[i],
       maxTemp: maxArr[i],
       description: describeWeatherCode(codeArr[i]),

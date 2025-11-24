@@ -21,6 +21,7 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState<TabKey>('overview')
   const [selectedCaravanMeta, setSelectedCaravanMeta] = useState<any | null>(null)
   const [justBooked, setJustBooked] = useState(false)
+  const [reservationStart, setReservationStart] = useState<string | null>(null)
   const { user } = useAuthStore()
 
   const isHost = user?.role === 'HOST'
@@ -188,9 +189,10 @@ export default function Dashboard() {
               )}
               <ReservationList onEmptyNavigateExplore={() => setActiveTab('explore')} />
               <CaravanCalendar />
-              <WeatherPanel selectedCaravan={selectedCaravanMeta} />
+              <WeatherPanel selectedCaravan={selectedCaravanMeta} startDate={reservationStart} />
               <ReservationForm
                 selectedCaravan={selectedCaravanMeta}
+                onStartDateChange={setReservationStart}
                 onSelectCaravanRequest={() => setActiveTab('explore')}
               />
             </>
@@ -201,6 +203,7 @@ export default function Dashboard() {
               <CaravanList
                 onBookClick={(caravan) => {
                   setSelectedCaravanMeta(caravan)
+                  setReservationStart(null)
                   setActiveTab('trips')
                   setJustBooked(true)
                   window.scrollTo({ top: 0, behavior: 'smooth' })
