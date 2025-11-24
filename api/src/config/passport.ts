@@ -31,11 +31,11 @@ export function configurePassport() {
       try {
         const user = await prisma.user.findUnique({ where: { email } });
         if (!user || !user.hashedPassword) {
-          return done(null, false, { message: 'Invalid credentials' });
+          return done(null, false, { message: '이메일 또는 비밀번호가 잘못되었습니다.' });
         }
         const valid = await bcrypt.compare(password, user.hashedPassword);
         if (!valid) {
-          return done(null, false, { message: 'Invalid credentials' });
+          return done(null, false, { message: '이메일 또는 비밀번호가 잘못되었습니다.' });
         }
         return done(null, user);
       } catch (err) {

@@ -224,11 +224,16 @@ export default function Login() {
             </button>
 
             {socialError && <div className="text-red-600 text-sm mt-2">{socialError}</div>}
-            {error && <div className="text-red-600 text-sm mt-1">{error}</div>}
+            {error && (
+              <div className="text-red-600 text-sm mt-1">
+                {error === 'Invalid credentials'
+                  ? '이메일 또는 비밀번호가 잘못되었습니다.'
+                  : error}
+              </div>
+            )}
           </form>
         </div>
       </motion.div>
     </div>
   )
 }
-

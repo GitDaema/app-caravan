@@ -50,6 +50,7 @@ export default function HostPanel() {
   const [openCaravanInbox, setOpenCaravanInbox] = useState<{ id: number; name: string } | null>(
     null,
   )
+  const [hasSeenInbox, setHasSeenInbox] = useState(false)
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['host-reservations'],
@@ -77,6 +78,9 @@ export default function HostPanel() {
 
   if (!isHost) return null
 
+  const totalPreInboxCount =
+    (preInbox as any[] | undefined)?.reduce((sum, item: any) => sum + (item.count || 0), 0) ?? 0
+
   return (
     <div className="bg-white rounded-2xl border border-slate-100 shadow-md p-4 md:p-5">
       <div className="flex items-center justify-between mb-3">
@@ -98,9 +102,10 @@ export default function HostPanel() {
               } else {
                 setOpenCaravanInbox(null)
               }
+              setHasSeenInbox(true)
             }}
           >
-            새 문의 {(preInbox as any[]).reduce((sum, item: any) => sum + (item.count || 0), 0)}건
+            {hasSeenInbox ? '문의함' : '새 문의'} {totalPreInboxCount}건
           </button>
         )}
       </div>

@@ -26,7 +26,11 @@ authRouter.post('/login', (req, res, next) => {
 
   passport.authenticate('local', (err: any, user: any, info: any) => {
     if (err) return next(err);
-    if (!user) return res.status(400).json({ message: info?.message ?? 'Invalid credentials' });
+    if (!user) {
+      return res
+        .status(400)
+        .json({ message: info?.message ?? '이메일 또는 비밀번호가 잘못되었습니다.' });
+    }
     req.logIn(user, (loginErr: any) => {
       if (loginErr) return next(loginErr);
       return res.json({ user: serializeUser(user) });
