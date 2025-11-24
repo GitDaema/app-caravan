@@ -12,6 +12,7 @@ import HostPanel from '../components/HostPanel'
 import CaravanCalendar from '../components/CaravanCalendar'
 import ReviewSection from '../components/ReviewSection'
 import WeatherPanel from '../components/WeatherPanel'
+import CaravanManager from '../components/CaravanManager'
 import { LayoutDashboard, CalendarDays, Compass, BriefcaseBusiness, ShieldCheck } from 'lucide-react'
 
 type TabKey = 'overview' | 'trips' | 'explore' | 'host' | 'admin'
@@ -212,11 +213,17 @@ export default function Dashboard() {
           {activeTab === 'host' && isHost && (
             <>
               <HostPanel />
+              <CaravanManager mode="host" />
               <CaravanForm />
             </>
           )}
 
-          {activeTab === 'admin' && isAdmin && <AdminReservations />}
+          {activeTab === 'admin' && isAdmin && (
+            <>
+              <AdminReservations />
+              <CaravanManager mode="admin" />
+            </>
+          )}
         </div>
       </main>
     </div>

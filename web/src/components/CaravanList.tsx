@@ -33,7 +33,7 @@ export default function CaravanList({ onBookClick }: CaravanListProps) {
     queryFn: async () => api.get(`/api/caravans?${query.toString()}`),
   })
 
-  const caravans = data || []
+  const caravans = (data || []).filter((c: any) => c.status !== 'maintenance')
 
   return (
     <div className="bg-white rounded-2xl border border-slate-100 shadow-md p-4 md:p-5">

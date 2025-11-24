@@ -49,4 +49,9 @@ export const api = {
       body: JSON.stringify(body || {}),
     })
   },
+  async delete(path: string) {
+    return request(`${API_BASE}${path}`, {
+      method: 'DELETE',
+    })
+  },
 }
