@@ -38,6 +38,11 @@ jobs:
           cd ..
 
           # 4) Docker Compose 재빌드 + 재시작
-          docker compose -f docker-compose.prod.yml up -d --build
+          if docker compose version >/dev/null 2>&1; then
+            DC="docker compose"
+          else
+            DC="docker-compose"
+          fi
+          $DC -f docker-compose.prod.yml up -d --build
 
           EOF
