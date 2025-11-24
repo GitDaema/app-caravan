@@ -6,9 +6,10 @@ import { MessageCircle } from 'lucide-react'
 
 type Props = {
   caravanId: number
+  caravanName?: string | null
 }
 
-export default function PreMessageThread({ caravanId }: Props) {
+export default function PreMessageThread({ caravanId, caravanName }: Props) {
   const { user } = useAuthStore()
   const qc = useQueryClient()
   const [content, setContent] = useState('')
@@ -29,12 +30,16 @@ export default function PreMessageThread({ caravanId }: Props) {
     onError: (e: any) => alert(e?.message || '문의 메시지 전송에 실패했습니다.'),
   })
 
+  const caravanLabel = caravanName ? caravanName : `Caravan #${caravanId}`
+
   if (!user) {
     return (
       <div className="border rounded-2xl p-3 bg-white/80 backdrop-blur-sm border-slate-200 shadow-md">
         <div className="flex items-center gap-2 mb-2 text-sm">
           <MessageCircle className="w-4 h-4 text-slate-400" />
-          <span className="font-medium text-slate-900">호스트에게 문의</span>
+          <span className="font-medium text-slate-900">
+            호스트에게 문의 · {caravanLabel}
+          </span>
         </div>
         <div className="text-xs text-slate-600">
           로그인 후 호스트에게 문의 메시지를 보낼 수 있습니다.
@@ -48,20 +53,37 @@ export default function PreMessageThread({ caravanId }: Props) {
       <div className="flex items-center justify-between mb-2 text-sm">
         <div className="flex items-center gap-2">
           <MessageCircle className="w-4 h-4 text-slate-400" />
-          <span className="font-medium text-slate-900">호스트에게 문의</span>
+          <span className="font-medium text-slate-900">
+            호스트에게 문의 · {caravanLabel}
+          </span>
         </div>
       </div>
       {isLoading && <div className="text-sm">불러오는 중...</div>}
       {error && (
-        <div className="text-sm text-red-600">문의 메시지를 불러오지 못했습니다.</div>
+        <div className="text-sm text-red-600">
+          문의 메시지를 불러오지 못했습니다.
+        </div>
       )}
       {!isLoading && !error && (
         <ul className="space-y-1 max-h-48 overflow-auto mb-2">
           {(data || []).length === 0 && (
-            <li className="text-xs text-gray-600">아직 주고받은 문의 메시지가 없습니다.</li>
+            <li className="text-xs text-gray-600">
+              아직 주고받은 문의 메시지가 없습니다.
+            </li>
           )}
           {(data || []).map((m: any) => {
             const isMine = user?.id === m.sender_id
+            const isHost = user?.role === 'HOST'
+
+            let senderLabel = ''
+            if (isMine) {
+              senderLabel = '나'
+            } else if (isHost) {
+              senderLabel = `게스트 #${m.sender_id}`
+            } else {
+              senderLabel = '호스트'
+            }
+
             return (
               <li
                 key={m.id}
@@ -72,9 +94,7 @@ export default function PreMessageThread({ caravanId }: Props) {
                 }`}
               >
                 <div className="flex justify-between items-center gap-2 mb-0.5">
-                  <span className="font-semibold">
-                    {isMine ? '나' : `호스트`}
-                  </span>
+                  <span className="font-semibold">{senderLabel}</span>
                   <span className="text-[11px] text-gray-500">
                     {new Date(m.createdAt).toLocaleTimeString([], {
                       hour: '2-digit',

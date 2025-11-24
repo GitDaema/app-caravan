@@ -198,7 +198,10 @@ export default function Dashboard() {
               />
               {selectedCaravanMeta && (
                 <div className="mt-3 space-y-3">
-                  <PreMessageThread caravanId={selectedCaravanMeta.id} />
+                  <PreMessageThread
+                    caravanId={selectedCaravanMeta.id}
+                    caravanName={selectedCaravanMeta.name}
+                  />
                   <ReviewSection />
                 </div>
               )}

@@ -61,6 +61,9 @@ export default function CaravanList({ onBookClick }: CaravanListProps) {
       return ok
     })
 
+  const openInquiryCaravan =
+    openInquiryId != null ? caravans.find((c: any) => c.id === openInquiryId) : null
+
   return (
     <div className="bg-white rounded-2xl border border-slate-100 shadow-md p-4 md:p-5">
       <div className="flex items-center mb-3">
@@ -172,10 +175,12 @@ export default function CaravanList({ onBookClick }: CaravanListProps) {
       )}
       {openInquiryId && (
         <div className="mt-4">
-          <PreMessageThread caravanId={openInquiryId} />
+          <PreMessageThread
+            caravanId={openInquiryId}
+            caravanName={openInquiryCaravan?.name ?? openInquiryCaravan?.location}
+          />
         </div>
       )}
     </div>
   )
 }
-

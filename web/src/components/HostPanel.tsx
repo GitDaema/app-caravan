@@ -28,7 +28,9 @@ export default function HostPanel() {
   const qc = useQueryClient()
   const isHost = !!user && user.role === 'HOST'
   const [activeReservationId, setActiveReservationId] = useState<number | null>(null)
-  const [openCaravanInboxId, setOpenCaravanInboxId] = useState<number | null>(null)
+  const [openCaravanInbox, setOpenCaravanInbox] = useState<{ id: number; name: string } | null>(
+    null,
+  )
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['host-reservations'],
@@ -69,7 +71,14 @@ export default function HostPanel() {
             className="text-[11px] px-2 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100"
             onClick={() => {
               const first = (preInbox as any[])[0]
-              setOpenCaravanInboxId(first?.caravan_id ?? null)
+              if (first?.caravan_id) {
+                setOpenCaravanInbox({
+                  id: first.caravan_id,
+                  name: first.caravan_name ?? `Caravan ${first.caravan_id}`,
+                })
+              } else {
+                setOpenCaravanInbox(null)
+              }
             }}
           >
             새 문의 {(preInbox as any[]).reduce((sum, item: any) => sum + (item.count || 0), 0)}건
@@ -166,9 +175,12 @@ export default function HostPanel() {
               <MessageThread reservationId={activeReservationId} />
             </div>
           )}
-          {openCaravanInboxId && (
+          {openCaravanInbox && (
             <div className="mt-3">
-              <PreMessageThread caravanId={openCaravanInboxId} />
+              <PreMessageThread
+                caravanId={openCaravanInbox.id}
+                caravanName={openCaravanInbox.name}
+              />
             </div>
           )}
         </div>
@@ -176,4 +188,3 @@ export default function HostPanel() {
     </div>
   )
 }
-
