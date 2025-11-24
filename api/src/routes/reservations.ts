@@ -333,7 +333,7 @@ reservationsRouter.post(
           throw new Error('INVALID_TRANSITION');
         }
 
-        if (nextStatus === 'cancelled' && currentStatus !== 'cancelled') {
+        if (nextStatus === 'cancelled') {
           const guestId = existing.user_id;
           const hostId = existing.caravan?.host_id ?? null;
           const amount = existing.price;
@@ -389,4 +389,3 @@ reservationsRouter.post(
     }
   },
 );
-
