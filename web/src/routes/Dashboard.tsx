@@ -11,6 +11,7 @@ import AdminReservations from '../components/AdminReservations'
 import HostPanel from '../components/HostPanel'
 import CaravanCalendar from '../components/CaravanCalendar'
 import ReviewSection from '../components/ReviewSection'
+import WeatherPanel from '../components/WeatherPanel'
 import { LayoutDashboard, CalendarDays, Compass, BriefcaseBusiness, ShieldCheck } from 'lucide-react'
 
 type TabKey = 'overview' | 'trips' | 'explore' | 'host' | 'admin'
@@ -186,6 +187,7 @@ export default function Dashboard() {
               )}
               <ReservationList onEmptyNavigateExplore={() => setActiveTab('explore')} />
               <CaravanCalendar />
+              <WeatherPanel selectedCaravan={selectedCaravanMeta} />
               <ReservationForm
                 selectedCaravan={selectedCaravanMeta}
                 onSelectCaravanRequest={() => setActiveTab('explore')}
