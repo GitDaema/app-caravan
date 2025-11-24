@@ -27,8 +27,9 @@ jobs:
           # 1) 배포 디렉터리로 이동 (실제 서버 경로로 수정 필요)
           cd ~/app-caravan
 
-          # 2) 최신 코드 가져오기
-          git pull
+          # 2) 로컬 변경사항 폐기 후 최신 코드로 강제 동기화
+          git fetch origin master
+          git reset --hard origin/master
 
           # 3) 프론트엔드 빌드
           cd web
@@ -40,4 +41,3 @@ jobs:
           docker compose -f docker-compose.prod.yml up -d --build
 
           EOF
-
