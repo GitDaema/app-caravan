@@ -107,7 +107,7 @@ export default function Landing() {
         <div className="max-w-4xl mx-auto bg-white border border-gray-200 rounded-[2.5rem] shadow-2xl shadow-slate-200/50 px-6 py-8 md:px-10 md:py-10">
           <div className="mb-12">
             <p className="text-2xl md:text-3xl font-extrabold text-slate-900 text-center">
-              앱 카라반, 이렇게 쓰여요
+              카라반 셰어, 이렇게 쓰여요
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
@@ -274,4 +274,3 @@ export default function Landing() {
     </div>
   )
 }
-
