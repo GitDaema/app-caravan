@@ -33,7 +33,7 @@ jobs:
 
           # 3) 프론트엔드 빌드
           cd web
-          npm install --omit=dev || npm install
+          npm install
           npm run build
           cd ..
 
