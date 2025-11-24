@@ -43,10 +43,10 @@ async function handleResponse(res: Response, genericMessage: string) {
         detail = data
       } else if (data && typeof data === 'object') {
         detail =
-          data.detail ||
-          data.message ||
-          data.error_description ||
-          data.error ||
+          (data as any).detail ||
+          (data as any).message ||
+          (data as any).error_description ||
+          (data as any).error ||
           genericMessage
       }
     } catch {
@@ -57,15 +57,43 @@ async function handleResponse(res: Response, genericMessage: string) {
   return res.json()
 }
 
+function buildGeocodingQuery(raw: string): string {
+  const trimmed = raw.trim()
+  if (!trimmed) return trimmed
+
+  // 1) 괄호 안에 영문 도시명이 있으면 그 부분만 사용 (예: "강원 동해 캠핑장 (Donghae)")
+  const parenMatch = trimmed.match(/\(([^)]+)\)/)
+  if (parenMatch && /[A-Za-z]/.test(parenMatch[1])) {
+    return parenMatch[1].trim()
+  }
+
+  // 2) 쉼표가 있으면 첫 번째 조각만 사용 (예: "Donghae, KR")
+  const commaIndex = trimmed.indexOf(',')
+  if (commaIndex > 0) {
+    return trimmed.slice(0, commaIndex).trim()
+  }
+
+  // 3) 문자열이 길면 첫 단어만 사용 (예: "Busan Haeundae Beach Camper")
+  if (trimmed.length > 15) {
+    const token = trimmed.split(/[ ,]/).filter(Boolean)[0]
+    if (token) return token
+  }
+
+  // 4) 그 외에는 전체를 그대로 사용
+  return trimmed
+}
+
 export async function fetchWeather(locationRaw: string): Promise<WeatherSummary> {
   const location = locationRaw.trim()
   if (!location) {
     throw new Error('위치 정보가 없습니다.')
   }
 
+  const geocodeQuery = buildGeocodingQuery(location)
+
   // 1) 위치 문자열을 좌표로 변환 (Open-Meteo Geocoding)
   const geoParams = new URLSearchParams({
-    name: location,
+    name: geocodeQuery,
     count: '1',
     language: 'ko',
     format: 'json',

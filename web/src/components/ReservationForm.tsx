@@ -16,7 +16,10 @@ const fallbackImages = [
   'https://images.unsplash.com/photo-1527786356703-4b100091cd2c?q=80&w=1000&auto=format&fit=crop',
 ]
 
-export default function ReservationForm({ selectedCaravan, onSelectCaravanRequest }: ReservationFormProps) {
+export default function ReservationForm({
+  selectedCaravan,
+  onSelectCaravanRequest,
+}: ReservationFormProps) {
   const qc = useQueryClient()
   const { selectedCaravanId } = useUIStore()
   const [start, setStart] = useState('')
@@ -93,38 +96,65 @@ export default function ReservationForm({ selectedCaravan, onSelectCaravanReques
       </div>
 
       {selectedCaravan && (
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-24 h-24 rounded-lg bg-slate-200 overflow-hidden flex-shrink-0 flex items-center justify-center">
-            {thumbnailUrl ? (
-              <img
-                src={thumbnailUrl}
-                alt={selectedCaravan.name}
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  e.currentTarget.onerror = null
-                  e.currentTarget.src = fallbackImages[0]
-                }}
-              />
-            ) : (
-              <ImageOff className="w-6 h-6 text-slate-400" />
-            )}
-          </div>
-          <div className="flex-1">
-            <div className="text-lg font-bold text-slate-900">{selectedCaravan.name}</div>
-            <div className="text-sm text-slate-500">{selectedCaravan.location}</div>
-            <div className="mt-1 text-sm font-bold text-blue-600">
-              {selectedCaravan.price_per_day?.toLocaleString?.('ko-KR') ??
-                selectedCaravan.price_per_day}
-              원 / 박
+        <div className="mb-4 space-y-3">
+          <div className="flex items-center gap-3">
+            <div className="w-24 h-24 rounded-lg bg-slate-200 overflow-hidden flex-shrink-0 flex items-center justify-center">
+              {thumbnailUrl ? (
+                <img
+                  src={thumbnailUrl}
+                  alt={selectedCaravan.name}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null
+                    e.currentTarget.src = fallbackImages[0]
+                  }}
+                />
+              ) : (
+                <ImageOff className="w-6 h-6 text-slate-400" />
+              )}
             </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-lg font-bold text-slate-900 truncate">
+                {selectedCaravan.name}
+              </div>
+              <div className="text-sm text-slate-500 truncate">
+                {selectedCaravan.location}
+              </div>
+              <div className="mt-1 text-sm font-bold text-blue-600">
+                {selectedCaravan.price_per_day?.toLocaleString?.('ko-KR') ??
+                  selectedCaravan.price_per_day}
+                원/박
+              </div>
+            </div>
+            <button
+              type="button"
+              className="text-xs text-slate-500 hover:text-slate-900 underline"
+              onClick={onSelectCaravanRequest}
+            >
+              변경
+            </button>
           </div>
-          <button
-            type="button"
-            className="text-xs text-slate-500 hover:text-slate-900 underline"
-            onClick={onSelectCaravanRequest}
-          >
-            변경
-          </button>
+
+          {(selectedCaravan.description || selectedCaravan.amenities) && (
+            <div className="rounded-xl border border-slate-100 bg-slate-50 px-3 py-2 text-xs text-slate-700 space-y-1 max-h-28 overflow-y-auto">
+              {selectedCaravan.description && (
+                <p className="leading-snug">
+                  <span className="font-semibold text-slate-800 mr-1">설명</span>
+                  <span className="align-top break-words">
+                    {selectedCaravan.description}
+                  </span>
+                </p>
+              )}
+              {selectedCaravan.amenities && (
+                <p className="leading-snug">
+                  <span className="font-semibold text-slate-800 mr-1">편의 시설</span>
+                  <span className="align-top break-words">
+                    {selectedCaravan.amenities}
+                  </span>
+                </p>
+              )}
+            </div>
+          )}
         </div>
       )}
 
@@ -157,7 +187,7 @@ export default function ReservationForm({ selectedCaravan, onSelectCaravanReques
 
         {totalPrice != null && (
           <div className="mt-1 text-sm font-semibold text-slate-900">
-            총 예상 금액: {totalPrice.toLocaleString('ko-KR')}원
+            예상 결제 금액: {totalPrice.toLocaleString('ko-KR')}원
           </div>
         )}
 
@@ -172,13 +202,14 @@ export default function ReservationForm({ selectedCaravan, onSelectCaravanReques
           {mutation.isPending
             ? '예약 생성 중...'
             : isOffline
-            ? '오프라인 상태에서는 예약할 수 없어요.'
+            ? '오프라인 상태에서는 예약할 수 없습니다'
             : '예약하기'}
         </button>
 
         {isOffline && (
           <p className="text-amber-600 text-xs sm:text-sm">
-            오프라인 상태에서는 예약을 만들 수 없습니다. 네트워크 연결 후 다시 시도해 주세요.
+            오프라인 상태에서는 예약을 만들 수 없습니다. 네트워크 연결 후 다시
+            시도해 주세요.
           </p>
         )}
 
@@ -191,3 +222,4 @@ export default function ReservationForm({ selectedCaravan, onSelectCaravanReques
     </div>
   )
 }
+

@@ -4,9 +4,46 @@ import { requireAuth, requireRole } from '../middleware/auth';
 
 export const caravansRouter = Router();
 
-caravansRouter.get('/', async (_req, res, next) => {
+caravansRouter.get('/', async (req, res, next) => {
   try {
-    const caravans = await prisma.caravan.findMany();
+    const { location, min_price, max_price, min_capacity } = req.query as {
+      location?: string
+      min_price?: string
+      max_price?: string
+      min_capacity?: string
+    }
+
+    const where: any = {}
+
+    if (location && location.trim()) {
+      where.location = {
+        contains: location.trim(),
+        mode: 'insensitive',
+      }
+    }
+
+    const minPrice = min_price ? Number(min_price) : undefined
+    const maxPrice = max_price ? Number(max_price) : undefined
+    if (!Number.isNaN(minPrice) || !Number.isNaN(maxPrice)) {
+      where.price_per_day = {}
+      if (!Number.isNaN(minPrice) && typeof minPrice === 'number') {
+        where.price_per_day.gte = minPrice
+      }
+      if (!Number.isNaN(maxPrice) && typeof maxPrice === 'number') {
+        where.price_per_day.lte = maxPrice
+      }
+    }
+
+    const minCapacity = min_capacity ? Number(min_capacity) : undefined
+    if (!Number.isNaN(minCapacity) && typeof minCapacity === 'number') {
+      where.capacity = { gte: minCapacity }
+    }
+
+    const caravans = await prisma.caravan.findMany({
+      where,
+      orderBy: { id: 'asc' },
+    });
+
     res.json(
       caravans.map((c) => ({
         id: c.id,
