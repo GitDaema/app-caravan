@@ -2,37 +2,19 @@
 version: "3.9"
 
 services:
-  db:
-    image: mariadb:10.11
-    restart: unless-stopped
-    environment:
-      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
-      MARIADB_DATABASE: ${MARIADB_DATABASE:-caravanshare}
-      MARIADB_USER: ${MARIADB_USER}
-      MARIADB_PASSWORD: ${MARIADB_PASSWORD}
-    volumes:
-      - db_data:/var/lib/mysql
-
   api:
-    build: ./api
+    build: .
     restart: unless-stopped
     environment:
-      NODE_ENV: ${NODE_ENV:-production}
-      DATABASE_URL: ${DATABASE_URL}
-      SESSION_SECRET: ${SESSION_SECRET}
-      SESSION_STORE: ${SESSION_STORE:-mysql}
-      FRONTEND_BASE_URL: ${FRONTEND_BASE_URL:-https://caravanshare.xyz}
+      SECRET_KEY: ${SECRET_KEY:-09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7}
+      DATABASE_URL: ${DATABASE_URL:-sqlite:////app/data/caravan_booking.db}
+      CORS_ORIGINS: ${CORS_ORIGINS:-*}
       GOOGLE_CLIENT_ID: "${GOOGLE_CLIENT_ID}"
-      GOOGLE_CLIENT_SECRET: "${GOOGLE_CLIENT_SECRET}"
-      GOOGLE_CALLBACK_URL: "${GOOGLE_CALLBACK_URL}"
-      NAVER_CLIENT_ID: "${NAVER_CLIENT_ID}"
-      NAVER_CLIENT_SECRET: "${NAVER_CLIENT_SECRET}"
-      NAVER_CALLBACK_URL: "${NAVER_CALLBACK_URL}"
-      KAKAO_CLIENT_ID: "${KAKAO_CLIENT_ID}"
-      KAKAO_CLIENT_SECRET: "${KAKAO_CLIENT_SECRET}"
-      KAKAO_CALLBACK_URL: "${KAKAO_CALLBACK_URL}"
-    depends_on:
-      - db
+      FIREBASE_PROJECT_ID: "${FIREBASE_PROJECT_ID}"
+    volumes:
+      - data:/app/data
+    expose:
+      - "8000"
 
   web:
     image: nginx:alpine
@@ -49,4 +31,4 @@ services:
       - api
 
 volumes:
-  db_data:
+  data:
